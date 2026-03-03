@@ -54,24 +54,25 @@ See `Dimensioned_Drawings/LidAssembly_Drawing.pdf` for the hinge location and di
 ```
 Metal_Parts_Package/
   README.md                ← You are here
-  4_Metal_Parts.glb        ← 3D view of all 4 parts + screws (open in any GLB viewer)
-  Part_Images/             ← PNG images of each part (see below)
+  4_Metal_Parts.glb        ← 3D view of all 4 parts + screws
+  view_parts.py            ← Run this to open the 3D view (python3 view_parts.py)
   Flat_Patterns_DXF/       ← Laser-cut files (send to CNC/laser)
   Flat_Patterns_SVG/       ← Visual previews (open in any browser)
   Dimensioned_Drawings/    ← PDF drawings with exact dimensions
 ```
 
-## Part Images
+## Viewing the 3D Model
 
-| Image | Part |
-|-------|------|
-| `00_All_4_Parts_Overview.png` | All 4 parts side by side |
-| `01_Chamber_Body.png` | Chamber — inner housing + outer mesh + support ring |
-| `02_Bottom_Cap.png` | Bottom cap disc |
-| `03_Top_Cap.png` | Top cap — outer ring + inner collar |
-| `04_Lid_Assembly.png` | Lid with hinge knuckle |
-| `05_Leg_Screws_M6.png` | M6 leg screws (x3) |
-| `06_Cap_Screws_M4.png` | M4 cap screws |
+**Option A:** Run `python3 view_parts.py` — opens the interactive 3D view automatically.
+
+**Option B:** Drag `4_Metal_Parts.glb` into https://gltf-viewer.donmccurdy.com
+
+**Color key:**
+- GOLD = Bottom Cap
+- GRAY = Chamber (base body)
+- GREEN = Top Cap
+- BLUE = Lid
+- DARK STEEL = Screws (M6 leg + M4 cap)
 
 ## DXF Layer Convention
 
