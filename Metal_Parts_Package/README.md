@@ -61,18 +61,28 @@ Metal_Parts_Package/
   Dimensioned_Drawings/    ← PDF drawings with exact dimensions
 ```
 
-## Viewing the 3D Model
+## Part Images
 
-**Option A:** Run `python3 view_parts.py` — opens the interactive 3D view automatically.
+See `Part_Images/` for rendered views of each part:
+
+| File | Part |
+|------|------|
+| `00_All_4_Metal_Parts.png` | All 4 parts in one image |
+| `01_Chamber_Body.png` | Chamber body — front |
+| `01_Chamber_Body_Back.png` | Chamber body — back (open interior) |
+| `02_Bottom_Cap.png` | Bottom cap — top |
+| `02_Bottom_Cap_Back.png` | Bottom cap — underside |
+| `03_Top_Cap.png` | Top cap — front |
+| `03_Top_Cap_Back.png` | Top cap — back (inner structure) |
+| `04_Lid_Assembly.png` | Lid — outside |
+| `04_Lid_Assembly_Back.png` | Lid — inside |
+| `4_Metal_Parts.pdf` | **Printable PDF** — all 4 parts, front + back (8 pages) |
+
+## Interactive 3D View
+
+**Option A:** Run `python3 view_parts.py` — opens the 3D model automatically.
 
 **Option B:** Drag `4_Metal_Parts.glb` into https://gltf-viewer.donmccurdy.com
-
-**Color key:**
-- GOLD = Bottom Cap
-- GRAY = Chamber (base body)
-- GREEN = Top Cap
-- BLUE = Lid
-- DARK STEEL = Screws (M6 leg + M4 cap)
 
 ## DXF Layer Convention
 
