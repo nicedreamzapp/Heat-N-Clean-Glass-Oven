@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heat-N-Clean Glass Oven — Full Assembly (Lid Open)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f0f0f0; color: #333; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden; }
+  canvas { display: block; position: fixed; top: 0; left: 0; z-index: 0; }
+
+  #panel {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    background: rgba(255,255,255,0.92); border-bottom: 1px solid #ccc;
+    padding: 8px 16px; display: flex; align-items: center; gap: 10px;
+    backdrop-filter: blur(12px); box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  }
+  #panel h2 { font-size: 12px; color: #444; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+
+  .ctrl-btn {
+    padding: 5px 10px; font-size: 11px;
+    background: #f0f0f0; border: 1px solid #ccc; border-radius: 5px;
+    color: #666; cursor: pointer; transition: background 0.15s; white-space: nowrap;
+  }
+  .ctrl-btn:hover { background: #e0e0ee; color: #333; }
+  .ctrl-btn.on { background: #d0d8ee; color: #336; }
+
+  #status { font-size: 11px; color: #888; margin-left: auto; white-space: nowrap; }
+
+  #info {
+    position: fixed; bottom: 14px; left: 16px; z-index: 10;
+    font-size: 11px; color: #999;
+  }
+</style>
+</head>
+<body>
+
+<div id="panel">
+  <h2>Nice Dreamz — Heat-N-Clean Glass Oven — Lid Open</h2>
+  <div class="ctrl-btn" id="btn-reset">Reset</div>
+  <div class="ctrl-btn" id="btn-wire">Wireframe</div>
+  <div id="status">Loading assembly...</div>
+</div>
+
+<div id="info">Orbit: Left-click drag | Zoom: Scroll | Pan: Right-click drag</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<script>
+var statusEl = document.getElementById('status');
+
+try {
+
+  var scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xf0f0f0);
+
+  var camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 5000);
+  camera.position.set(200, 180, 300);
+
+  var renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  document.body.appendChild(renderer.domElement);
+
+  var controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+
+  // Lighting
+  scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+  var lights = [
+    { pos: [300, 400, 200], int: 0.7 },
+    { pos: [-300, 300, -200], int: 0.5 },
+    { pos: [0, -200, 300], int: 0.4 },
+    { pos: [200, 100, -300], int: 0.4 },
+    { pos: [-200, 400, 200], int: 0.3 }
+  ];
+  for (var i = 0; i < lights.length; i++) {
+    var dl = new THREE.DirectionalLight(0xffffff, lights[i].int);
+    dl.position.set(lights[i].pos[0], lights[i].pos[1], lights[i].pos[2]);
+    scene.add(dl);
+  }
+  scene.add(new THREE.HemisphereLight(0xddeeff, 0x888888, 0.6));
+
+  // Load assembly
+  var MODEL_URL = 'https://media.githubusercontent.com/media/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/CAD%20Exports/Assembly_LidOpen.glb';
+  var loader = new THREE.GLTFLoader();
+  var model = null;
+  var wireframeMode = false;
+
+  loader.load(MODEL_URL, function(gltf) {
+    model = gltf.scene;
+
+    model.traverse(function(child) {
+      if (child.isMesh) {
+        child.geometry.computeVertexNormals();
+        child.material.side = THREE.DoubleSide;
+      }
+    });
+
+    scene.add(model);
+
+    // Fit camera
+    var box = new THREE.Box3().setFromObject(model);
+    var center = box.getCenter(new THREE.Vector3());
+    var size = box.getSize(new THREE.Vector3());
+    var dist = Math.max(size.x, size.y, size.z) * 1.6;
+    controls.target.copy(center);
+    camera.position.set(center.x + dist * 0.5, center.y + dist * 0.4, center.z + dist * 0.6);
+    controls.update();
+
+    statusEl.textContent = 'Assembly loaded';
+    statusEl.style.color = '#44aa44';
+
+  }, function(progress) {
+    if (progress.total > 0) {
+      var pct = Math.round((progress.loaded / progress.total) * 100);
+      statusEl.textContent = 'Loading... ' + pct + '%';
+    }
+  }, function(err) {
+    console.error(err);
+    statusEl.textContent = 'Error loading assembly';
+    statusEl.style.color = '#cc3333';
+  });
+
+  // Controls
+  document.getElementById('btn-reset').addEventListener('click', function() {
+    if (!model) return;
+    var box = new THREE.Box3().setFromObject(model);
+    var center = box.getCenter(new THREE.Vector3());
+    var size = box.getSize(new THREE.Vector3());
+    var dist = Math.max(size.x, size.y, size.z) * 1.6;
+    controls.target.copy(center);
+    camera.position.set(center.x + dist * 0.5, center.y + dist * 0.4, center.z + dist * 0.6);
+    controls.update();
+  });
+
+  document.getElementById('btn-wire').addEventListener('click', function() {
+    wireframeMode = !wireframeMode;
+    this.classList.toggle('on', wireframeMode);
+    if (model) {
+      model.traverse(function(child) {
+        if (child.isMesh) child.material.wireframe = wireframeMode;
+      });
+    }
+  });
+
+  window.addEventListener('resize', function() {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+
+  (function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  })();
+
+} catch(e) {
+  statusEl.textContent = 'ERROR: ' + e.message;
+  statusEl.style.color = '#cc3333';
+  console.error(e);
+}
+</script>
+</body>
+</html>
