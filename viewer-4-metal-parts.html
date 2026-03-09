@@ -190,10 +190,10 @@ try {
         // Apply colored material
         group.traverse(function(child) {
           if (child.isMesh) {
-            child.material = new THREE.MeshStandardMaterial({
+            child.material = new THREE.MeshPhongMaterial({
               color: cfg.color,
-              metalness: 0.35,
-              roughness: 0.5,
+              specular: 0x666666,
+              shininess: 80,
               side: THREE.DoubleSide
             });
           }
