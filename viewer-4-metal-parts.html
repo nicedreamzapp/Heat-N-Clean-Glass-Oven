@@ -55,16 +55,16 @@
     <span class="dot" style="background:#888"></span>Show All
   </button>
   <button class="part-btn" data-part="bottom">
-    <span class="dot" style="background:#E8A030"></span>Bottom Cap
+    <span class="dot" style="background:#FFBb44"></span>Bottom Cap
   </button>
   <button class="part-btn" data-part="base">
-    <span class="dot" style="background:#7090C0"></span>Chamber (Base Body)
+    <span class="dot" style="background:#88BBEE"></span>Chamber (Base Body)
   </button>
   <button class="part-btn" data-part="top">
-    <span class="dot" style="background:#40B060"></span>Top Cap
+    <span class="dot" style="background:#66DD88"></span>Top Cap
   </button>
   <button class="part-btn" data-part="lid">
-    <span class="dot" style="background:#C05070"></span>Lid Assembly
+    <span class="dot" style="background:#EE7788"></span>Lid Assembly
   </button>
 
   <div class="sep"></div>
@@ -120,19 +120,17 @@ try {
   }
   scene.add(new THREE.HemisphereLight(0xddeeff, 0x888888, 0.6));
 
-  // Grid
-  var grid = new THREE.GridHelper(1000, 50, 0xcccccc, 0xe0e0e0);
-  scene.add(grid);
+  // No grid — clean view
 
   // Part config
   var LFS = 'https://media.githubusercontent.com/media/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/CAD%20Exports/Individual%20Parts/GLB';
   var SPACING = 200;
 
   var PARTS = {
-    bottom: { file: LFS + '/02_Bottom_Cap.glb',  color: 0xE8A030, emissive: 0x3A2808, label: 'Bottom Cap',  xOff: -SPACING * 1.5 },
-    base:   { file: LFS + '/01_Base_Body.glb',   color: 0x7090C0, emissive: 0x1C2430, label: 'Chamber',     xOff: -SPACING * 0.5 },
-    top:    { file: LFS + '/03_Top_Cap.glb',     color: 0x40B060, emissive: 0x102C18, label: 'Top Cap',     xOff:  SPACING * 0.5 },
-    lid:    { file: LFS + '/04_Lid_Assembly.glb', color: 0xC05070, emissive: 0x30141C, label: 'Lid Assembly', xOff:  SPACING * 1.5 }
+    bottom: { file: LFS + '/02_Bottom_Cap.glb',  color: 0xFFBB44, emissive: 0x664400, label: 'Bottom Cap',   xOff: -SPACING * 1.5 },
+    base:   { file: LFS + '/01_Base_Body.glb',   color: 0x88BBEE, emissive: 0x224466, label: 'Chamber',      xOff: -SPACING * 0.5 },
+    top:    { file: LFS + '/03_Top_Cap.glb',     color: 0x66DD88, emissive: 0x226633, label: 'Top Cap',      xOff:  SPACING * 0.5 },
+    lid:    { file: LFS + '/04_Lid_Assembly.glb', color: 0xEE7788, emissive: 0x662233, label: 'Lid Assembly',  xOff:  SPACING * 1.5 }
   };
 
   var partGroups = {};
@@ -155,11 +153,10 @@ try {
 
       group.traverse(function(child) {
         if (child.isMesh) {
-          child.material = new THREE.MeshPhongMaterial({
+          child.geometry.computeVertexNormals();
+          child.material = new THREE.MeshLambertMaterial({
             color: cfg.color,
             emissive: cfg.emissive,
-            specular: 0x444444,
-            shininess: 40,
             side: THREE.DoubleSide
           });
         }
