@@ -105,7 +105,7 @@ try {
   controls.dampingFactor = 0.08;
 
   // Lighting — bright, even, from all sides
-  scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+  scene.add(new THREE.AmbientLight(0xffffff, 0.5));
   var lights = [
     { pos: [300, 400, 200], int: 0.7 },
     { pos: [-300, 300, -200], int: 0.5 },
@@ -127,10 +127,10 @@ try {
   var SPACING = 200;
 
   var PARTS = {
-    bottom: { file: LFS + '/02_Bottom_Cap.glb',  color: 0xFFBB44, emissive: 0x664400, label: 'Bottom Cap',   xOff: -SPACING * 1.5 },
-    base:   { file: LFS + '/01_Base_Body.glb',   color: 0x88BBEE, emissive: 0x224466, label: 'Chamber',      xOff: -SPACING * 0.5 },
-    top:    { file: LFS + '/03_Top_Cap.glb',     color: 0x66DD88, emissive: 0x226633, label: 'Top Cap',      xOff:  SPACING * 0.5 },
-    lid:    { file: LFS + '/04_Lid_Assembly.glb', color: 0xEE7788, emissive: 0x662233, label: 'Lid Assembly',  xOff:  SPACING * 1.5 }
+    bottom: { file: LFS + '/02_Bottom_Cap.glb',  color: 0xCC8820, emissive: 0x332200, label: 'Bottom Cap',   xOff: -SPACING * 1.5 },
+    base:   { file: LFS + '/01_Base_Body.glb',   color: 0x4477AA, emissive: 0x112233, label: 'Chamber',      xOff: -SPACING * 0.5 },
+    top:    { file: LFS + '/03_Top_Cap.glb',     color: 0x33AA55, emissive: 0x0D2B15, label: 'Top Cap',      xOff:  SPACING * 0.5 },
+    lid:    { file: LFS + '/04_Lid_Assembly.glb', color: 0xBB4455, emissive: 0x2E1115, label: 'Lid Assembly',  xOff:  SPACING * 1.5 }
   };
 
   var partGroups = {};
