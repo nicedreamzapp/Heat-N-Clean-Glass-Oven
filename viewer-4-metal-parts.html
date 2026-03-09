@@ -155,11 +155,12 @@ scene.add(axes);
 
 // --- Part config (spaced 200mm apart along X, matching Python layout) ---
 const SPACING = 200;
+const LFS_BASE = 'https://media.githubusercontent.com/media/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/CAD%20Exports/Individual%20Parts/GLB';
 const PARTS = {
-  bottom: { file: 'CAD%20Exports/Individual%20Parts/GLB/02_Bottom_Cap.glb',   color: 0x44aa66, label: '02 — Bottom Cap',  desc: '304 SS, 1.2mm — Disk with rolled lip, M4/M6 screw holes',          xOffset: -SPACING * 1.5 },
-  base:   { file: 'CAD%20Exports/Individual%20Parts/GLB/01_Base_Body.glb',    color: 0xcc8844, label: '01 — Base Body',   desc: '304 SS, 1.2mm — Inner housing + outer mesh + support ring + fins',  xOffset: -SPACING * 0.5 },
-  top:    { file: 'CAD%20Exports/Individual%20Parts/GLB/03_Top_Cap.glb',      color: 0x6688cc, label: '03 — Top Cap',     desc: '304 SS, 1.2mm — Annular ring, compound-curved grooves (stamped)',   xOffset:  SPACING * 0.5 },
-  lid:    { file: 'CAD%20Exports/Individual%20Parts/GLB/04_Lid_Assembly.glb', color: 0xcc5566, label: '04 — Lid Assembly', desc: '304 SS, 1.2mm — 6 welded sub-parts + handle + hinge tabs',          xOffset:  SPACING * 1.5 },
+  bottom: { file: `${LFS_BASE}/02_Bottom_Cap.glb`,   color: 0x44aa66, label: '02 — Bottom Cap',  desc: '304 SS, 1.2mm — Disk with rolled lip, M4/M6 screw holes',          xOffset: -SPACING * 1.5 },
+  base:   { file: `${LFS_BASE}/01_Base_Body.glb`,    color: 0xcc8844, label: '01 — Base Body',   desc: '304 SS, 1.2mm — Inner housing + outer mesh + support ring + fins',  xOffset: -SPACING * 0.5 },
+  top:    { file: `${LFS_BASE}/03_Top_Cap.glb`,      color: 0x6688cc, label: '03 — Top Cap',     desc: '304 SS, 1.2mm — Annular ring, compound-curved grooves (stamped)',   xOffset:  SPACING * 0.5 },
+  lid:    { file: `${LFS_BASE}/04_Lid_Assembly.glb`, color: 0xcc5566, label: '04 — Lid Assembly', desc: '304 SS, 1.2mm — 6 welded sub-parts + handle + hinge tabs',          xOffset:  SPACING * 1.5 },
 };
 
 const partGroups = {};
