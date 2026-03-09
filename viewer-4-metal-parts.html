@@ -87,6 +87,14 @@
     <div class="ctrl-btn" id="btn-info">Part Info</div>
   </div>
 
+  <div class="sep"></div>
+  <label style="font-size:11px;color:#888">Brightness</label>
+  <input type="range" id="slider-bright" min="0" max="200" value="100" style="width:100%;margin:4px 0;accent-color:#5588cc">
+  <label style="font-size:11px;color:#888">Emissive Glow</label>
+  <input type="range" id="slider-emissive" min="0" max="100" value="30" style="width:100%;margin:4px 0;accent-color:#cc8844">
+  <label style="font-size:11px;color:#888">Background</label>
+  <input type="range" id="slider-bg" min="0" max="100" value="16" style="width:100%;margin:4px 0;accent-color:#888">
+
   <div id="status">Initializing...</div>
 </div>
 
@@ -135,18 +143,24 @@ try {
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
 
-  // Lighting
-  scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+  // Lighting — strong from all angles
+  var ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+  scene.add(ambientLight);
   var d1 = new THREE.DirectionalLight(0xffffff, 2.0);
   d1.position.set(200, 300, 150);
   scene.add(d1);
-  var d2 = new THREE.DirectionalLight(0xffffff, 1.2);
+  var d2 = new THREE.DirectionalLight(0xffffff, 1.5);
   d2.position.set(-150, 200, -100);
   scene.add(d2);
-  var d3 = new THREE.DirectionalLight(0xffffff, 0.8);
+  var d3 = new THREE.DirectionalLight(0xffffff, 1.0);
   d3.position.set(0, -100, 200);
   scene.add(d3);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x444466, 1.0));
+  var d4 = new THREE.DirectionalLight(0xffffff, 1.0);
+  d4.position.set(100, 50, -200);
+  scene.add(d4);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x666666, 1.5));
+  var allLights = [ambientLight, d1, d2, d3, d4];
+  var baseLightIntensities = [1.5, 2.0, 1.5, 1.0, 1.0];
 
   // Grid & Axes
   var grid = new THREE.GridHelper(1000, 50, 0x3a3a55, 0x2a2a44);
@@ -169,6 +183,7 @@ try {
   var partCenters = {};
   var wireframeMode = false;
   var loadedCount = 0;
+  var emissiveLevel = 0.3;
   var loader = new THREE.GLTFLoader();
 
   setStatus('Loading 4 parts...', '#ffaa44');
@@ -190,11 +205,14 @@ try {
         // Apply colored material
         group.traverse(function(child) {
           if (child.isMesh) {
+            var emissiveColor = new THREE.Color(cfg.color).multiplyScalar(emissiveLevel);
             child.material = new THREE.MeshPhongMaterial({
               color: cfg.color,
-              specular: 0x666666,
-              shininess: 80,
-              side: THREE.DoubleSide
+              emissive: emissiveColor,
+              specular: 0x888888,
+              shininess: 60,
+              side: THREE.DoubleSide,
+              flatShading: false
             });
           }
         });
@@ -318,6 +336,36 @@ try {
     this.classList.toggle('on', showInfo);
     legendEl.style.display = showInfo ? 'block' : 'none';
     updateLegend();
+  });
+
+  // --- Sliders ---
+  function updateAllMaterials() {
+    var keys = Object.keys(partGroups);
+    for (var i = 0; i < keys.length; i++) {
+      var cfg = PARTS[keys[i]];
+      partGroups[keys[i]].traverse(function(child) {
+        if (child.isMesh) {
+          child.material.emissive = new THREE.Color(cfg.color).multiplyScalar(emissiveLevel);
+        }
+      });
+    }
+  }
+
+  document.getElementById('slider-bright').addEventListener('input', function() {
+    var scale = this.value / 100;
+    for (var i = 0; i < allLights.length; i++) {
+      allLights[i].intensity = baseLightIntensities[i] * scale;
+    }
+  });
+
+  document.getElementById('slider-emissive').addEventListener('input', function() {
+    emissiveLevel = this.value / 100;
+    updateAllMaterials();
+  });
+
+  document.getElementById('slider-bg').addEventListener('input', function() {
+    var v = Math.round(this.value * 2.55);
+    scene.background = new THREE.Color('rgb(' + v + ',' + v + ',' + v + ')');
   });
 
   // Resize
