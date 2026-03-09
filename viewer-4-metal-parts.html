@@ -10,35 +10,33 @@
   canvas { display: block; position: fixed; top: 0; left: 0; z-index: 0; }
 
   #panel {
-    position: fixed; top: 16px; left: 16px; z-index: 10;
-    background: rgba(255,255,255,0.92); border: 1px solid #ccc;
-    border-radius: 10px; padding: 16px 18px; min-width: 240px;
-    backdrop-filter: blur(12px); box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    background: rgba(255,255,255,0.92); border-bottom: 1px solid #ccc;
+    padding: 8px 16px; display: flex; align-items: center; gap: 8px;
+    backdrop-filter: blur(12px); box-shadow: 0 1px 6px rgba(0,0,0,0.08);
   }
-  #panel h2 { font-size: 14px; margin-bottom: 14px; color: #444; letter-spacing: 1px; text-transform: uppercase; }
+  #panel h2 { font-size: 12px; color: #444; letter-spacing: 1px; text-transform: uppercase; margin-right: 8px; white-space: nowrap; }
 
   .part-btn {
-    display: block; width: 100%; padding: 8px 12px; margin-bottom: 6px;
-    font-size: 13px; text-align: left;
-    background: #f5f5f5; border: 1px solid #ddd; border-radius: 6px;
-    color: #555; cursor: pointer; transition: all 0.15s;
+    padding: 5px 10px; font-size: 12px;
+    background: #f5f5f5; border: 1px solid #ddd; border-radius: 5px;
+    color: #555; cursor: pointer; transition: all 0.15s; white-space: nowrap;
   }
   .part-btn:hover { background: #eef; color: #333; border-color: #aac; }
   .part-btn.active { background: #e0e8f5; border-color: #88aadd; color: #333; font-weight: 600; }
-  .part-btn .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+  .part-btn .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
 
-  .sep { height: 1px; background: #ddd; margin: 12px 0; }
+  .sep { display: none; }
 
-  .ctrl-row { display: flex; gap: 6px; margin-top: 4px; }
   .ctrl-btn {
-    flex: 1; padding: 6px 0; font-size: 11px; text-align: center;
+    padding: 5px 10px; font-size: 11px;
     background: #f0f0f0; border: 1px solid #ccc; border-radius: 5px;
-    color: #666; cursor: pointer; transition: background 0.15s;
+    color: #666; cursor: pointer; transition: background 0.15s; white-space: nowrap;
   }
   .ctrl-btn:hover { background: #e0e0ee; color: #333; }
   .ctrl-btn.on { background: #d0d8ee; color: #336; }
 
-  #status { margin-top: 10px; font-size: 11px; color: #888; }
+  #status { font-size: 11px; color: #888; margin-left: auto; white-space: nowrap; }
 
   #info {
     position: fixed; bottom: 14px; left: 16px; z-index: 10;
@@ -67,13 +65,8 @@
     <span class="dot" style="background:#EE7788"></span>Lid Assembly
   </button>
 
-  <div class="sep"></div>
-
-  <div class="ctrl-row">
-    <div class="ctrl-btn" id="btn-reset">Reset View</div>
-    <div class="ctrl-btn" id="btn-wire">Wireframe</div>
-  </div>
-
+  <div class="ctrl-btn" id="btn-reset">Reset</div>
+  <div class="ctrl-btn" id="btn-wire">Wireframe</div>
   <div id="status">Loading...</div>
 </div>
 
