@@ -7,7 +7,7 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #2a2a3a; color: #eee; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden; }
-  canvas { display: block; }
+  canvas { display: block; position: fixed; top: 0; left: 0; z-index: 0; }
 
   #panel {
     position: fixed; top: 16px; left: 16px; z-index: 10;
@@ -15,7 +15,7 @@
     border-radius: 10px; padding: 16px 18px; min-width: 240px;
     backdrop-filter: blur(12px);
   }
-  #panel h2 { font-size: 13px; margin-bottom: 14px; color: #99aacc; letter-spacing: 1px; text-transform: uppercase; }
+  #panel h2 { font-size: 14px; margin-bottom: 14px; color: #99aacc; letter-spacing: 1px; text-transform: uppercase; }
 
   .part-btn {
     display: block; width: 100%; padding: 8px 12px; margin-bottom: 6px;
@@ -25,7 +25,7 @@
   }
   .part-btn:hover { background: #2a2a44; color: #fff; border-color: #556; }
   .part-btn.active { background: #2d3a5a; border-color: #5577cc; color: #fff; }
-  .part-btn .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+  .part-btn .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
 
   .sep { height: 1px; background: #333; margin: 12px 0; }
 
@@ -38,9 +38,7 @@
   .ctrl-btn:hover { background: #2a2a44; color: #ddd; }
   .ctrl-btn.on { background: #334466; color: #aaccff; }
 
-  #status { margin-top: 10px; font-size: 11px; color: #666; }
-  #status.loading { color: #ffaa44; }
-  #status.ready { color: #44cc66; }
+  #status { margin-top: 10px; font-size: 11px; color: #888; }
 
   #info {
     position: fixed; bottom: 14px; left: 16px; z-index: 10;
@@ -50,34 +48,32 @@
   #legend {
     position: fixed; top: 16px; right: 16px; z-index: 10;
     background: rgba(16, 16, 32, 0.93); border: 1px solid #333;
-    border-radius: 10px; padding: 14px 16px; min-width: 200px;
+    border-radius: 10px; padding: 14px 16px; min-width: 220px;
     backdrop-filter: blur(12px); font-size: 12px; color: #999;
     display: none;
   }
   #legend h3 { font-size: 12px; color: #88aacc; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-  #legend .row { margin-bottom: 4px; }
-  #legend .label { color: #bbb; }
 </style>
 </head>
 <body>
 
 <div id="panel">
-  <h2>4 Main Metal Parts</h2>
+  <h2>Nice Dreamz — 4 Metal Parts</h2>
 
   <button class="part-btn active" data-part="all">
     <span class="dot" style="background:#88aacc"></span>Show All
   </button>
   <button class="part-btn" data-part="bottom">
-    <span class="dot" style="background:#44aa66"></span>02 — Bottom Cap
+    <span class="dot" style="background:#DCB044"></span>02 — Bottom Cap
   </button>
   <button class="part-btn" data-part="base">
-    <span class="dot" style="background:#cc8844"></span>01 — Chamber (Base Body)
+    <span class="dot" style="background:#B4BEC8"></span>01 — Chamber (Base Body)
   </button>
   <button class="part-btn" data-part="top">
-    <span class="dot" style="background:#6688cc"></span>03 — Top Cap
+    <span class="dot" style="background:#50C850"></span>03 — Top Cap
   </button>
   <button class="part-btn" data-part="lid">
-    <span class="dot" style="background:#cc5566"></span>04 — Lid Assembly
+    <span class="dot" style="background:#50A0DC"></span>04 — Lid Assembly
   </button>
 
   <div class="sep"></div>
@@ -85,14 +81,13 @@
   <div class="ctrl-row">
     <div class="ctrl-btn" id="btn-reset">Reset</div>
     <div class="ctrl-btn" id="btn-wire">Wireframe</div>
-    <div class="ctrl-btn" id="btn-explode">Explode</div>
   </div>
   <div class="ctrl-row" style="margin-top:6px">
     <div class="ctrl-btn" id="btn-grid">Grid</div>
     <div class="ctrl-btn" id="btn-info">Part Info</div>
   </div>
 
-  <div id="status" class="loading">Loading parts...</div>
+  <div id="status">Initializing...</div>
 </div>
 
 <div id="legend">
@@ -100,247 +95,250 @@
   <div id="legend-content"></div>
 </div>
 
-<div id="info">Orbit: Left-click &nbsp;|&nbsp; Zoom: Scroll &nbsp;|&nbsp; Pan: Right-click</div>
+<div id="info">Orbit: Left-click drag | Zoom: Scroll | Pan: Right-click drag</div>
 
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
-  }
+<!-- Classic script tags — no import maps needed -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.164.1/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.164.1/examples/js/loaders/GLTFLoader.js"></script>
+
+<script>
+var statusEl = document.getElementById('status');
+
+function setStatus(msg, color) {
+  statusEl.textContent = msg;
+  statusEl.style.color = color || '#888';
 }
-</script>
 
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+try {
+  setStatus('Setting up scene...', '#ffaa44');
 
-// --- Setup ---
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x2a2a3a);
+  // Scene
+  var scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x2a2a3a);
 
-const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 5000);
-camera.position.set(0, 400, 700);
+  // Camera
+  var camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 5000);
+  camera.position.set(0, 350, 650);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.8;
-document.body.appendChild(renderer.domElement);
+  // Renderer
+  var renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.8;
+  document.body.appendChild(renderer.domElement);
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.08;
+  // Controls
+  var controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
 
-// --- Lighting (bright, multi-angle for metallic surfaces) ---
-scene.add(new THREE.AmbientLight(0xffffff, 1.0));
-const d1 = new THREE.DirectionalLight(0xffffff, 2.0);
-d1.position.set(200, 300, 150);
-scene.add(d1);
-const d2 = new THREE.DirectionalLight(0xffffff, 1.2);
-d2.position.set(-150, 200, -100);
-scene.add(d2);
-const d3 = new THREE.DirectionalLight(0xffffff, 0.8);
-d3.position.set(0, -100, 200);
-scene.add(d3);
-scene.add(new THREE.HemisphereLight(0xffffff, 0x444466, 1.0));
+  // Lighting
+  scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+  var d1 = new THREE.DirectionalLight(0xffffff, 2.0);
+  d1.position.set(200, 300, 150);
+  scene.add(d1);
+  var d2 = new THREE.DirectionalLight(0xffffff, 1.2);
+  d2.position.set(-150, 200, -100);
+  scene.add(d2);
+  var d3 = new THREE.DirectionalLight(0xffffff, 0.8);
+  d3.position.set(0, -100, 200);
+  scene.add(d3);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x444466, 1.0));
 
-// --- Grid & Axes ---
-const grid = new THREE.GridHelper(1000, 50, 0x2a2a44, 0x1a1a33);
-scene.add(grid);
-const axes = new THREE.AxesHelper(50);
-scene.add(axes);
+  // Grid & Axes
+  var grid = new THREE.GridHelper(1000, 50, 0x3a3a55, 0x2a2a44);
+  scene.add(grid);
+  var axes = new THREE.AxesHelper(50);
+  scene.add(axes);
 
-// --- Part config (spaced 200mm apart along X, matching Python layout) ---
-const SPACING = 200;
-const LFS_BASE = 'https://media.githubusercontent.com/media/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/CAD%20Exports/Individual%20Parts/GLB';
-const PARTS = {
-  bottom: { file: `${LFS_BASE}/02_Bottom_Cap.glb`,   color: 0x44aa66, label: '02 — Bottom Cap',  desc: '304 SS, 1.2mm — Disk with rolled lip, M4/M6 screw holes',          xOffset: -SPACING * 1.5 },
-  base:   { file: `${LFS_BASE}/01_Base_Body.glb`,    color: 0xcc8844, label: '01 — Base Body',   desc: '304 SS, 1.2mm — Inner housing + outer mesh + support ring + fins',  xOffset: -SPACING * 0.5 },
-  top:    { file: `${LFS_BASE}/03_Top_Cap.glb`,      color: 0x6688cc, label: '03 — Top Cap',     desc: '304 SS, 1.2mm — Annular ring, compound-curved grooves (stamped)',   xOffset:  SPACING * 0.5 },
-  lid:    { file: `${LFS_BASE}/04_Lid_Assembly.glb`, color: 0xcc5566, label: '04 — Lid Assembly', desc: '304 SS, 1.2mm — 6 welded sub-parts + handle + hinge tabs',          xOffset:  SPACING * 1.5 },
-};
+  // Part definitions — colors match Python export script
+  var LFS = 'https://media.githubusercontent.com/media/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/CAD%20Exports/Individual%20Parts/GLB';
+  var SPACING = 200;
 
-const partGroups = {};
-const partCenters = {};
-const loader = new GLTFLoader();
-let loadedCount = 0;
-let wireframeMode = false;
-let exploded = false;
-const statusEl = document.getElementById('status');
+  var PARTS = {
+    bottom: { file: LFS + '/02_Bottom_Cap.glb',   color: 0xDCB044, label: '02 - Bottom Cap',  desc: '304 SS, 1.2mm — Disk with rolled lip, M4/M6 screw holes',          xOff: -SPACING * 1.5 },
+    base:   { file: LFS + '/01_Base_Body.glb',     color: 0xB4BEC8, label: '01 - Base Body',   desc: '304 SS, 1.2mm — Inner housing + outer mesh + support ring + fins',  xOff: -SPACING * 0.5 },
+    top:    { file: LFS + '/03_Top_Cap.glb',        color: 0x50C850, label: '03 - Top Cap',     desc: '304 SS, 1.2mm — Annular ring, compound-curved grooves (stamped)',   xOff:  SPACING * 0.5 },
+    lid:    { file: LFS + '/04_Lid_Assembly.glb',   color: 0x50A0DC, label: '04 - Lid Assembly', desc: '304 SS, 1.2mm — 6 welded sub-parts + handle + hinge tabs',         xOff:  SPACING * 1.5 }
+  };
 
-function setPartMaterial(obj, hex) {
-  obj.traverse(child => {
-    if (child.isMesh) {
-      child.material = new THREE.MeshStandardMaterial({
-        color: hex,
-        metalness: 0.35,
-        roughness: 0.5,
-        side: THREE.DoubleSide,
-        wireframe: wireframeMode,
+  var partGroups = {};
+  var partCenters = {};
+  var wireframeMode = false;
+  var loadedCount = 0;
+  var loader = new THREE.GLTFLoader();
+
+  setStatus('Loading 4 parts...', '#ffaa44');
+
+  function loadPart(key) {
+    var cfg = PARTS[key];
+    setStatus('Loading ' + cfg.label + '...', '#ffaa44');
+
+    loader.load(
+      cfg.file,
+      function(gltf) {
+        var group = gltf.scene;
+
+        // Center part then offset to its lane
+        var box = new THREE.Box3().setFromObject(group);
+        var center = box.getCenter(new THREE.Vector3());
+        group.position.set(cfg.xOff - center.x, -center.y, -center.z);
+
+        // Apply colored material
+        group.traverse(function(child) {
+          if (child.isMesh) {
+            child.material = new THREE.MeshStandardMaterial({
+              color: cfg.color,
+              metalness: 0.35,
+              roughness: 0.5,
+              side: THREE.DoubleSide
+            });
+          }
+        });
+
+        scene.add(group);
+        partGroups[key] = group;
+
+        var placedBox = new THREE.Box3().setFromObject(group);
+        partCenters[key] = placedBox.getCenter(new THREE.Vector3());
+
+        loadedCount++;
+        if (loadedCount >= 4) {
+          setStatus('All 4 parts loaded', '#44cc66');
+          fitAll();
+        } else {
+          // Load next part
+          var keys = Object.keys(PARTS);
+          var nextIdx = keys.indexOf(key) + 1;
+          if (nextIdx < keys.length) loadPart(keys[nextIdx]);
+        }
+      },
+      function(progress) {
+        if (progress.total > 0) {
+          var pct = Math.round((progress.loaded / progress.total) * 100);
+          setStatus('Loading ' + cfg.label + '... ' + pct + '%', '#ffaa44');
+        }
+      },
+      function(err) {
+        console.error('Failed to load ' + key, err);
+        setStatus('Error loading ' + cfg.label, '#ff4466');
+        // Still try loading next
+        loadedCount++;
+        var keys = Object.keys(PARTS);
+        var nextIdx = keys.indexOf(key) + 1;
+        if (nextIdx < keys.length) loadPart(keys[nextIdx]);
+      }
+    );
+  }
+
+  // Start loading sequentially (less strain on connections)
+  loadPart('bottom');
+
+  // Camera fitting
+  function fitTo(box) {
+    var center = box.getCenter(new THREE.Vector3());
+    var size = box.getSize(new THREE.Vector3());
+    var dist = Math.max(size.x, size.y, size.z) * 1.6;
+    controls.target.copy(center);
+    camera.position.set(center.x + dist * 0.5, center.y + dist * 0.4, center.z + dist * 0.6);
+    controls.update();
+  }
+
+  function fitAll() {
+    var box = new THREE.Box3();
+    var keys = Object.keys(partGroups);
+    for (var i = 0; i < keys.length; i++) {
+      if (partGroups[keys[i]].visible) box.expandByObject(partGroups[keys[i]]);
+    }
+    if (!box.isEmpty()) fitTo(box);
+  }
+
+  // Part selection
+  var activePart = 'all';
+  var buttons = document.querySelectorAll('.part-btn');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', function() {
+      var key = this.dataset.part;
+      activePart = key;
+      for (var j = 0; j < buttons.length; j++) {
+        buttons[j].classList.toggle('active', buttons[j].dataset.part === key);
+      }
+      var keys = Object.keys(partGroups);
+      for (var k = 0; k < keys.length; k++) {
+        partGroups[keys[k]].visible = (key === 'all' || key === keys[k]);
+      }
+      fitAll();
+      updateLegend();
+    });
+  }
+
+  // Controls
+  document.getElementById('btn-reset').addEventListener('click', fitAll);
+
+  document.getElementById('btn-wire').addEventListener('click', function() {
+    wireframeMode = !wireframeMode;
+    this.classList.toggle('on', wireframeMode);
+    var keys = Object.keys(partGroups);
+    for (var i = 0; i < keys.length; i++) {
+      partGroups[keys[i]].traverse(function(child) {
+        if (child.isMesh) child.material.wireframe = wireframeMode;
       });
     }
   });
-}
 
-function loadPart(key) {
-  const cfg = PARTS[key];
-  return new Promise((resolve, reject) => {
-    loader.load(cfg.file, gltf => {
-      const group = gltf.scene;
-
-      // Center the part on its own origin, then shift to its lane
-      const box = new THREE.Box3().setFromObject(group);
-      const center = box.getCenter(new THREE.Vector3());
-      group.position.set(cfg.xOffset - center.x, -center.y, -center.z);
-
-      setPartMaterial(group, cfg.color);
-      scene.add(group);
-      partGroups[key] = group;
-
-      // Store the placed center for explode/fit
-      const placedBox = new THREE.Box3().setFromObject(group);
-      partCenters[key] = placedBox.getCenter(new THREE.Vector3());
-
-      loadedCount++;
-      statusEl.textContent = `Loading... (${loadedCount}/4)`;
-      resolve();
-    }, undefined, reject);
+  document.getElementById('btn-grid').addEventListener('click', function() {
+    grid.visible = !grid.visible;
+    axes.visible = !axes.visible;
+    this.classList.toggle('on', !grid.visible);
   });
-}
 
-// Load all 4 parts
-Promise.all(Object.keys(PARTS).map(loadPart)).then(() => {
-  statusEl.textContent = 'All 4 parts loaded';
-  statusEl.className = 'ready';
-  fitAll();
-}).catch(err => {
-  console.error(err);
-  statusEl.textContent = 'Error loading parts';
-  statusEl.className = 'error';
-});
+  // Legend
+  var legendEl = document.getElementById('legend');
+  var legendContent = document.getElementById('legend-content');
+  var showInfo = false;
 
-// --- Camera fitting ---
-function getBoundsOfVisible() {
-  const box = new THREE.Box3();
-  for (const [key, group] of Object.entries(partGroups)) {
-    if (group.visible) box.expandByObject(group);
+  function updateLegend() {
+    if (!showInfo) return;
+    var html = '';
+    var keys = activePart === 'all' ? Object.keys(PARTS) : [activePart];
+    for (var i = 0; i < keys.length; i++) {
+      var p = PARTS[keys[i]];
+      if (!p) continue;
+      var c = '#' + p.color.toString(16).padStart(6, '0');
+      html += '<div style="margin-bottom:8px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + c + ';margin-right:6px;vertical-align:middle"></span><span style="color:#bbb">' + p.label + '</span><br><span style="color:#777;font-size:11px;margin-left:14px">' + p.desc + '</span></div>';
+    }
+    legendContent.innerHTML = html;
   }
-  return box;
-}
 
-function fitTo(box) {
-  const center = box.getCenter(new THREE.Vector3());
-  const size = box.getSize(new THREE.Vector3());
-  const dist = Math.max(size.x, size.y, size.z) * 1.8;
-  controls.target.copy(center);
-  camera.position.set(center.x + dist * 0.6, center.y + dist * 0.5, center.z + dist * 0.7);
-  controls.update();
-}
+  document.getElementById('btn-info').addEventListener('click', function() {
+    showInfo = !showInfo;
+    this.classList.toggle('on', showInfo);
+    legendEl.style.display = showInfo ? 'block' : 'none';
+    updateLegend();
+  });
 
-function fitAll() {
-  const box = getBoundsOfVisible();
-  if (!box.isEmpty()) fitTo(box);
-}
+  // Resize
+  window.addEventListener('resize', function() {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
 
-// --- Part selection ---
-let activePart = 'all';
-const buttons = document.querySelectorAll('.part-btn');
-
-function selectPart(key) {
-  activePart = key;
-  buttons.forEach(b => b.classList.toggle('active', b.dataset.part === key));
-
-  for (const [k, group] of Object.entries(partGroups)) {
-    group.visible = (key === 'all' || key === k);
+  // Render loop
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
   }
-  fitAll();
-  updateLegend();
+  animate();
+
+} catch(e) {
+  setStatus('ERROR: ' + e.message, '#ff4466');
+  console.error(e);
 }
-
-buttons.forEach(btn => {
-  btn.addEventListener('click', () => selectPart(btn.dataset.part));
-});
-
-// --- Explode view ---
-function setExplode(on) {
-  exploded = on;
-  document.getElementById('btn-explode').classList.toggle('on', on);
-  if (Object.keys(partGroups).length < 4) return;
-
-  const allCenter = new THREE.Vector3();
-  Object.values(partCenters).forEach(c => allCenter.add(c));
-  allCenter.divideScalar(4);
-
-  const spread = on ? 80 : 0;
-
-  for (const [key, group] of Object.entries(partGroups)) {
-    const orig = partCenters[key];
-    const dir = new THREE.Vector3().subVectors(orig, allCenter).normalize();
-    // Offset from original position
-    group.position.copy(dir.multiplyScalar(spread));
-  }
-}
-
-// --- Controls ---
-document.getElementById('btn-reset').addEventListener('click', fitAll);
-
-document.getElementById('btn-wire').addEventListener('click', () => {
-  wireframeMode = !wireframeMode;
-  document.getElementById('btn-wire').classList.toggle('on', wireframeMode);
-  for (const group of Object.values(partGroups)) {
-    group.traverse(child => {
-      if (child.isMesh) child.material.wireframe = wireframeMode;
-    });
-  }
-});
-
-document.getElementById('btn-explode').addEventListener('click', () => setExplode(!exploded));
-
-document.getElementById('btn-grid').addEventListener('click', () => {
-  grid.visible = !grid.visible;
-  axes.visible = !axes.visible;
-  document.getElementById('btn-grid').classList.toggle('on', !grid.visible);
-});
-
-const legendEl = document.getElementById('legend');
-const legendContent = document.getElementById('legend-content');
-let showInfo = false;
-
-function updateLegend() {
-  if (!showInfo) return;
-  let html = '';
-  const keys = activePart === 'all' ? Object.keys(PARTS) : [activePart];
-  for (const k of keys) {
-    if (!PARTS[k]) continue;
-    const p = PARTS[k];
-    html += `<div class="row"><span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#${p.color.toString(16).padStart(6,'0')};margin-right:6px"></span><span class="label">${p.label}</span><br><span style="color:#777;font-size:11px;margin-left:14px">${p.desc}</span></div><br>`;
-  }
-  legendContent.innerHTML = html;
-}
-
-document.getElementById('btn-info').addEventListener('click', () => {
-  showInfo = !showInfo;
-  document.getElementById('btn-info').classList.toggle('on', showInfo);
-  legendEl.style.display = showInfo ? 'block' : 'none';
-  updateLegend();
-});
-
-// --- Resize ---
-addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-});
-
-// --- Animate ---
-(function animate() {
-  requestAnimationFrame(animate);
-  controls.update();
-  renderer.render(scene, camera);
-})();
 </script>
+
 </body>
 </html>
