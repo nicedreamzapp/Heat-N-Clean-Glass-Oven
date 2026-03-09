@@ -6,7 +6,7 @@
 <title>Heat-N-Clean — 4 Main Metal Parts</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #12121e; color: #eee; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden; }
+  body { background: #2a2a3a; color: #eee; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden; }
   canvas { display: block; }
 
   #panel {
@@ -67,11 +67,11 @@
   <button class="part-btn active" data-part="all">
     <span class="dot" style="background:#88aacc"></span>Show All
   </button>
-  <button class="part-btn" data-part="base">
-    <span class="dot" style="background:#cc8844"></span>01 — Base Body
-  </button>
   <button class="part-btn" data-part="bottom">
     <span class="dot" style="background:#44aa66"></span>02 — Bottom Cap
+  </button>
+  <button class="part-btn" data-part="base">
+    <span class="dot" style="background:#cc8844"></span>01 — Chamber (Base Body)
   </button>
   <button class="part-btn" data-part="top">
     <span class="dot" style="background:#6688cc"></span>03 — Top Cap
@@ -118,44 +118,48 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // --- Setup ---
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x12121e);
+scene.background = new THREE.Color(0x2a2a3a);
 
 const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 5000);
-camera.position.set(220, 170, 280);
+camera.position.set(0, 400, 700);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.3;
+renderer.toneMappingExposure = 1.8;
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
 
-// --- Lighting ---
-scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-const d1 = new THREE.DirectionalLight(0xffffff, 1.3);
-d1.position.set(150, 250, 120);
+// --- Lighting (bright, multi-angle for metallic surfaces) ---
+scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+const d1 = new THREE.DirectionalLight(0xffffff, 2.0);
+d1.position.set(200, 300, 150);
 scene.add(d1);
-const d2 = new THREE.DirectionalLight(0x7788cc, 0.5);
-d2.position.set(-120, 80, -180);
+const d2 = new THREE.DirectionalLight(0xffffff, 1.2);
+d2.position.set(-150, 200, -100);
 scene.add(d2);
-scene.add(new THREE.HemisphereLight(0xccddff, 0x222233, 0.5));
+const d3 = new THREE.DirectionalLight(0xffffff, 0.8);
+d3.position.set(0, -100, 200);
+scene.add(d3);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x444466, 1.0));
 
 // --- Grid & Axes ---
-const grid = new THREE.GridHelper(500, 50, 0x2a2a44, 0x1a1a33);
+const grid = new THREE.GridHelper(1000, 50, 0x2a2a44, 0x1a1a33);
 scene.add(grid);
 const axes = new THREE.AxesHelper(50);
 scene.add(axes);
 
-// --- Part config ---
+// --- Part config (spaced 200mm apart along X, matching Python layout) ---
+const SPACING = 200;
 const PARTS = {
-  base:   { file: 'CAD Exports/Individual Parts/GLB/01_Base_Body.glb',    color: 0xcc8844, label: '01 — Base Body',   desc: '304 SS, 1.2mm — Inner housing + outer mesh + support ring + fins' },
-  bottom: { file: 'CAD Exports/Individual Parts/GLB/02_Bottom_Cap.glb',   color: 0x44aa66, label: '02 — Bottom Cap',  desc: '304 SS, 1.2mm — Disk with rolled lip, M4/M6 screw holes' },
-  top:    { file: 'CAD Exports/Individual Parts/GLB/03_Top_Cap.glb',      color: 0x6688cc, label: '03 — Top Cap',     desc: '304 SS, 1.2mm — Annular ring, compound-curved grooves (stamped)' },
-  lid:    { file: 'CAD Exports/Individual Parts/GLB/04_Lid_Assembly.glb', color: 0xcc5566, label: '04 — Lid Assembly', desc: '304 SS, 1.2mm — 6 welded sub-parts + handle + hinge tabs' },
+  bottom: { file: 'CAD Exports/Individual Parts/GLB/02_Bottom_Cap.glb',   color: 0x44aa66, label: '02 — Bottom Cap',  desc: '304 SS, 1.2mm — Disk with rolled lip, M4/M6 screw holes',          xOffset: -SPACING * 1.5 },
+  base:   { file: 'CAD Exports/Individual Parts/GLB/01_Base_Body.glb',    color: 0xcc8844, label: '01 — Base Body',   desc: '304 SS, 1.2mm — Inner housing + outer mesh + support ring + fins',  xOffset: -SPACING * 0.5 },
+  top:    { file: 'CAD Exports/Individual Parts/GLB/03_Top_Cap.glb',      color: 0x6688cc, label: '03 — Top Cap',     desc: '304 SS, 1.2mm — Annular ring, compound-curved grooves (stamped)',   xOffset:  SPACING * 0.5 },
+  lid:    { file: 'CAD Exports/Individual Parts/GLB/04_Lid_Assembly.glb', color: 0xcc5566, label: '04 — Lid Assembly', desc: '304 SS, 1.2mm — 6 welded sub-parts + handle + hinge tabs',          xOffset:  SPACING * 1.5 },
 };
 
 const partGroups = {};
@@ -171,8 +175,8 @@ function setPartMaterial(obj, hex) {
     if (child.isMesh) {
       child.material = new THREE.MeshStandardMaterial({
         color: hex,
-        metalness: 0.88,
-        roughness: 0.3,
+        metalness: 0.35,
+        roughness: 0.5,
         side: THREE.DoubleSide,
         wireframe: wireframeMode,
       });
@@ -185,12 +189,19 @@ function loadPart(key) {
   return new Promise((resolve, reject) => {
     loader.load(cfg.file, gltf => {
       const group = gltf.scene;
+
+      // Center the part on its own origin, then shift to its lane
+      const box = new THREE.Box3().setFromObject(group);
+      const center = box.getCenter(new THREE.Vector3());
+      group.position.set(cfg.xOffset - center.x, -center.y, -center.z);
+
       setPartMaterial(group, cfg.color);
       scene.add(group);
       partGroups[key] = group;
 
-      const box = new THREE.Box3().setFromObject(group);
-      partCenters[key] = box.getCenter(new THREE.Vector3());
+      // Store the placed center for explode/fit
+      const placedBox = new THREE.Box3().setFromObject(group);
+      partCenters[key] = placedBox.getCenter(new THREE.Vector3());
 
       loadedCount++;
       statusEl.textContent = `Loading... (${loadedCount}/4)`;
