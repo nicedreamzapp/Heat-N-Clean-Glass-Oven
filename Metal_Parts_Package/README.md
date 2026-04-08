@@ -4,6 +4,25 @@
 
 ---
 
+## Fabrication Flexibilities — Read First
+
+We are flexible on the items below. Use the cheapest equivalent that meets the
+listed constraints — the goal is to keep cost down without compromising the
+parts customers actually see or that mate against the ceramic chamber.
+
+| # | Item | Flexible | Hold |
+|---|------|----------|------|
+| 1 | **Perforation pattern (outer mesh)** | Hole size, spacing, exact pattern. Stock pre-perforated 304 SS sheet acceptable, target 35–45% open area. | Outer mesh OD (154.5 mm), height, slot positions, seam location. |
+| 2 | **Material grade — hidden parts** | Inner housing, support ring, standoff fins may use **430 stainless** instead of 304 (must tolerate 870 °F continuous). | 304 stainless on outer mesh, top cap, lid exterior, steel tray. |
+| 3 | **Surface finish — hidden surfaces** | Mill finish acceptable on any surface not visible from outside. | #4 brushed on outer mesh, top cap, lid exterior, tray top. |
+| 4 | **Bend radius** | 1.2–2.0 mm inside bend radius on bottom cap lip, tray brake bends, lid sub-parts — use standard tooling. | 1.2 mm (1× T) on top cap only. |
+| 5 | **Top cap construction** | **Two-piece welded preferred** — flat ring + 4 welded U-channel pieces in slot positions. **No stamping die required.** | Weld seams ground flush and brushed to match. |
+| 6 | **Welding method** | Shop's choice on hidden seams (TIG, spot, laser). | Visible welds clean: top cap channels, outer mesh seam, hinge knuckles. |
+| 7 | **Standoff fin count** | 8–10 fins acceptable instead of the 12 drawn, if structurally sufficient. | Maintain 4 mm air gap and concentricity. |
+| 8 | **Leg bolt rotational position** | Exact rotation flexible — drawn at 40° / 160° / 280° but any 120°-spaced rotation is fine. | 3 legs, evenly spaced, at R = 65.85 mm. |
+
+---
+
 ## The 4 Parts
 
 | # | Part | DXF File | Notes |
@@ -98,6 +117,12 @@ See `Part_Images/` for rendered views of each part:
 
 ## Material Spec
 
-- **Material:** 304 Stainless Steel
+- **Material:** 304 Stainless Steel (430 acceptable on hidden internal parts — see Flexibilities)
 - **Thickness:** 1.2 mm (18 gauge)
-- **Finish:** Brushed
+- **Finish:** Brushed (#4) on visible surfaces; mill finish acceptable on hidden surfaces
+
+---
+
+## Quote Recipient
+
+**Sending to:** sales@tianruntools.com (Tianrun Tools)
