@@ -200,12 +200,16 @@ def in_housing_hole(angle_deg, z):
 
 slot_arc_half_deg = (slot_width / 2) / ceramic_outer_r * (180 / np.pi)
 
+_housing_slot_buffer_mm = 1.0
+_housing_extra_deg = (_housing_slot_buffer_mm / housing_inner_r) * (180 / np.pi)
+_housing_slot_half_deg = slot_arc_half_deg + _housing_extra_deg
+
 def get_housing_z_offset(angle_deg):
     for slot_center in slot_positions:
         diff = abs(angle_deg - slot_center)
         if diff > 180: diff = 360 - diff
-        if diff <= slot_arc_half_deg:
-            t = 1.0 - (diff / slot_arc_half_deg)
+        if diff <= _housing_slot_half_deg:
+            t = 1.0 - (diff / _housing_slot_half_deg)
             half_w = slot_width / 2
             straight_h = slot_depth - half_w
             return straight_h + half_w * np.sqrt(max(0, t * (2 - t)))
@@ -242,19 +246,28 @@ def in_perf(ang, z, holes, mid_r, hole_r):
             return True
     return False
 
+_mesh_slot_buffer_mm = 1.0
+_mesh_extra_deg = (_mesh_slot_buffer_mm / mesh_inner_r) * (180 / np.pi)
+_mesh_slot_half_deg = slot_arc_half_deg + _mesh_extra_deg
+_mesh_lip_clearance = 10.0
+
 def in_mesh_slot(angle_deg, z):
     half_w = slot_width / 2
-    straight_h = slot_depth - half_w
+    straight_h = slot_depth - half_w + _mesh_lip_clearance
+    total_depth = slot_depth + _mesh_lip_clearance
     z_from_top = housing_top_z - z
     for slot_center in slot_positions:
         ang_diff = abs(angle_deg - slot_center)
         if ang_diff > 180: ang_diff = 360 - ang_diff
-        arc_dist = ang_diff * (np.pi / 180) * mesh_inner_r
-        if arc_dist <= half_w:
-            if z_from_top <= straight_h: return True
-            elif z_from_top <= slot_depth:
+        if ang_diff <= _mesh_slot_half_deg:
+            t = ang_diff / _mesh_slot_half_deg
+            arc_dist_norm = t * half_w
+            if z_from_top <= straight_h:
+                return True
+            elif z_from_top <= total_depth:
                 z_from_arc = z_from_top - straight_h
-                if arc_dist**2 + z_from_arc**2 <= half_w**2: return True
+                if arc_dist_norm**2 + z_from_arc**2 <= half_w**2:
+                    return True
     return False
 
 def in_bottom_hole(angle_deg, r):

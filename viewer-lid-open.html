@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Heat & Clean — Full Assembly (Lid Open)</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #e8e8ec; overflow: hidden; font-family: -apple-system, sans-serif; }
+canvas { width: 100vw; height: 100vh; display: block; }
+#label { position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.78); color: #fff; padding: 10px 24px; border-radius: 10px;
+  font-size: 16px; font-weight: 600; z-index: 10; }
+#slider-box { position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.6); color: #fff; padding: 8px 16px; border-radius: 8px;
+  font-size: 12px; z-index: 10; display: flex; align-items: center; gap: 10px; }
+#slider { width: 220px; }
+#info { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.6); color: #ddd; padding: 8px 18px; border-radius: 8px;
+  font-size: 12px; z-index: 10; }
+#loading { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  font-size: 18px; color: #666; z-index: 20; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="label">Heat &amp; Clean Oven — Lid Open (High Res)</div>
+<div id="slider-box">
+  Lid angle: <span id="angle-val">95°</span>
+  <input id="slider" type="range" min="0" max="120" value="95" />
+</div>
+<div id="info">Drag: rotate &bull; Scroll: zoom &bull; Right-drag: pan &bull; Slider: open/close lid</div>
+<div id="loading">Loading high-res parts...</div>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+// Z-up to match CAD coordinate system
+THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
+
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setClearColor(0xe8e8ec);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, window.innerWidth/window.innerHeight, 0.1, 5000);
+camera.up.set(0, 0, 1);
+camera.position.set(260, -260, 170);
+
+const ctl = new OrbitControls(camera, renderer.domElement);
+ctl.enableDamping = true;
+ctl.target.set(0, 0, 55);
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+const d1 = new THREE.DirectionalLight(0xffffff, 1.5); d1.position.set(200,200,400); scene.add(d1);
+const d2 = new THREE.DirectionalLight(0xaabbdd, 0.6); d2.position.set(-200,-200,100); scene.add(d2);
+const d3 = new THREE.DirectionalLight(0xffeedd, 0.4); d3.position.set(100,-300,-50); scene.add(d3);
+scene.add(new THREE.HemisphereLight(0xddeeff, 0x888888, 0.5));
+
+// Ground grid on XY plane
+const grid = new THREE.GridHelper(400, 20, 0xbbbbcc, 0xd0d0d8);
+grid.rotation.x = Math.PI / 2;
+grid.position.z = -45;
+scene.add(grid);
+
+// Exact hinge geometry (matches the CAD)
+const HINGE_ANGLE_DEG = 292.4106;
+const HINGE_ANGLE_RAD = HINGE_ANGLE_DEG * Math.PI / 180;
+const PIVOT_R = 89.25;
+const HOUSING_TOP_Z = 91;
+
+const pivotX = PIVOT_R * Math.cos(HINGE_ANGLE_RAD);
+const pivotY = PIVOT_R * Math.sin(HINGE_ANGLE_RAD);
+const pivotZ = HOUSING_TOP_Z;
+
+const axisX = -Math.sin(HINGE_ANGLE_RAD);
+const axisY =  Math.cos(HINGE_ANGLE_RAD);
+const hingeAxis = new THREE.Vector3(axisX, axisY, 0).normalize();
+
+const loader = new GLTFLoader();
+const base = 'CAD Exports/Original_4_Metal_STL/';
+
+function applyMaterial(group, color) {
+  group.traverse(ch => {
+    if (ch.isMesh) {
+      ch.geometry.deleteAttribute('color');
+      ch.geometry.computeVertexNormals();
+      ch.material = new THREE.MeshStandardMaterial({
+        color, metalness: 0.55, roughness: 0.35,
+        side: THREE.FrontSide, vertexColors: false
+      });
+    }
+  });
+}
+
+function loadPart(file, color) {
+  return new Promise(res => {
+    loader.load(base + file, gltf => {
+      applyMaterial(gltf.scene, color);
+      res(gltf.scene);
+    });
+  });
+}
+
+let lidPivotRef = null;
+
+async function build() {
+  const [base_body, bot_cap, top_cap, lid, ceramic] = await Promise.all([
+    loadPart('01_Base_Body.glb', 0xb8bec5),
+    loadPart('02_Bottom_Cap.glb', 0xc8b898),
+    loadPart('03_Top_Cap.glb', 0xa8c898),
+    loadPart('04_Lid_Assembly.glb', 0x98b8c8),
+    loadPart('ceramic_heater.glb', 0xf5f0e8),
+  ]);
+
+  // Parts load at their original world coordinates from the CAD
+  scene.add(base_body);
+  scene.add(bot_cap);
+  scene.add(top_cap);
+
+  // Ceramic cylinder (core) — loaded from STEP file
+  scene.add(ceramic);
+
+  // Ceramic disks (base + lid)
+  // Design: 92.5mm OD x 5.5mm thick, with a 76mm OD lip portion
+  // Build as a simple white ceramic disk with dual-diameter shape
+  const ceramicMat = new THREE.MeshStandardMaterial({
+    color: 0xf5f0e8, metalness: 0.0, roughness: 0.7,
+    side: THREE.FrontSide
+  });
+
+  function makeCeramicDisk() {
+    const group = new THREE.Group();
+    // Body portion: 92.5mm OD, 4.5mm thick
+    const bodyGeo = new THREE.CylinderGeometry(46.25, 46.25, 4.5, 64);
+    bodyGeo.rotateX(Math.PI / 2);
+    const body = new THREE.Mesh(bodyGeo, ceramicMat);
+    body.position.z = 2.25;
+    group.add(body);
+    // Lip portion: 76mm OD, 1mm thick
+    const lipGeo = new THREE.CylinderGeometry(38, 38, 1.0, 64);
+    lipGeo.rotateX(Math.PI / 2);
+    const lip = new THREE.Mesh(lipGeo, ceramicMat);
+    lip.position.z = -0.5;
+    group.add(lip);
+    return group;
+  }
+
+  // Ceramic base disk — sits at the bottom of the ceramic cylinder (z ~ -5.5)
+  const cBase = makeCeramicDisk();
+  cBase.position.z = -5.5;
+  scene.add(cBase);
+
+  // Ceramic lid disk — sits on top of the ceramic cylinder (z ~ 91)
+  const cLid = makeCeramicDisk();
+  cLid.position.z = 91;
+  scene.add(cLid);
+
+  // Hinge pin — 5mm dia x 30mm long, aligned with hinge tangent axis
+  const pinMat = new THREE.MeshStandardMaterial({
+    color: 0xaaaaaa, metalness: 0.9, roughness: 0.25
+  });
+  const hingeTangentAngle = Math.atan2(axisY, axisX);
+  const pinGeo = new THREE.CylinderGeometry(2.5, 2.5, 30, 24);
+  const hingePin = new THREE.Mesh(pinGeo, pinMat);
+  // Default cylinder axis is +Y, rotate so it points along tangent (XY plane)
+  hingePin.rotation.z = hingeTangentAngle + Math.PI / 2;
+  hingePin.position.set(pivotX, pivotY, pivotZ);
+  scene.add(hingePin);
+
+  // Hinge knuckles on base body (2 x cylinders at outer edges of hinge span)
+  const knuckleGeo = new THREE.CylinderGeometry(5, 5, 8, 20);
+  for (let sign = -1; sign <= 1; sign += 2) {
+    const k = new THREE.Mesh(knuckleGeo, pinMat);
+    k.rotation.z = hingeTangentAngle + Math.PI / 2;
+    const offset = sign * 11;
+    k.position.set(
+      pivotX + axisX * offset,
+      pivotY + axisY * offset,
+      pivotZ
+    );
+    scene.add(k);
+  }
+
+  // Leg screws (3 x M6 hex bolts) at leg positions 40, 160, 280 degrees
+  const leg_r = 65.85;
+  const leg_angles = [40, 160, 280];
+  const housing_bottom_z = -30.7;
+  const leg_height = 25;
+  for (const angDeg of leg_angles) {
+    const ang = angDeg * Math.PI / 180;
+    const bx = leg_r * Math.cos(ang);
+    const by = leg_r * Math.sin(ang);
+
+    // Hex head (cylinder 12mm dia x 4mm tall)
+    const headGeo = new THREE.CylinderGeometry(6, 6, 4, 6);
+    headGeo.rotateX(Math.PI / 2);
+    const head = new THREE.Mesh(headGeo, pinMat);
+    head.position.set(bx, by, housing_bottom_z - leg_height - 5);
+    head.rotation.x = Math.PI / 2;
+    scene.add(head);
+
+    // Shaft (6mm dia x 40mm long)
+    const shaftGeo = new THREE.CylinderGeometry(3, 3, 40, 16);
+    shaftGeo.rotateX(Math.PI / 2);
+    const shaft = new THREE.Mesh(shaftGeo, pinMat);
+    shaft.position.set(bx, by, housing_bottom_z - leg_height + 15);
+    shaft.rotation.x = Math.PI / 2;
+    scene.add(shaft);
+  }
+
+  // Cap screws (10 x M4 screws — 5 top + 5 bottom at flange positions)
+  // Flange angles from the CAD
+  const flange_angles = [42, 112, 183, 259, 326];
+  const capScrewMat = new THREE.MeshStandardMaterial({
+    color: 0x707070, metalness: 0.8, roughness: 0.4
+  });
+  for (const angDeg of flange_angles) {
+    const ang = angDeg * Math.PI / 180;
+    const hole_r = 78.75 + 6; // cap_outer_r + tab_depth/2
+    const sx = hole_r * Math.cos(ang);
+    const sy = hole_r * Math.sin(ang);
+
+    // Top screw head
+    const topHeadGeo = new THREE.CylinderGeometry(3.5, 3.5, 2, 16);
+    topHeadGeo.rotateX(Math.PI / 2);
+    const topHead = new THREE.Mesh(topHeadGeo, capScrewMat);
+    topHead.position.set(sx, sy, 91 - 5 + 2);
+    topHead.rotation.x = Math.PI / 2;
+    scene.add(topHead);
+
+    // Bottom screw head
+    const botHead = topHead.clone();
+    botHead.position.set(sx, sy, -30.7 + 5);
+    scene.add(botHead);
+  }
+
+  // Create pivot group at the hinge position
+  const lidPivot = new THREE.Group();
+  lidPivot.position.set(pivotX, pivotY, pivotZ);
+  scene.add(lidPivot);
+
+  // Place the lid inside the pivot, offset so it appears at its original world position
+  // when the pivot has zero rotation
+  lid.position.set(-pivotX, -pivotY, -pivotZ);
+  lidPivot.add(lid);
+
+  lidPivotRef = lidPivot;
+  setLidAngle(95);
+
+  document.getElementById('loading').remove();
+}
+
+function setLidAngle(deg) {
+  if (!lidPivotRef) return;
+  const q = new THREE.Quaternion();
+  q.setFromAxisAngle(hingeAxis, deg * Math.PI / 180);
+  lidPivotRef.setRotationFromQuaternion(q);
+}
+
+build();
+
+// Expose globals for debugging
+window.__scene = scene;
+window.__camera = camera;
+window.__ctl = ctl;
+window.__setLidAngle = setLidAngle;
+
+document.getElementById('slider').addEventListener('input', e => {
+  const val = parseFloat(e.target.value);
+  document.getElementById('angle-val').textContent = val + '°';
+  setLidAngle(val);
+});
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+(function a(){ requestAnimationFrame(a); ctl.update(); renderer.render(scene,camera); })();
+</script>
+</body>
+</html>
