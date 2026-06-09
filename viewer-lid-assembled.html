@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lid — assembled (mirrors the base)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#e8e8ec; overflow:hidden; font-family:-apple-system, sans-serif; }
+canvas { display:block; width:100vw; height:100vh; }
+.tag { position:fixed; top:14px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,0.82); color:#fff; padding:8px 22px; border-radius:9px; font-size:15px; font-weight:600; z-index:5; }
+.legend { position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,0.68); color:#eee; padding:10px 18px; border-radius:8px; font-size:12.5px; z-index:5; line-height:1.7; text-align:center; }
+.sw { display:inline-block; width:12px; height:12px; border-radius:2px; margin:0 5px 0 14px; vertical-align:middle; }
+#loading { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); font-size:18px; color:#666; z-index:20; }
+button { position:fixed; top:52px; left:50%; transform:translateX(-50%); z-index:6; background:#2f7fd6; color:#fff; border:none; padding:6px 16px; border-radius:7px; font-size:13px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="tag">Lid — assembled (mirrors the base: 2 ceramic spacers, 2 shared bolt rings)</div>
+<button id="solid">Make solid</button>
+<div id="loading">Loading…</div>
+<div class="legend">
+  <span class="sw" style="background:#b8bec5"></span>Inner tube
+  <span class="sw" style="background:#6f9bd8"></span>Outer perforated tube
+  <span class="sw" style="background:#4f8f7a"></span>Top plate
+  <span class="sw" style="background:#cfa98a"></span>Ceramic-lid holder
+  <span class="sw" style="background:#e7d9b0"></span>Ceramic spacers
+  <span class="sw" style="background:#9098a0"></span>Handle
+  <span class="sw" style="background:#d9a521"></span>Bolts + nuts · flat-tab hinge &nbsp;·&nbsp; drag to rotate
+</div>
+<canvas id="c"></canvas>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const V='?v=lidA5';
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xe8e8ec);
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(40, innerWidth/innerHeight, 0.1, 9000);
+cam.up.set(0,0,1); cam.position.set(300,-360,160);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.set(0,0,0);
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+
+const loader=new GLTFLoader();
+const load=p=>new Promise(res=>loader.load(p,g=>res(g.scene)));
+const LID='CAD Exports/Lid Split/';
+function paint(o,opt){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,...opt}); }}); }
+const tubeMats=[];
+
+const boltMat=new THREE.MeshStandardMaterial({color:0xd9a521,metalness:0.7,roughness:0.3});
+const nutMat =new THREE.MeshStandardMaterial({color:0xc8ccd2,metalness:0.85,roughness:0.3});
+const BOLT_OFF = 52.4*Math.PI/180;   // clocked into the slot gaps, same as the base
+function bolt(){ const s=new THREE.Group();
+  const sh =new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,9.5,16),boltMat); sh.rotation.z=Math.PI/2; sh.position.set(72.5,0,0);
+  const hd =new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.2,2.8,6), boltMat); hd.rotation.z=Math.PI/2; hd.position.set(78.6,0,0);
+  const nut=new THREE.Mesh(new THREE.CylinderGeometry(3.6,3.6,3.0,6), nutMat ); nut.rotation.z=Math.PI/2; nut.position.set(69.35,0,0);
+  s.add(sh,hd,nut); return s; }
+function screwRing(z){ const g=new THREE.Group();
+  for(let k=0;k<6;k++){ const b=bolt(); b.rotation.z=k*(Math.PI*2/6)+BOLT_OFF; b.position.z=z; g.add(b); }
+  return g; }
+// flat-tab pivot hinge at ~292deg (laser-cut flat tab + pivot bolt) — easiest to machine
+function hinge(z){ const g=new THREE.Group();
+  const tab=new THREE.Mesh(new THREE.BoxGeometry(14,22,3),
+    new THREE.MeshStandardMaterial({color:0x8a9098,metalness:0.6,roughness:0.4}));
+  tab.position.set(mesh_outer_r()+7,0,0);
+  const pin=new THREE.Mesh(new THREE.CylinderGeometry(2.2,2.2,26,16),boltMat);
+  pin.rotation.x=Math.PI/2; pin.position.set(mesh_outer_r()+7,0,0);
+  g.add(tab,pin); g.rotation.z=292.4*Math.PI/180; g.position.z=z; return g; }
+function mesh_outer_r(){ return 77.25; }
+// 2 vertical M5 bolts fastening the handle feet down through the top plate
+const HANDLE_POSTS=[[7.95,46.5],[-38.3,27.5]];
+function handleBolts(){ const g=new THREE.Group();
+  for(const [px,py] of HANDLE_POSTS){   // tiny M3 — just foot + plate
+    const sh=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,7,14),boltMat); sh.rotation.x=Math.PI/2; sh.position.set(px,py,127);
+    const hd=new THREE.Mesh(new THREE.CylinderGeometry(2.6,2.6,1.6,12),boltMat); hd.rotation.x=Math.PI/2; hd.position.set(px,py,130.5);
+    g.add(sh,hd);
+  } return g; }
+
+Promise.all([
+  load(LID+'1_Lid_Inner_Tube.glb'+V),
+  load(LID+'2_Lid_Outer_Perforated_Tube.glb'+V),
+  load(LID+'3_Lid_Top_Disk.glb'+V),
+  load(LID+'4_Lid_Ceramic_Holder.glb'+V),
+  load(LID+'5_Lid_Handle.glb'+V),
+  load(LID+'4_Lid_Spacer.glb'+V),
+  load(LID+'4_Lid_Spacer.glb'+V),
+]).then(([inner,outer,topd,holder,handle,spTop,spBot])=>{
+  const grp=new THREE.Group();
+  paint(inner,{color:0xb8bec5,metalness:0.5,roughness:0.4,transparent:true,opacity:0.12,depthWrite:false});
+  paint(outer,{color:0x6f9bd8,metalness:0.4,roughness:0.4,transparent:true,opacity:0.10,depthWrite:false});
+  paint(topd,{color:0x4f8f7a,metalness:0.55,roughness:0.4});
+  paint(holder,{color:0xcfa98a,metalness:0.0,roughness:0.7});
+  paint(handle,{color:0x9098a0,metalness:0.7,roughness:0.35});
+  paint(spTop,{color:0xe7d9b0,metalness:0.0,roughness:0.78});
+  paint(spBot,{color:0xe7d9b0,metalness:0.0,roughness:0.78});
+  inner.traverse(c=>{if(c.isMesh)tubeMats.push(c.material);});
+  outer.traverse(c=>{if(c.isMesh)tubeMats.push(c.material);});
+  spTop.position.z=119; spBot.position.z=99;
+  grp.add(inner,outer,topd,holder,handle,spTop,spBot);
+  grp.add(screwRing(119), screwRing(99), hinge(115), handleBolts());
+  const c=new THREE.Box3().setFromObject(grp).getCenter(new THREE.Vector3());
+  grp.position.sub(c); scene.add(grp);
+  const el=document.getElementById('loading'); if(el) el.remove();
+});
+
+let solid=false;
+document.getElementById('solid').addEventListener('click',e=>{
+  solid=!solid; e.target.textContent=solid?'See-through':'Make solid';
+  tubeMats.forEach(m=>{ m.transparent=!solid; m.opacity=solid?1:(m.color.getHex()===0x6f9bd8?0.10:0.12); m.depthWrite=solid; m.needsUpdate=true; });
+});
+
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+renderer.setSize(innerWidth,innerHeight);
+(function loop(){ requestAnimationFrame(loop); ctl.update(); renderer.render(scene,cam); })();
+</script>
+</body>
+</html>

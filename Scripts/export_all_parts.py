@@ -1056,8 +1056,37 @@ print("Building lid assembly...")
 lid_height = 35
 lid_bottom_z = housing_top_z
 
-lid_inner = create_hollow_cylinder(housing_inner_r, housing_outer_r, lid_height)
+# Lid fastening — mirrors the base: 2 shared bolt rings, bolts clocked into the slot
+# gaps (same ring_screw_angles). Top ring (z+26) shares the top plate's lip; bottom
+# ring (z+9) shares the ceramic-lid holder's flange.
+lid_ring_zs = [lid_bottom_z + 28, lid_bottom_z + 8]   # 119 (top), 99 (bottom) — tight to the plates
+def in_lid_ring_hole(angle_deg, z, mid_r):
+    for hz in lid_ring_zs:
+        if abs(z - hz) > ring_screw_hole_r: continue
+        for ha in ring_screw_angles:
+            ad = abs(angle_deg - ha)
+            if ad > 180: ad = 360 - ad
+            arc = ad * (np.pi / 180) * mid_r
+            if np.sqrt(arc**2 + (z - hz)**2) < ring_screw_hole_r: return True
+    return False
+
+def punch_radial_holes(mesh, ring_zs, angles, hr=ring_screw_hole_r):
+    """Remove faces near each (angle, z) hole — a through-hole, no boolean needed."""
+    fc = mesh.triangles_center
+    ang = (np.degrees(np.arctan2(fc[:, 1], fc[:, 0])) % 360)
+    z = fc[:, 2]; r = np.sqrt(fc[:, 0]**2 + fc[:, 1]**2)
+    keep = np.ones(len(mesh.faces), dtype=bool)
+    for hz in ring_zs:
+        for a in angles:
+            ad = np.abs(ang - a); ad = np.minimum(ad, 360 - ad)
+            arc = np.radians(ad) * r
+            keep &= ~(np.sqrt(arc**2 + (z - hz)**2) < hr)
+    mesh.update_faces(keep)
+    return mesh
+
+lid_inner = create_hollow_cylinder(housing_inner_r, housing_outer_r, lid_height, sections=240)
 lid_inner.apply_translation([0, 0, lid_bottom_z])
+# (round holes drilled in gen_lid_extras.py via boolean cutter)
 
 # Lid outer mesh with perforations
 lid_perf_holes = []
@@ -1090,6 +1119,7 @@ for ai in range(mesh_sections):
     for zi in range(lid_mesh_z_bands):
         mid_z = lid_bottom_z + ((zi + 0.5) / lid_mesh_z_bands) * lid_height
         if in_perf(mid_ang, mid_z, lid_perf_holes, perf_mid_r, perf_hole_r): continue
+        if in_lid_ring_hole(mid_ang, mid_z, perf_mid_r): continue
         lid_mesh_faces.append([lid_mesh_idx[(ai, zi, 0)], lid_mesh_idx[(ai, zi+1, 0)], lid_mesh_idx[(nai, zi, 0)]])
         lid_mesh_faces.append([lid_mesh_idx[(nai, zi, 0)], lid_mesh_idx[(ai, zi+1, 0)], lid_mesh_idx[(nai, zi+1, 0)]])
         lid_mesh_faces.append([lid_mesh_idx[(ai, zi, 1)], lid_mesh_idx[(nai, zi, 1)], lid_mesh_idx[(ai, zi+1, 1)]])
@@ -1182,6 +1212,9 @@ lid_shelf_z = lid_wall_bottom + lid_wall_height
 lid_shelf = create_hollow_cylinder(lid_ring_inner_r, ceramic_outer_r, sheet_metal_thickness)
 lid_shelf.apply_translation([0, 0, lid_shelf_z])
 
+# (Ceramic-lid holder flange + top-plate lip are built short, with clean drilled round
+#  holes, in gen_lid_extras.py — boolean cutter, not face removal.)
+
 # Lid top disk -- perforated
 lid_top_z = lid_bottom_z + lid_height
 ltd_sections = 720  # Match main mesh for round holes
@@ -1223,6 +1256,8 @@ for ai in range(ltd_sections):
 
 lid_top_disk = trimesh.Trimesh(vertices=np.array(ltd_verts), faces=np.array(ltd_faces))
 lid_top_disk.fix_normals()
+
+# (Top-plate lip added in gen_lid_extras.py — short, with drilled round holes.)
 
 # Handle — offset away from hinge toward the opening edge
 lid_top_surface_z = lid_bottom_z + lid_height + sheet_metal_thickness

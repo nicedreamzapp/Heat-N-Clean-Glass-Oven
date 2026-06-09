@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Base + Lid — both finished assemblies side by side</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#e8e8ec;overflow:hidden;font-family:-apple-system,sans-serif}
+canvas{display:block;width:100vw;height:100vh}
+.tag{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;padding:8px 22px;border-radius:9px;font-size:15px;font-weight:600;z-index:5}
+.legend{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.68);color:#eee;padding:9px 16px;border-radius:8px;font-size:12.5px;z-index:5;text-align:center}
+button{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:6;background:#2f7fd6;color:#fff;border:none;padding:6px 16px;border-radius:7px;font-size:13px;cursor:pointer}
+#loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+</style></head><body>
+<div class="tag">Heat &amp; Clean — the finished BASE (left) and LID (right) — parts slightly separated</div>
+<button id="solid">Make solid</button>
+<div id="loading">Loading both assemblies…</div>
+<div class="legend">left: base/chamber &nbsp;·&nbsp; right: lid &nbsp;·&nbsp; drag to rotate · scroll to zoom</div>
+<canvas id="c"></canvas>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const V='?v=bl3';
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xe8e8ec);
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,0.1,9000);
+cam.up.set(0,0,1); cam.position.set(120,-720,300);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.set(0,0,0);
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+const loader=new GLTFLoader();
+const load=p=>new Promise(res=>loader.load(p,g=>res(g.scene)));
+const CHAM='CAD Exports/Core Split/', LID='CAD Exports/Lid Split/';
+const tubeMats=[];
+function paint(o,opt){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,...opt}); if(opt.transparent)tubeMats.push(ch.material);} }); }
+const boltMat=new THREE.MeshStandardMaterial({color:0xd9a521,metalness:0.7,roughness:0.3});
+const nutMat =new THREE.MeshStandardMaterial({color:0xc8ccd2,metalness:0.85,roughness:0.3});
+const OFF=52.4*Math.PI/180;
+function bolt(len,sx,hx,nx){ const s=new THREE.Group();
+  s.add(new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,len,16),boltMat));
+  s.children[0].rotation.z=Math.PI/2; s.children[0].position.set(sx,0,0);
+  const hd=new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.2,2.8,6),boltMat); hd.rotation.z=Math.PI/2; hd.position.set(hx,0,0);
+  const nut=new THREE.Mesh(new THREE.CylinderGeometry(3.6,3.6,3,6),nutMat); nut.rotation.z=Math.PI/2; nut.position.set(nx,0,0);
+  s.add(hd,nut); return s; }
+function ring(z,len,sx,hx,nx){ const g=new THREE.Group();
+  for(let k=0;k<6;k++){ const b=bolt(len,sx,hx,nx); b.rotation.z=k*Math.PI/3+OFF; b.position.z=z; g.add(b);} return g; }
+function hinge(z){ const g=new THREE.Group();
+  const tab=new THREE.Mesh(new THREE.BoxGeometry(14,22,3),new THREE.MeshStandardMaterial({color:0x8a9098,metalness:0.6,roughness:0.4}));
+  tab.position.set(84,0,0);
+  const pin=new THREE.Mesh(new THREE.CylinderGeometry(2.2,2.2,26,16),boltMat); pin.rotation.x=Math.PI/2; pin.position.set(84,0,0);
+  g.add(tab,pin); g.rotation.z=292.4*Math.PI/180; g.position.z=z; return g; }
+function handleBolts(){ const g=new THREE.Group();
+  for(const [px,py] of [[7.95,46.5],[-38.3,27.5]]){
+    const sh=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,7,14),boltMat); sh.rotation.x=Math.PI/2; sh.position.set(px,py,127);
+    const hd=new THREE.Mesh(new THREE.CylinderGeometry(2.6,2.6,1.6,12),boltMat); hd.rotation.x=Math.PI/2; hd.position.set(px,py,130.5);
+    g.add(sh,hd);} return g; }
+function centerX(grp,x){ const c=new THREE.Box3().setFromObject(grp).getCenter(new THREE.Vector3()); grp.position.set(x-c.x,-c.y,-c.z); }
+
+Promise.all([
+  load(CHAM+'1_Inner_Wall_Tube.glb'+V),load(CHAM+'2_Outer_Perforated_Tube.glb'+V),load(CHAM+'3_Support_Ring_Full.glb'+V),
+  load(CHAM+'4_Spacer_Ring.glb'+V),load(CHAM+'4_Spacer_Ring.glb'+V),load(CHAM+'4_Spacer_Ring.glb'+V),
+  load(CHAM+'6_Ceramic_Base_Disk.glb'+V),load(CHAM+'06_Ceramic_Cylinder.glb'+V),load(CHAM+'02_Bottom_Cap.glb'+V),
+  load(LID+'1_Lid_Inner_Tube.glb'+V),load(LID+'2_Lid_Outer_Perforated_Tube.glb'+V),load(LID+'3_Lid_Top_Disk.glb'+V),
+  load(LID+'4_Lid_Ceramic_Holder.glb'+V),load(LID+'5_Lid_Handle.glb'+V),load(LID+'4_Lid_Spacer.glb'+V),load(LID+'4_Lid_Spacer.glb'+V),
+]).then(p=>{
+  const [ci,co,csup,cs1,cs2,cs3,cbd,ccer,ccap, li,lo,ltp,lh,lhand,ls1,ls2]=p;
+  // BASE
+  const B=new THREE.Group();
+  paint(ci,{color:0xb8bec5,metalness:0.5,roughness:0.4,transparent:true,opacity:0.10,depthWrite:false});
+  paint(co,{color:0x6f9bd8,metalness:0.4,roughness:0.4,transparent:true,opacity:0.08,depthWrite:false});
+  paint(csup,{color:0x4f8f7a,metalness:0.55,roughness:0.4});
+  [cs1,cs2,cs3].forEach(s=>paint(s,{color:0xe7d9b0,metalness:0,roughness:0.78}));
+  paint(cbd,{color:0xe7d9b0,metalness:0,roughness:0.7}); paint(ccer,{color:0xf2f0ea,metalness:0,roughness:0.6});
+  paint(ccap,{color:0xdcb48c,metalness:0.55,roughness:0.45});
+  cs1.position.z=59+46; cs2.position.z=-24-36; cs3.position.z=2.15;
+  ccap.position.z=-44; csup.position.z=-18;   // bigger explode
+  B.add(ci,co,csup,cs1,cs2,cs3,cbd,ccer,ccap, ring(59,9.5,72.5,78.6,69.35),ring(-24,13,73.5,80.6,69.35),ring(2.15,9.5,72.5,78.6,69.35));
+  centerX(B,-115); scene.add(B);
+  // LID
+  const L=new THREE.Group();
+  paint(li,{color:0xb8bec5,metalness:0.5,roughness:0.4,transparent:true,opacity:0.12,depthWrite:false});
+  paint(lo,{color:0x6f9bd8,metalness:0.4,roughness:0.4,transparent:true,opacity:0.10,depthWrite:false});
+  paint(ltp,{color:0x4f8f7a,metalness:0.55,roughness:0.4}); paint(lh,{color:0xcfa98a,metalness:0,roughness:0.7});
+  paint(lhand,{color:0x9098a0,metalness:0.7,roughness:0.35});
+  [ls1,ls2].forEach(s=>paint(s,{color:0xe7d9b0,metalness:0,roughness:0.78}));
+  ls1.position.z=119+38; ls2.position.z=99-34;
+  ltp.position.z=54; lh.position.z=-54; lhand.position.z=104;   // bigger explode
+  L.add(li,lo,ltp,lh,lhand,ls1,ls2, ring(119,9.5,72.5,78.6,69.35),ring(99,9.5,72.5,78.6,69.35),hinge(115),handleBolts());
+  centerX(L,115); scene.add(L);
+  const el=document.getElementById('loading'); if(el) el.remove();
+});
+let solid=false;
+document.getElementById('solid').addEventListener('click',e=>{ solid=!solid; e.target.textContent=solid?'See-through':'Make solid';
+  tubeMats.forEach(m=>{ m.transparent=!solid; m.opacity=solid?1:(m.color.getHex()===0x6f9bd8?0.09:0.11); m.depthWrite=solid; m.needsUpdate=true; }); });
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+renderer.setSize(innerWidth,innerHeight);
+(function loop(){ requestAnimationFrame(loop); ctl.update(); renderer.render(scene,cam); })();
+</script></body></html>

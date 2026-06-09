@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Handle — underside (holes in the post bottoms)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#e8e8ec;overflow:hidden;font-family:-apple-system,sans-serif}
+canvas{display:block;width:100vw;height:100vh}
+.tag{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;padding:8px 22px;border-radius:9px;font-size:15px;font-weight:600;z-index:5}
+.legend{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.68);color:#eee;padding:10px 18px;border-radius:8px;font-size:12.5px;z-index:5;text-align:center}
+#loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+</style></head><body>
+<div class="tag">Handle flipped over — the 2 M3 holes bored into the bottom of the posts</div>
+<div id="loading">Loading…</div>
+<div class="legend">drag to rotate · scroll to zoom — look into the two post ends</div>
+<canvas id="c"></canvas>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const V='?v=hb'+Math.floor(performance.now());
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xe8e8ec);
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.15;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,0.1,9000);
+cam.up.set(0,0,1); cam.position.set(22,-30,32);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.set(0,0,0);
+scene.add(new THREE.AmbientLight(0xffffff,1.0));
+const d1=new THREE.DirectionalLight(0xffffff,1.3); d1.position.set(100,-120,200); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xffffff,0.7); d2.position.set(-100,100,-50); scene.add(d2);
+const loader=new GLTFLoader();
+loader.load('CAD Exports/Lid Split/5_Lid_Handle.glb'+V, g=>{
+  const h=g.scene;
+  h.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+    ch.material=new THREE.MeshStandardMaterial({color:0x9098a0,metalness:0.6,roughness:0.4,side:THREE.DoubleSide}); }});
+  // center, then flip upside down so the post bottoms (with the holes) face up toward us
+  const b=new THREE.Box3().setFromObject(h); const c=b.getCenter(new THREE.Vector3());
+  h.traverse(ch=>{ if(ch.isMesh) ch.geometry.translate(-c.x,-c.y,-c.z); });  // center the geometry at origin
+  h.rotation.x=Math.PI;  // flip so the post-bottom holes face the camera
+  scene.add(h);
+  const el=document.getElementById('loading'); if(el) el.remove();
+});
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+renderer.setSize(innerWidth,innerHeight);
+(function loop(){ requestAnimationFrame(loop); ctl.update(); renderer.render(scene,cam); })();
+</script></body></html>
