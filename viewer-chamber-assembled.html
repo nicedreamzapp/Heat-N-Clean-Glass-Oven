@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Chamber — all parts assembled together</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#e8e8ec; overflow:hidden; font-family:-apple-system, sans-serif; }
+canvas { display:block; width:100vw; height:100vh; }
+.tag { position:fixed; top:14px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,0.82); color:#fff; padding:8px 22px; border-radius:9px; font-size:15px; font-weight:600; z-index:5; }
+.legend { position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,0.68); color:#eee; padding:10px 18px; border-radius:8px; font-size:12.5px; z-index:5; line-height:1.7; text-align:center; }
+.sw { display:inline-block; width:12px; height:12px; border-radius:2px; margin:0 5px 0 14px; vertical-align:middle; }
+#loading { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); font-size:18px; color:#666; z-index:20; }
+button { position:fixed; top:52px; left:50%; transform:translateX(-50%); z-index:6; background:#2f7fd6; color:#fff; border:none; padding:6px 16px; border-radius:7px; font-size:13px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="tag">Chamber — all parts assembled together (tubes see-through)</div>
+<button id="solid">Make solid</button>
+<div id="loading">Loading…</div>
+<div class="legend">
+  <span class="sw" style="background:#b8bec5"></span>Inner tube
+  <span class="sw" style="background:#6f9bd8"></span>Outer perforated tube
+  <span class="sw" style="background:#4f8f7a"></span>Support ring + flange
+  <span class="sw" style="background:#e7d9b0"></span>Ceramic spacers
+  <span class="sw" style="background:#f2f0ea"></span>Ceramic core
+  <span class="sw" style="background:#d9a521"></span>M6 bolts + nuts &nbsp;·&nbsp; drag to rotate
+</div>
+<canvas id="c"></canvas>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const V='?v=core1';
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xe8e8ec);
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(40, innerWidth/innerHeight, 0.1, 9000);
+cam.up.set(0,0,1); cam.position.set(300,-360,150);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.set(0,0,0);
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+
+const loader=new GLTFLoader();
+const load=p=>new Promise(res=>loader.load(p,g=>res(g.scene)));
+const SPLIT='CAD Exports/Core Split/';
+function paint(o,opt){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,...opt}); }}); }
+const tubeMats=[];
+
+// radial M6 bolt + hex nut, kept SHORT — only long enough to pass through
+// outer wall (77) -> spacer -> inner wall (71) and grab the nut. No excess length.
+// Walls: outer surface r77.25 -> outer wall -> spacer -> inner wall, inner surface r70.85.
+// Bolt grips exactly that stack: head flush outside, nut snug against the inner wall,
+// shaft ends just past the nut. No excess thread.
+const boltMat=new THREE.MeshStandardMaterial({color:0xd9a521,metalness:0.7,roughness:0.3});
+const nutMat =new THREE.MeshStandardMaterial({color:0xc8ccd2,metalness:0.85,roughness:0.3});
+function bolt(){ const s=new THREE.Group();
+  const sh =new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,9.5,16),boltMat); sh.rotation.z=Math.PI/2; sh.position.set(72.5,0,0);    // shaft spans 67.75->77.25
+  const hd =new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.2,2.8,6), boltMat); hd.rotation.z=Math.PI/2; hd.position.set(78.6,0,0);    // hex head flush outside
+  const nut=new THREE.Mesh(new THREE.CylinderGeometry(3.6,3.6,3.0,6), nutMat ); nut.rotation.z=Math.PI/2; nut.position.set(69.35,0,0);  // hex nut snug on inner wall
+  s.add(sh,hd,nut); return s; }
+function screwRing(z, n, off){ const g=new THREE.Group();
+  for(let k=0;k<n;k++){ const b=bolt(); b.rotation.z=k*(Math.PI*2/n)+off; b.position.z=z; g.add(b); }
+  return g; }
+
+Promise.all([
+  load(SPLIT+'1_Inner_Wall_Tube.glb'+V),
+  load(SPLIT+'2_Outer_Perforated_Tube.glb'+V),
+  load(SPLIT+'3_Support_Ring_Full.glb'+V),
+  load(SPLIT+'4_Spacer_Ring.glb'+V),
+  load(SPLIT+'4_Spacer_Ring.glb'+V),
+  load(SPLIT+'6_Ceramic_Base_Disk.glb'+V),
+  load(SPLIT+'06_Ceramic_Cylinder.glb'+V),
+]).then(([inner,outer,support,spTop,spBot,baseDisk,ceramic])=>{
+  const grp=new THREE.Group();
+  paint(inner,{color:0xb8bec5,metalness:0.5,roughness:0.4,transparent:true,opacity:0.12,depthWrite:false});
+  paint(outer,{color:0x6f9bd8,metalness:0.4,roughness:0.4,transparent:true,opacity:0.13,depthWrite:false});
+  paint(support,{color:0x4f8f7a,metalness:0.55,roughness:0.4});
+  paint(spTop,{color:0xe7d9b0,metalness:0.0,roughness:0.78});
+  paint(spBot,{color:0xe7d9b0,metalness:0.0,roughness:0.78});
+  paint(baseDisk,{color:0xe7d9b0,metalness:0.0,roughness:0.7});
+  paint(ceramic,{color:0xf2f0ea,metalness:0.0,roughness:0.6});  // the ceramic core
+  inner.traverse(c=>{if(c.isMesh)tubeMats.push(c.material);});
+  outer.traverse(c=>{if(c.isMesh)tubeMats.push(c.material);});
+  spTop.position.z=59;     // top spacer at the top screw ring
+  spBot.position.z=-19.7;  // bottom spacer at the bottom screw ring
+  grp.add(inner,outer,support,spTop,spBot,baseDisk,ceramic);
+  grp.add(screwRing(59,8,Math.PI/8), screwRing(-19.7,8,Math.PI/8), screwRing(2.15,6,Math.PI/6));
+  // center the whole assembly for viewing
+  const c=new THREE.Box3().setFromObject(grp).getCenter(new THREE.Vector3());
+  grp.position.sub(c); scene.add(grp);
+  const el=document.getElementById('loading'); if(el) el.remove();
+});
+
+let solid=false;
+document.getElementById('solid').addEventListener('click',e=>{
+  solid=!solid; e.target.textContent=solid?'See-through':'Make solid';
+  tubeMats.forEach(m=>{ m.transparent=!solid; m.opacity=solid?1:(m.color.getHex()===0x6f9bd8?0.16:0.22); m.depthWrite=solid; m.needsUpdate=true; });
+});
+
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+renderer.setSize(innerWidth,innerHeight);
+(function loop(){ requestAnimationFrame(loop); ctl.update(); renderer.render(scene,cam); })();
+</script>
+</body>
+</html>

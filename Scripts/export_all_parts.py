@@ -200,7 +200,7 @@ def in_housing_hole(angle_deg, z):
 
 slot_arc_half_deg = (slot_width / 2) / ceramic_outer_r * (180 / np.pi)
 
-_housing_slot_buffer_mm = 1.0
+_housing_slot_buffer_mm = 0.0   # match the ceramic core slot exactly (no extra width)
 _housing_extra_deg = (_housing_slot_buffer_mm / housing_inner_r) * (180 / np.pi)
 _housing_slot_half_deg = slot_arc_half_deg + _housing_extra_deg
 
@@ -263,10 +263,10 @@ def in_perf(ang, z, holes, mid_r, hole_r):
             return True
     return False
 
-_mesh_slot_buffer_mm = 1.0
+_mesh_slot_buffer_mm = 0.0   # match the ceramic core slot exactly (no extra width)
 _mesh_extra_deg = (_mesh_slot_buffer_mm / mesh_inner_r) * (180 / np.pi)
 _mesh_slot_half_deg = slot_arc_half_deg + _mesh_extra_deg
-_mesh_lip_clearance = 10.0
+_mesh_lip_clearance = 0.0    # outer slot same depth as the ceramic/inner slot (was +10mm)
 
 def in_mesh_slot(angle_deg, z):
     half_w = slot_width / 2
@@ -305,19 +305,27 @@ def in_bottom_hole(angle_deg, r):
             return True
     return False
 
-# Ring of 8 M6 screws clamping inner housing + outer perforated tube together,
-# one ring near the top and one near the bottom. These are REAL clearance holes
-# cut through both walls (they line up with the bolts drawn in the assembly viewer).
-ring_screw_angles = [k * 45 + 22.5 for k in range(8)]
-ring_screw_zs = [59.0, -19.7]   # top ring, bottom ring (z in part coords)
-ring_screw_hole_r = 3.3         # M6 clearance hole, 6.6 mm diameter
+# M6 screw rings that clamp the chamber together. REAL clearance holes cut through
+# BOTH tube walls, lined up with the bolts in the assembly viewer:
+#   top + bottom rings -> 8 screws each, hold the 2 spacer rings between the tubes
+#   seat ring          -> 6 screws, come in from the outer chamber to hold the support ring
+ring_screw_hole_r = 3.3                                   # M6 clearance, 6.6 mm dia
+spacer_screw_angles = [k * 45 + 22.5 for k in range(8)]   # the 2 spacer rings
+seat_screw_angles   = [k * 60 + 30  for k in range(6)]    # the support-ring flange
+ring_screw_sets = [
+    (spacer_screw_angles,  59.0),    # top spacer ring
+    (spacer_screw_angles, -19.7),    # bottom spacer ring
+    (seat_screw_angles,     2.15),   # support-ring (seat) flange
+]
 
 def in_ring_screw_hole(angle_deg, z, mid_r):
-    for h_ang in ring_screw_angles:
-        ang_diff = abs(angle_deg - h_ang)
-        if ang_diff > 180: ang_diff = 360 - ang_diff
-        arc = ang_diff * (np.pi / 180) * mid_r
-        for h_z in ring_screw_zs:
+    for angs, h_z in ring_screw_sets:
+        if abs(z - h_z) > ring_screw_hole_r:
+            continue
+        for h_ang in angs:
+            ang_diff = abs(angle_deg - h_ang)
+            if ang_diff > 180: ang_diff = 360 - ang_diff
+            arc = ang_diff * (np.pi / 180) * mid_r
             if np.sqrt(arc**2 + (z - h_z)**2) < ring_screw_hole_r:
                 return True
     return False

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Chamber — the 5 parts, each with its real screw holes</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#e8e8ec; overflow:hidden; font-family:-apple-system, sans-serif; }
+canvas { display:block; width:100vw; height:100vh; }
+.tag { position:fixed; top:14px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,0.82); color:#fff; padding:8px 22px; border-radius:9px; font-size:15px; font-weight:600; z-index:5; }
+.legend { position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,0.68); color:#eee; padding:10px 18px; border-radius:8px; font-size:12.5px; z-index:5; line-height:1.7; text-align:center; }
+.sw { display:inline-block; width:12px; height:12px; border-radius:2px; margin:0 5px 0 14px; vertical-align:middle; }
+#loading { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); font-size:18px; color:#666; z-index:20; }
+</style>
+</head>
+<body>
+<div class="tag">Chamber — the 5 parts, each with its REAL screw holes</div>
+<div id="loading">Loading…</div>
+<div class="legend">
+  <span class="sw" style="background:#b8bec5"></span>1 · Inner wall tube
+  <span class="sw" style="background:#6f9bd8"></span>2 · Outer perforated tube
+  <span class="sw" style="background:#4f8f7a"></span>3 · Support ring + flange (6 holes)
+  <span class="sw" style="background:#eae6dd"></span>4 · Top spacer — CERAMIC (insulating)
+  <span class="sw" style="background:#eae6dd"></span>5 · Bottom spacer — CERAMIC (insulating)
+  &nbsp;·&nbsp; drag to rotate · scroll to zoom
+</div>
+<canvas id="c"></canvas>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const V='?v=slots1';
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xe8e8ec);
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(38, innerWidth/innerHeight, 0.1, 9000);
+cam.up.set(0,0,1); cam.position.set(0,-1320,250);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.set(0,0,10);
+scene.add(new THREE.AmbientLight(0xffffff,0.92));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+
+const loader=new GLTFLoader();
+const load=p=>new Promise(res=>loader.load(p,g=>res(g.scene)));
+const SPLIT='CAD Exports/Core Split/';
+function paint(o,opt){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({metalness:0.5,roughness:0.4,side:THREE.DoubleSide,...opt}); }}); }
+function center(o){ const b=new THREE.Box3().setFromObject(o); o.position.sub(b.getCenter(new THREE.Vector3())); }
+
+Promise.all([
+  load(SPLIT+'1_Inner_Wall_Tube.glb'+V),
+  load(SPLIT+'2_Outer_Perforated_Tube.glb'+V),
+  load(SPLIT+'3_Support_Ring_Full.glb'+V),
+  load(SPLIT+'4_Spacer_Ring.glb'+V),
+  load(SPLIT+'4_Spacer_Ring.glb'+V),
+]).then(parts=>{
+  const mats=[{color:0xb8bec5},{color:0x6f9bd8},{color:0x4f8f7a},
+    {color:0xeae6dd,metalness:0.0,roughness:0.78},{color:0xeae6dd,metalness:0.0,roughness:0.78}];
+  const S=190;
+  parts.forEach((o,i)=>{ paint(o,mats[i]); center(o); o.position.x=(i-2)*S; scene.add(o); });
+  const el=document.getElementById('loading'); if(el) el.remove();
+});
+
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+renderer.setSize(innerWidth,innerHeight);
+(function loop(){ requestAnimationFrame(loop); ctl.update(); renderer.render(scene,cam); })();
+</script>
+</body>
+</html>
