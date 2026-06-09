@@ -310,7 +310,10 @@ def in_bottom_hole(angle_deg, r):
 #   top + bottom rings -> 8 screws each, hold the 2 spacer rings between the tubes
 #   seat ring          -> 6 screws, come in from the outer chamber to hold the support ring
 ring_screw_hole_r = 3.3                                # M6 clearance, 6.6 mm dia
-ring_screw_angles = [k * 60 + 30 for k in range(6)]    # ONE 6-bolt pattern for every ring
+# Clocked to 52.4° so NO bolt lands on a ceramic slot (slots at 6.5/77/148/218°, each ±6.5°).
+# Old 30° clocking drove 3 of 6 bolts into slots. 52.4° clears every slot by ≥14° and every
+# other hole (legs 40/160/280, wire 183, tc 315) by ≥10.6°. Matches viewer-chamber-assembled.html.
+ring_screw_angles = [k * 60 + 52.4 for k in range(6)]  # ONE 6-bolt pattern for every ring
 ring_screw_sets = [
     (ring_screw_angles,  59.0),    # top spacer ring
     (ring_screw_angles, -24.0),    # bottom: ONE ring fastens spacer + bottom cap together

@@ -38,7 +38,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-const V='?v=spacer3';
+const V='?v=clk52';
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
 renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xe8e8ec);
@@ -101,8 +101,8 @@ Promise.all([
   load(SPLIT+'02_Bottom_Cap.glb'+V),
 ]).then(([inner,outer,support,spTop,spBot,spSeat,baseDisk,ceramic,cap])=>{
   const grp=new THREE.Group();
-  paint(inner,{color:0xb8bec5,metalness:0.5,roughness:0.4,transparent:true,opacity:0.12,depthWrite:false});
-  paint(outer,{color:0x6f9bd8,metalness:0.4,roughness:0.4,transparent:true,opacity:0.13,depthWrite:false});
+  paint(inner,{color:0xb8bec5,metalness:0.5,roughness:0.4,transparent:true,opacity:0.10,depthWrite:false});
+  paint(outer,{color:0x6f9bd8,metalness:0.4,roughness:0.4,transparent:true,opacity:0.08,depthWrite:false});
   paint(support,{color:0x4f8f7a,metalness:0.55,roughness:0.4});
   paint(spTop,{color:0xe7d9b0,metalness:0.0,roughness:0.78});
   paint(spBot,{color:0xe7d9b0,metalness:0.0,roughness:0.78});
