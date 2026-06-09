@@ -47,8 +47,9 @@ https://github.com/nicedreamzapp/Heat-N-Clean-Glass-Oven
 4. **折弯半径:** 底盖、托盘和盖子子部件可使用您标准模具的
    1.2–2.0 mm 范围。
 
-5. **顶盖工艺:** 不需要冲压模具!请将顶盖做成 **扁平环 + 4 个
-   U 型槽焊接件**,大幅降低开模成本。
+5. **顶盖工艺:** 不需要冲压模具!请将顶盖做成 **扁平环
+   (上方切穿 4 个槽口)+ 4 个小型 U 型槽焊接件**(仅在陶瓷外侧),
+   顶盖在陶瓷上方保持平整 —— 槽口不再凹入陶瓷,大幅降低开模成本。
 
 6. **焊接方法:** 隐藏接缝由贵司自行选择(TIG、点焊、激光焊均可),
    仅可见焊缝需打磨美观。
@@ -117,8 +118,10 @@ possible to reduce cost:
    standard tooling in the 1.2–2.0 mm range.
 
 5. **Top cap construction:** **No stamping die required!** Build the
-   top cap as a **flat ring + 4 welded U-channel pieces** — major
-   tooling cost saving.
+   top cap as a **flat ring with 4 cut-through slot openings + 4 small
+   welded U-channel pieces** seated at the slot openings (outside the
+   ceramic only). The cap stays flat over the ceramic — slots do NOT
+   dip into the ceramic — major tooling cost saving.
 
 6. **Welding method:** Shop's choice on hidden seams (TIG, spot, laser).
    Only visible welds need to be cleanly finished.

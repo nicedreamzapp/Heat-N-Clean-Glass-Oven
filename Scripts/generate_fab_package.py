@@ -116,11 +116,13 @@ BOM = [
         "material": "304 Stainless Steel",
         "thickness_mm": 1.2,
         "flat_size": f"Annular ring ID {ceramic_inner_r*2:.0f}mm OD {cap_outer_r*2:.0f}mm",
-        "process": "STAMPED/FORMED compound curve + laser cut perforations + rolled lips",
-        "notes": "CRITICAL: 4 U-shaped compound-curved grooves (10.5mm wide x 23.5mm deep) following ceramic element slots. "
-                 "Requires custom stamping die or hydroforming. "
-                 "Also has: 10mm outer lip, 3mm inner grab lip, 5mm insulation ridge at R=70.85mm, "
-                 "5mm ceramic retaining ridge at R=46.25mm (between slots only), "
+        "process": "STAMPED/FORMED outer-only slot dips + laser cut perforations + rolled lips",
+        "notes": "REVISED METHOD: Top cap is FLAT over the ceramic (no dipping into the ceramic slot). "
+                 "4 slot openings are CUT THROUGH the cap over each ceramic slot (10.5mm wide angular x radial range cap_inner_r to ceramic_outer_r), "
+                 "leaving the ceramic slot fully accessible from above. "
+                 "OUTSIDE the ceramic outer wall (R > 46.25mm), the cap dips 23.5mm into the housing slot region — these dips are the support flaps that hug the ceramic OD on each side of the slot. "
+                 "Also has: 10mm outer lip, 3mm inner grab lip (broken into 4 arcs at slot openings), 5mm insulation ridge at R=70.85mm (broken at slot openings), "
+                 "10mm ceramic retaining flap at R=46.25mm running flush up to slot edges (between slots only), "
                  "ventilation perforations (4mm holes), 5x M4 screw tabs.",
     },
     {
@@ -289,9 +291,17 @@ the parts that customers actually see or that mate against the ceramic chamber.
 - **Hold 1.2 mm (1× T)** on the top cap only — its lips and ridges must mate
   cleanly with the ceramic.
 
-### 5. Top cap construction — TWO-PIECE WELDED PREFERRED
-- **Build the top cap as a flat ring with 4 welded U-channel pieces** in the
-  slot positions instead of one stamped piece. **No custom stamping die required.**
+### 5. Top cap construction — REVISED METHOD (slot does NOT enter ceramic)
+- The top cap is now **FLAT over the ceramic** — it does **not** dip into the
+  ceramic slot. The ceramic slot must remain fully accessible from above so the
+  glass can drop straight in.
+- **4 rectangular slot openings** are cut through the cap directly over each
+  ceramic slot (10.5 mm wide × from cap ID out to ceramic OD ≈ R 46.25 mm).
+- **Outside the ceramic outer wall** (R > 46.25 mm), the cap dips ~23.5 mm
+  down into the housing slot region. These dips are the **support flaps** that
+  hug the ceramic OD on each side of every slot. Build them as **4 small welded
+  U-channel pieces** seated against the ceramic OD — the inner edge of each
+  channel is at R = 46.25 mm and meets the slot opening flush.
 - Weld seams on the top surface are acceptable as long as they are cleanly finished
   (ground flush, brushed to match).
 
@@ -404,19 +414,22 @@ See `BOM.csv` for complete details including flat pattern sizes and fabrication 
 - 5x screw tabs with M4 holes for mounting to mesh shell
 - Tabs extend radially outward from disk edge
 
-### 03 — Top Cap (MOST COMPLEX PART)
-**This part requires custom tooling (stamping die or hydroforming).**
+### 03 — Top Cap (REVISED — no longer dips into ceramic slot)
+**Recommended build: flat ring + 4 small welded U-channel pieces (one per slot, outside the ceramic only).**
 
 - Annular ring from ID {ceramic_inner_r*2:.0f}mm to OD {cap_outer_r*2:.0f}mm
-- **4 U-shaped compound-curved grooves** following ceramic element slot positions
-  - Each groove: {slot_width}mm wide, {slot_depth}mm deep, stadium-shaped profile
-  - Grooves dip down from the flat ring surface following the ceramic cylinder's slot contours
-  - These are the most complex features — the ring surface undulates following 4 slot profiles
-- 10mm outer lip (bent down around outside edge)
-- 3mm inner grab lip at R={ceramic_inner_r}mm (holds ceramic disk from above)
-- 5mm insulation ridge at R={housing_inner_r}mm (drops into insulation gap)
-- 5mm ceramic retaining ridge at R={ceramic_outer_r}mm (between slots only — holds ceramic cylinder)
-- Ventilation perforations: 4mm holes in flat areas between grooves
+- The ring is **FLAT over the ceramic** (no dipping into the ceramic slot — ceramic slot must stay fully open from above for the glass)
+- **4 rectangular slot openings cut through the ring** at the ceramic slot positions
+  - Each opening: {slot_width}mm wide angularly, radially from the ring ID out to ceramic OD = R {ceramic_outer_r}mm
+- **4 small U-channel pieces** ({slot_width}mm wide × ~{slot_depth}mm deep) welded into the ring at each slot
+  - Inner edge of each channel sits at R = {ceramic_outer_r}mm, flush against the ceramic OD
+  - Outer edge extends to R = {cap_outer_r}mm
+  - Channels dip ~{slot_depth}mm down into the housing slot region (outside the ceramic) — they are the support flaps that frame the slot from the outside
+- 10mm outer lip (bent down around outside edge — broken at the 4 slot openings)
+- 3mm inner grab lip at R={ceramic_inner_r}mm (broken into 4 arcs at slot openings)
+- 5mm insulation ridge at R={housing_inner_r}mm (broken at slot openings)
+- **10mm ceramic retaining flap** at R={ceramic_outer_r}mm running flush up to slot edges (between slots only — holds ceramic cylinder, gives the cap a flat seat against ceramic OD on both sides of every slot)
+- Ventilation perforations: 4mm holes in flat areas between slots
 - 5x screw tabs with M4 holes for mounting to mesh shell
 
 ### 04 — Lid Assembly
@@ -567,9 +580,15 @@ cheaper stock material or skip custom tooling.
   内折弯半径 —— 使用您的标准模具。
 - **仅顶盖必须保持 1.2 mm(1× T)** —— 其凸缘和凸起必须与陶瓷干净配合。
 
-### 5. 顶盖结构 —— 优先选择两件焊接式
-- **将顶盖制作成扁平环加 4 个 U 型槽焊接件**,焊接在槽位置,
-  替代单件冲压件。**无需定制冲压模具。**
+### 5. 顶盖结构 —— 修订方法(槽口不进入陶瓷)
+- 顶盖现在 **在陶瓷上方保持平整** —— 不再向下凹入陶瓷槽口。
+  陶瓷槽口必须从上方完全可触达,以便玻璃直接放入。
+- **4 个矩形槽口** 在顶盖上直接切穿,正对每个陶瓷槽口
+  (10.5 mm 宽 × 从盖内径到陶瓷外径 R 46.25 mm)。
+- **在陶瓷外壁之外**(R > 46.25 mm),顶盖向下凹入约 23.5 mm
+  进入外壳槽口区域。这些凹槽是 **支撑翼**,在每个槽口两侧
+  紧贴陶瓷外径。建议做成 **4 个小型焊接 U 型槽件**,
+  内边缘 R = 46.25 mm,与槽口齐平。
 - 顶面焊缝可接受,只要打磨平整并刷拉丝处理与基材匹配。
 
 ### 6. 焊接方法
@@ -707,17 +726,25 @@ cheaper stock material or skip custom tooling.
   (旋转角度灵活,见灵活性 #8)
 - 5 个 M4 螺丝凸耳,用于安装到外网壳
 
-### 03 —— 顶盖(灵活性 #5:两件焊接式)
+### 03 —— 顶盖(修订版 —— 槽口不进入陶瓷)
 **不再需要定制冲压模具。**
 
 - 扁平环,内径 {ceramic_inner_r*2:.0f}mm,外径 {cap_outer_r*2:.0f}mm
-- **4 个 U 型槽焊接件**,焊接在陶瓷加热槽位置
-  - 每个槽件:{slot_width}mm 宽 × {slot_depth}mm 深,长椭圆形截面
-  - 焊接到扁平环,焊缝打磨光洁并拉丝至与基材匹配
-- 10mm 外卷边
-- R={ceramic_inner_r}mm 处 3mm 内抓边(从上方固定陶瓷圆盘)
-- R={housing_inner_r}mm 处 5mm 隔热脊(进入隔热间隙)
-- R={ceramic_outer_r}mm 处 5mm 陶瓷保持脊(仅在槽之间)
+- 顶盖在陶瓷上方 **保持平整** —— 不向下凹入陶瓷槽口
+  (陶瓷槽口必须从上方完全开放,以便玻璃直接放入)
+- **环上切穿 4 个矩形槽口**,正对陶瓷槽口位置
+  - 每个槽口:{slot_width}mm 宽,径向从环内径到陶瓷外径 R={ceramic_outer_r}mm
+- **4 个小型 U 型槽焊接件**({slot_width}mm 宽 × ~{slot_depth}mm 深)
+  焊接在每个槽口处
+  - 每个 U 型槽内边缘位于 R={ceramic_outer_r}mm,与陶瓷外径齐平
+  - 外边缘延伸至 R={cap_outer_r}mm
+  - 槽件向下凹入约 {slot_depth}mm 进入外壳槽口区域(陶瓷外侧)
+    —— 这些是支撑翼,在每个槽口两侧紧贴陶瓷外径
+- 10mm 外卷边(在 4 个槽口处中断)
+- R={ceramic_inner_r}mm 处 3mm 内抓边(在槽口处分成 4 段弧)
+- R={housing_inner_r}mm 处 5mm 隔热脊(在槽口处中断)
+- **R={ceramic_outer_r}mm 处 10mm 陶瓷保持翼**,延伸至槽口边缘
+  (仅在槽之间 —— 给顶盖在每个槽口两侧提供贴紧陶瓷外径的平面座)
 - 通风孔:槽之间扁平区域的 4mm 孔
 - 5 个 M4 螺丝凸耳,用于安装到外网壳
 
@@ -895,8 +922,9 @@ https://github.com/nicedreamzapp/Heat-N-Clean-Glass-Oven
 4. **折弯半径:** 底盖、托盘和盖子子部件可使用您标准模具的
    1.2–2.0 mm 范围。
 
-5. **顶盖工艺:** 不需要冲压模具!请将顶盖做成 **扁平环 + 4 个
-   U 型槽焊接件**,大幅降低开模成本。
+5. **顶盖工艺:** 不需要冲压模具!请将顶盖做成 **扁平环
+   (上方切穿 4 个槽口)+ 4 个小型 U 型槽焊接件**(仅在陶瓷外侧),
+   顶盖在陶瓷上方保持平整 —— 槽口不再凹入陶瓷,大幅降低开模成本。
 
 6. **焊接方法:** 隐藏接缝由贵司自行选择(TIG、点焊、激光焊均可),
    仅可见焊缝需打磨美观。
@@ -965,8 +993,10 @@ possible to reduce cost:
    standard tooling in the 1.2–2.0 mm range.
 
 5. **Top cap construction:** **No stamping die required!** Build the
-   top cap as a **flat ring + 4 welded U-channel pieces** — major
-   tooling cost saving.
+   top cap as a **flat ring with 4 cut-through slot openings + 4 small
+   welded U-channel pieces** seated at the slot openings (outside the
+   ceramic only). The cap stays flat over the ceramic — slots do NOT
+   dip into the ceramic — major tooling cost saving.
 
 6. **Welding method:** Shop's choice on hidden seams (TIG, spot, laser).
    Only visible welds need to be cleanly finished.

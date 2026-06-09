@@ -226,6 +226,23 @@ def get_slot_z_offset(angle_deg):
             return straight_h + half_w * np.sqrt(max(0, t * (2 - t)))
     return 0
 
+def in_cap_slot(angle_deg):
+    """True when angle is inside a ceramic slot opening."""
+    for slot_center in slot_positions:
+        diff = abs(angle_deg - slot_center)
+        if diff > 180: diff = 360 - diff
+        if diff <= slot_arc_half_deg:
+            return True
+    return False
+
+def get_cap_flat_z_offset(angle_deg, r):
+    """Cap top dips into the slot only on the outside of the ceramic — the
+    ceramic top stays covered (flat) so the slot in the metal is flush with
+    the ceramic outer wall, not extending in over the chamber."""
+    if r <= ceramic_outer_r:
+        return 0
+    return get_slot_z_offset(angle_deg)
+
 # Perforation hole positions
 perf_holes = []
 mesh_height = housing_top_z - housing_bottom_z
@@ -288,13 +305,30 @@ def in_bottom_hole(angle_deg, r):
             return True
     return False
 
+# Ring of 8 M6 screws clamping inner housing + outer perforated tube together,
+# one ring near the top and one near the bottom. These are REAL clearance holes
+# cut through both walls (they line up with the bolts drawn in the assembly viewer).
+ring_screw_angles = [k * 45 + 22.5 for k in range(8)]
+ring_screw_zs = [59.0, -19.7]   # top ring, bottom ring (z in part coords)
+ring_screw_hole_r = 3.3         # M6 clearance hole, 6.6 mm diameter
+
+def in_ring_screw_hole(angle_deg, z, mid_r):
+    for h_ang in ring_screw_angles:
+        ang_diff = abs(angle_deg - h_ang)
+        if ang_diff > 180: ang_diff = 360 - ang_diff
+        arc = ang_diff * (np.pi / 180) * mid_r
+        for h_z in ring_screw_zs:
+            if np.sqrt(arc**2 + (z - h_z)**2) < ring_screw_hole_r:
+                return True
+    return False
+
 # =============================================================================
 # PART 1A: BASE BODY - Inner housing with slots + holes
 # =============================================================================
 print("Building base body (inner housing)...")
 
-housing_sections = 180
-housing_z_bands = 40
+housing_sections = 480
+housing_z_bands = 160
 housing_verts = []
 housing_faces = []
 housing_idx = {}
@@ -316,6 +350,7 @@ for ai in range(housing_sections):
     for zi in range(housing_z_bands):
         mid_z = housing_bottom_z + ((zi + 0.5) / housing_z_bands) * (housing_top_z - housing_bottom_z)
         if in_housing_hole(mid_ang, mid_z): continue
+        if in_ring_screw_hole(mid_ang, mid_z, housing_outer_r): continue
         housing_faces.append([housing_idx[(ai, zi, 0)], housing_idx[(ai, zi+1, 0)], housing_idx[(nai, zi, 0)]])
         housing_faces.append([housing_idx[(nai, zi, 0)], housing_idx[(ai, zi+1, 0)], housing_idx[(nai, zi+1, 0)]])
         housing_faces.append([housing_idx[(ai, zi, 1)], housing_idx[(nai, zi, 1)], housing_idx[(ai, zi+1, 1)]])
@@ -360,6 +395,7 @@ for ai in range(mesh_sections):
         mid_z = housing_bottom_z + ((zi + 0.5) / mesh_z_bands) * mesh_height
         if in_mesh_slot(mid_ang, mid_z): continue
         if in_perf(mid_ang, mid_z, perf_holes, perf_mid_r, perf_hole_r): continue
+        if in_ring_screw_hole(mid_ang, mid_z, perf_mid_r): continue
         mesh_faces.append([mesh_idx[(ai, zi, 0)], mesh_idx[(ai, zi+1, 0)], mesh_idx[(nai, zi, 0)]])
         mesh_faces.append([mesh_idx[(nai, zi, 0)], mesh_idx[(ai, zi+1, 0)], mesh_idx[(nai, zi+1, 0)]])
         mesh_faces.append([mesh_idx[(ai, zi, 1)], mesh_idx[(nai, zi, 1)], mesh_idx[(ai, zi+1, 1)]])
@@ -737,10 +773,10 @@ cap_idx = {}
 for ai in range(cap_sections):
     ang_deg = (ai / cap_sections) * 360
     ang_rad = np.radians(ang_deg)
-    z_off = get_slot_z_offset(ang_deg)
     cos_a, sin_a = np.cos(ang_rad), np.sin(ang_rad)
     for ri in range(cap_radial + 1):
         r = cap_inner_r + (ri / cap_radial) * (cap_outer_r - cap_inner_r)
+        z_off = get_cap_flat_z_offset(ang_deg, r)
         cap_idx[(ai, ri, 0)] = len(cap_verts)
         cap_verts.append([r * cos_a, r * sin_a, housing_top_z - z_off])
         cap_idx[(ai, ri, 1)] = len(cap_verts)
@@ -749,9 +785,14 @@ for ai in range(cap_sections):
 for ai in range(cap_sections):
     nai = (ai + 1) % cap_sections
     mid_ang = ((ai + 0.5) / cap_sections) * 360
+    cap_in_slot = in_cap_slot(mid_ang)
     for ri in range(cap_radial):
         mid_r = cap_inner_r + ((ri + 0.5) / cap_radial) * (cap_outer_r - cap_inner_r)
         if in_cap_perf(mid_ang, mid_r):
+            continue
+        # Cutout over the ceramic slot — slot must be open from above so the
+        # glass can drop into the ceramic. Outer region keeps its dip (flaps).
+        if cap_in_slot and mid_r <= ceramic_outer_r:
             continue
         v0t, v0b = cap_idx[(ai, ri, 0)], cap_idx[(ai, ri, 1)]
         v1t, v1b = cap_idx[(ai, ri+1, 0)], cap_idx[(ai, ri+1, 1)]
@@ -792,7 +833,7 @@ for ai in range(lip_sections):
     ang_deg = (ai / lip_sections) * 360
     ang_rad = np.radians(ang_deg)
     cos_a, sin_a = np.cos(ang_rad), np.sin(ang_rad)
-    z_off_cap = get_slot_z_offset(ang_deg)
+    z_off_cap = get_slot_z_offset(ang_deg)  # lip top tracks the dipped cap_flat at slots
     z_off_lip = get_lip_z_offset(ang_deg)
     extra_drop = z_off_lip - z_off_cap
     for zi in range(lip_z_bands + 1):
@@ -819,19 +860,25 @@ grab_verts = []
 grab_faces = []
 grab_idx = {}
 
+def _grab_in_slot(ai):
+    return in_cap_slot((ai / grab_sections) * 360)
+
 for ai in range(grab_sections):
+    if _grab_in_slot(ai):
+        continue  # inner grab ring breaks at slot openings so the ceramic slot is accessible
     ang_deg = (ai / grab_sections) * 360
     ang_rad = np.radians(ang_deg)
     cos_a, sin_a = np.cos(ang_rad), np.sin(ang_rad)
-    z_off = get_slot_z_offset(ang_deg)
     for zi in range(grab_z_bands + 1):
-        z = (housing_top_z - z_off) - (zi / grab_z_bands) * ceramic_grab_lip
+        z = housing_top_z - (zi / grab_z_bands) * ceramic_grab_lip
         for ri, r in enumerate([ceramic_inner_r, ceramic_inner_r + sheet_metal_thickness]):
             grab_idx[(ai, zi, ri)] = len(grab_verts)
             grab_verts.append([r * cos_a, r * sin_a, z])
 
 for ai in range(grab_sections):
     nai = (ai + 1) % grab_sections
+    if _grab_in_slot(ai) or _grab_in_slot(nai):
+        continue
     for zi in range(grab_z_bands):
         grab_faces.append([grab_idx[(ai, zi, 0)], grab_idx[(ai, zi+1, 0)], grab_idx[(nai, zi, 0)]])
         grab_faces.append([grab_idx[(nai, zi, 0)], grab_idx[(ai, zi+1, 0)], grab_idx[(nai, zi+1, 0)]])
@@ -853,7 +900,7 @@ for ai in range(ridge_sections):
     ang_deg = (ai / ridge_sections) * 360
     ang_rad = np.radians(ang_deg)
     cos_a, sin_a = np.cos(ang_rad), np.sin(ang_rad)
-    z_off = get_slot_z_offset(ang_deg)
+    z_off = get_slot_z_offset(ang_deg)  # ridge dips with cap at slots (outside ceramic)
     for zi in range(ridge_z_bands + 1):
         z = (housing_top_z - z_off) - (zi / ridge_z_bands) * ridge_drop
         for ri, r in enumerate([housing_inner_r - sheet_metal_thickness, housing_inner_r]):
@@ -873,9 +920,9 @@ cap_ridge.fix_normals()
 
 # Ceramic outer retaining ridge (holds ceramic cylinder from outside at top)
 # Only between slots — skip angular ranges where slots are
-ceramic_ret_drop = 5
+ceramic_ret_drop = 10  # 10mm flap hugging ceramic OD between slots — alignment + support
 ceramic_ret_z_bands = 4
-ceramic_ret_margin = 2  # extra degrees clearance past slot edge
+ceramic_ret_margin = 0  # ridge runs all the way up to the slot edge so flaps frame the slot
 
 def in_slot_zone(ang):
     """Check if angle is within a slot opening (with margin)."""
@@ -1228,6 +1275,10 @@ print("Loading ceramic cylinder...")
 
 ceramic_parts_dir = os.path.join(os.path.dirname(cad_exports_dir), "Ceramic Parts")
 ceramic_stl_path = os.path.join(ceramic_parts_dir, "updatedcylinder.stl")
+if not os.path.exists(ceramic_stl_path):
+    fallback = os.path.join(cad_exports_dir, "Individual Parts", "STL", "06_Ceramic_Cylinder.stl")
+    print(f"  (source missing, using fallback {os.path.basename(fallback)})")
+    ceramic_stl_path = fallback
 ceramic_cylinder = trimesh.load(ceramic_stl_path)
 ceramic_cylinder.visual.face_colors = ceramic_body_color
 
@@ -1237,11 +1288,17 @@ ceramic_cylinder.visual.face_colors = ceramic_body_color
 print("Loading ceramic base disk...")
 
 ceramic_disk_stl_path = os.path.join(ceramic_parts_dir, "lidbottomupdated.stl")
+_disk_source_present = os.path.exists(ceramic_disk_stl_path)
+if not _disk_source_present:
+    fallback_base = os.path.join(cad_exports_dir, "Individual Parts", "STL", "07_Ceramic_Base_Disk.stl")
+    print(f"  (disk source missing, using fallback {os.path.basename(fallback_base)} as-is)")
+    ceramic_disk_stl_path = fallback_base
 ceramic_base = trimesh.load(ceramic_disk_stl_path)
-ceramic_base.apply_transform(trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0]))
-base_bounds = ceramic_base.bounds
-ceramic_base.apply_translation([0, 0, -base_bounds[0][2]])
-ceramic_base.apply_translation([0, 0, -disk_thickness])
+if _disk_source_present:
+    ceramic_base.apply_transform(trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0]))
+    base_bounds = ceramic_base.bounds
+    ceramic_base.apply_translation([0, 0, -base_bounds[0][2]])
+    ceramic_base.apply_translation([0, 0, -disk_thickness])
 ceramic_base.visual.face_colors = ceramic_disk_color
 
 # =============================================================================
@@ -1249,10 +1306,14 @@ ceramic_base.visual.face_colors = ceramic_disk_color
 # =============================================================================
 print("Loading ceramic lid disk...")
 
-ceramic_lid = trimesh.load(ceramic_disk_stl_path)
-ceramic_lid.apply_transform(trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0]))
-lid_bounds = ceramic_lid.bounds
-ceramic_lid.apply_translation([0, 0, -lid_bounds[0][2]])
+if _disk_source_present:
+    ceramic_lid = trimesh.load(ceramic_disk_stl_path)
+    ceramic_lid.apply_transform(trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0]))
+    lid_bounds = ceramic_lid.bounds
+    ceramic_lid.apply_translation([0, 0, -lid_bounds[0][2]])
+else:
+    fallback_lid = os.path.join(cad_exports_dir, "Individual Parts", "STL", "07b_Ceramic_Lid_Disk.stl")
+    ceramic_lid = trimesh.load(fallback_lid)
 ceramic_lid.visual.face_colors = ceramic_disk_color
 
 # =============================================================================

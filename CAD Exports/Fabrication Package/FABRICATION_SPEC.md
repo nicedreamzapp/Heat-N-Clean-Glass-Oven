@@ -39,9 +39,17 @@ the parts that customers actually see or that mate against the ceramic chamber.
 - **Hold 1.2 mm (1× T)** on the top cap only — its lips and ridges must mate
   cleanly with the ceramic.
 
-### 5. Top cap construction — TWO-PIECE WELDED PREFERRED
-- **Build the top cap as a flat ring with 4 welded U-channel pieces** in the
-  slot positions instead of one stamped piece. **No custom stamping die required.**
+### 5. Top cap construction — REVISED METHOD (slot does NOT enter ceramic)
+- The top cap is now **FLAT over the ceramic** — it does **not** dip into the
+  ceramic slot. The ceramic slot must remain fully accessible from above so the
+  glass can drop straight in.
+- **4 rectangular slot openings** are cut through the cap directly over each
+  ceramic slot (10.5 mm wide × from cap ID out to ceramic OD ≈ R 46.25 mm).
+- **Outside the ceramic outer wall** (R > 46.25 mm), the cap dips ~23.5 mm
+  down into the housing slot region. These dips are the **support flaps** that
+  hug the ceramic OD on each side of every slot. Build them as **4 small welded
+  U-channel pieces** seated against the ceramic OD — the inner edge of each
+  channel is at R = 46.25 mm and meets the slot opening flush.
 - Weld seams on the top surface are acceptable as long as they are cleanly finished
   (ground flush, brushed to match).
 
@@ -84,7 +92,7 @@ the parts that customers actually see or that mate against the ceramic chamber.
 | 01C | Support Ring | 1 | 1.2mm | Laser cut + bend |
 | 01D | Standoff Fins | 12 | 1.2mm | Laser cut |
 | 02 | Bottom Cap | 1 | 1.2mm | Laser cut disk + roll 10mm lip + 5 screw tabs |
-| 03 | Top Cap | 1 | 1.2mm | STAMPED/FORMED compound curve + laser cut perforations + rolled lips |
+| 03 | Top Cap | 1 | 1.2mm | STAMPED/FORMED outer-only slot dips + laser cut perforations + rolled lips |
 | 04 | Lid Assembly | 1 | 1.2mm | Laser cut 6 sub-parts + weld together |
 | 05 | Hinge Pin | 1 | 5mm rodmm | Cut rod to length |
 | 12 | Steel Tray | 1 | 3.0mm | Laser cut + 4 brake bends (12mm lips) |
@@ -159,19 +167,22 @@ See `BOM.csv` for complete details including flat pattern sizes and fabrication 
 - 5x screw tabs with M4 holes for mounting to mesh shell
 - Tabs extend radially outward from disk edge
 
-### 03 — Top Cap (MOST COMPLEX PART)
-**This part requires custom tooling (stamping die or hydroforming).**
+### 03 — Top Cap (REVISED — no longer dips into ceramic slot)
+**Recommended build: flat ring + 4 small welded U-channel pieces (one per slot, outside the ceramic only).**
 
 - Annular ring from ID 82mm to OD 158mm
-- **4 U-shaped compound-curved grooves** following ceramic element slot positions
-  - Each groove: 10.5mm wide, 23.5mm deep, stadium-shaped profile
-  - Grooves dip down from the flat ring surface following the ceramic cylinder's slot contours
-  - These are the most complex features — the ring surface undulates following 4 slot profiles
-- 10mm outer lip (bent down around outside edge)
-- 3mm inner grab lip at R=40.75mm (holds ceramic disk from above)
-- 5mm insulation ridge at R=70.85mm (drops into insulation gap)
-- 5mm ceramic retaining ridge at R=46.25mm (between slots only — holds ceramic cylinder)
-- Ventilation perforations: 4mm holes in flat areas between grooves
+- The ring is **FLAT over the ceramic** (no dipping into the ceramic slot — ceramic slot must stay fully open from above for the glass)
+- **4 rectangular slot openings cut through the ring** at the ceramic slot positions
+  - Each opening: 10.5mm wide angularly, radially from the ring ID out to ceramic OD = R 46.25mm
+- **4 small U-channel pieces** (10.5mm wide × ~23.5mm deep) welded into the ring at each slot
+  - Inner edge of each channel sits at R = 46.25mm, flush against the ceramic OD
+  - Outer edge extends to R = 78.75mm
+  - Channels dip ~23.5mm down into the housing slot region (outside the ceramic) — they are the support flaps that frame the slot from the outside
+- 10mm outer lip (bent down around outside edge — broken at the 4 slot openings)
+- 3mm inner grab lip at R=40.75mm (broken into 4 arcs at slot openings)
+- 5mm insulation ridge at R=70.85mm (broken at slot openings)
+- **10mm ceramic retaining flap** at R=46.25mm running flush up to slot edges (between slots only — holds ceramic cylinder, gives the cap a flat seat against ceramic OD on both sides of every slot)
+- Ventilation perforations: 4mm holes in flat areas between slots
 - 5x screw tabs with M4 holes for mounting to mesh shell
 
 ### 04 — Lid Assembly
