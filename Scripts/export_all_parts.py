@@ -309,13 +309,12 @@ def in_bottom_hole(angle_deg, r):
 # BOTH tube walls, lined up with the bolts in the assembly viewer:
 #   top + bottom rings -> 8 screws each, hold the 2 spacer rings between the tubes
 #   seat ring          -> 6 screws, come in from the outer chamber to hold the support ring
-ring_screw_hole_r = 3.3                                   # M6 clearance, 6.6 mm dia
-spacer_screw_angles = [k * 45 + 22.5 for k in range(8)]   # the 2 spacer rings
-seat_screw_angles   = [k * 60 + 30  for k in range(6)]    # the support-ring flange
+ring_screw_hole_r = 3.3                                # M6 clearance, 6.6 mm dia
+ring_screw_angles = [k * 60 + 30 for k in range(6)]    # ONE 6-bolt pattern for every ring
 ring_screw_sets = [
-    (spacer_screw_angles,  59.0),    # top spacer ring
-    (spacer_screw_angles, -19.7),    # bottom spacer ring
-    (seat_screw_angles,     2.15),   # support-ring (seat) flange
+    (ring_screw_angles,  59.0),    # top spacer ring
+    (ring_screw_angles, -24.0),    # bottom: ONE ring fastens spacer + bottom cap together
+    (ring_screw_angles,   2.15),   # support-ring (seat) flange
 ]
 
 def in_ring_screw_hole(angle_deg, z, mid_r):
@@ -329,6 +328,9 @@ def in_ring_screw_hole(angle_deg, z, mid_r):
             if np.sqrt(arc**2 + (z - h_z)**2) < ring_screw_hole_r:
                 return True
     return False
+
+# The bottom cap fastens via the SAME bottom ring (z=-24) — one bolt passes through
+# the cap lip, outer tube, ceramic spacer, and inner tube. No separate cap ring.
 
 # =============================================================================
 # PART 1A: BASE BODY - Inner housing with slots + holes
@@ -581,7 +583,7 @@ if flange_5 >= 360:
     flange_5 -= 360
 bottom_cap_tab_angles.append(flange_5)
 
-bottom_cap_lip_height = 10
+bottom_cap_lip_height = 16   # tall enough for the M6 consolidated ring at z=-24 to sit inside the lip
 bottom_cap_outer_r = mesh_outer_r + 1.5
 bottom_cap_z = housing_bottom_z - sheet_metal_thickness
 
@@ -612,9 +614,9 @@ for h_ang, h_r_pos, h_radius in bottom_cap_holes:
     hole_cyl.apply_translation([hole_x, hole_y, bottom_cap_z + sheet_metal_thickness/2])
     bottom_cap_disk = bottom_cap_disk.difference(hole_cyl)
 
-# Outer lip going UP
-bc_lip_sections = 180
-bc_lip_z_bands = 8
+# Outer lip going UP — wraps the outer tube; radial M4 screws fasten through it
+bc_lip_sections = 360
+bc_lip_z_bands = 20
 bc_lip_verts = []
 bc_lip_faces = []
 bc_lip_idx = {}
@@ -631,7 +633,12 @@ for ai in range(bc_lip_sections):
 
 for ai in range(bc_lip_sections):
     nai = (ai + 1) % bc_lip_sections
+    mid_ang = ((ai + 0.5) / bc_lip_sections) * 360
     for zi in range(bc_lip_z_bands):
+        mid_z = bottom_cap_z + sheet_metal_thickness + ((zi + 0.5) / bc_lip_z_bands) * bottom_cap_lip_height
+        # cut the SAME consolidated bottom ring (z=-24) through the lip — the bolt that
+        # holds the ceramic spacer also passes through here and fastens the cap
+        if in_ring_screw_hole(mid_ang, mid_z, bottom_cap_outer_r - sheet_metal_thickness/2): continue
         bc_lip_faces.append([bc_lip_idx[(ai, zi, 0)], bc_lip_idx[(ai, zi+1, 0)], bc_lip_idx[(nai, zi, 0)]])
         bc_lip_faces.append([bc_lip_idx[(nai, zi, 0)], bc_lip_idx[(ai, zi+1, 0)], bc_lip_idx[(nai, zi+1, 0)]])
         bc_lip_faces.append([bc_lip_idx[(ai, zi, 1)], bc_lip_idx[(nai, zi, 1)], bc_lip_idx[(ai, zi+1, 1)]])
@@ -640,36 +647,12 @@ for ai in range(bc_lip_sections):
 bottom_cap_lip = trimesh.Trimesh(vertices=np.array(bc_lip_verts), faces=np.array(bc_lip_faces))
 bottom_cap_lip.fix_normals()
 
-# Screw tabs with holes
-bottom_cap_tabs = []
-screw_hole_r = 2.25  # M4 clearance hole (4.5mm diameter per ISO 273)
-tab_width = 15
-tab_depth = 12
-
-for ang_deg in bottom_cap_tab_angles:
-    ang_rad = np.radians(ang_deg)
-    tab_r = bottom_cap_outer_r + tab_depth/2 - 2
-    tab_x = tab_r * np.cos(ang_rad)
-    tab_y = tab_r * np.sin(ang_rad)
-    tab_z = bottom_cap_z + sheet_metal_thickness + bottom_cap_lip_height/2
-
-    # Round flange (cylinder) instead of square tab
-    tab = trimesh.creation.cylinder(radius=tab_width/2, height=bottom_cap_lip_height, sections=32)
-    tab.apply_translation([tab_x, tab_y, tab_z])
-    tab.visual.face_colors = [220, 180, 140, 255]
-    bottom_cap_tabs.append(tab)
-
-    hole_r = bottom_cap_outer_r + tab_depth/2
-    hole_x = hole_r * np.cos(ang_rad)
-    hole_y = hole_r * np.sin(ang_rad)
-    hole = trimesh.creation.cylinder(radius=screw_hole_r, height=bottom_cap_lip_height + 2, sections=16)
-    hole.apply_translation([hole_x, hole_y, tab_z])
-    hole.visual.face_colors = [40, 40, 45, 255]
-    bottom_cap_tabs.append(hole)
-
-bottom_cap = trimesh.util.concatenate([bottom_cap_disk, bottom_cap_lip] + bottom_cap_tabs)
+# Bottom cap = disk + lip. It fastens via the SHARED bottom ring (z=-24): the same
+# 6 M6 bolts pass through the cap lip, outer tube, ceramic spacer and inner tube.
+# (Old floating vertical tabs + bosses removed — they didn't line up.)
+bottom_cap = trimesh.util.concatenate([bottom_cap_disk, bottom_cap_lip])
 bottom_cap.visual.face_colors = [220, 180, 140, 255]
-print(f"  5 round flanges at {[f'{a:.0f} deg' for a in bottom_cap_tab_angles]}")
+print(f"  bottom cap: lip wraps outer tube, fastened by the shared bottom ring ({len(ring_screw_angles)} M6 at {[f'{a:.0f} deg' for a in ring_screw_angles]})")
 
 # Add screw bosses to base body bottom edge
 print("Adding screw bosses to base body bottom...")

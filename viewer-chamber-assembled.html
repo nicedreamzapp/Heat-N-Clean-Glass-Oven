@@ -17,7 +17,7 @@ button { position:fixed; top:52px; left:50%; transform:translateX(-50%); z-index
 </style>
 </head>
 <body>
-<div class="tag">Chamber — all parts assembled together (tubes see-through)</div>
+<div class="tag">Chamber + bottom cap — all parts assembled (tubes see-through)</div>
 <button id="solid">Make solid</button>
 <div id="loading">Loading…</div>
 <div class="legend">
@@ -26,7 +26,8 @@ button { position:fixed; top:52px; left:50%; transform:translateX(-50%); z-index
   <span class="sw" style="background:#4f8f7a"></span>Support ring + flange
   <span class="sw" style="background:#e7d9b0"></span>Ceramic spacers
   <span class="sw" style="background:#f2f0ea"></span>Ceramic core
-  <span class="sw" style="background:#d9a521"></span>M6 bolts + nuts &nbsp;·&nbsp; drag to rotate
+  <span class="sw" style="background:#dcb48c"></span>Bottom cap
+  <span class="sw" style="background:#d9a521"></span>Bolts + nuts &nbsp;·&nbsp; drag to rotate
 </div>
 <canvas id="c"></canvas>
 <script type="importmap">
@@ -37,7 +38,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-const V='?v=core1';
+const V='?v=spacer3';
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
 renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xe8e8ec);
@@ -73,6 +74,20 @@ function bolt(){ const s=new THREE.Group();
 function screwRing(z, n, off){ const g=new THREE.Group();
   for(let k=0;k<n;k++){ const b=bolt(); b.rotation.z=k*(Math.PI*2/n)+off; b.position.z=z; g.add(b); }
   return g; }
+// longer M6 bolt for the CONSOLIDATED bottom ring — one bolt reaches through the
+// cap lip -> outer tube -> ceramic spacer -> inner tube -> nut. Fastens spacer + cap.
+function boltLong(){ const s=new THREE.Group();
+  const sh =new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,13,16),boltMat); sh.rotation.z=Math.PI/2; sh.position.set(73.5,0,0);   // shaft spans 67->80
+  const hd =new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.2,2.8,6), boltMat); hd.rotation.z=Math.PI/2; hd.position.set(80.6,0,0);   // hex head outside the cap lip
+  const nut=new THREE.Mesh(new THREE.CylinderGeometry(3.6,3.6,3.0,6), nutMat ); nut.rotation.z=Math.PI/2; nut.position.set(69.35,0,0);  // hex nut on inner wall
+  s.add(sh,hd,nut); return s; }
+function screwRingLong(z, n, off){ const g=new THREE.Group();
+  for(let k=0;k<n;k++){ const b=boltLong(); b.rotation.z=k*(Math.PI*2/n)+off; b.position.z=z; g.add(b); }
+  return g; }
+// Bolt ring clocking: ceramic slots sit at 6.5/77.1/147.7/218.3° (each ±6.5°).
+// 52.4° lands all six bolts on solid metal — clears every slot by ≥14° (need ≥13).
+// The old 30° (π/6) clocking drove three bolts into slots (90/150/210°). Do not revert.
+const BOLT_OFF = 52.4 * Math.PI/180;
 
 Promise.all([
   load(SPLIT+'1_Inner_Wall_Tube.glb'+V),
@@ -80,23 +95,28 @@ Promise.all([
   load(SPLIT+'3_Support_Ring_Full.glb'+V),
   load(SPLIT+'4_Spacer_Ring.glb'+V),
   load(SPLIT+'4_Spacer_Ring.glb'+V),
+  load(SPLIT+'4_Spacer_Ring.glb'+V),
   load(SPLIT+'6_Ceramic_Base_Disk.glb'+V),
   load(SPLIT+'06_Ceramic_Cylinder.glb'+V),
-]).then(([inner,outer,support,spTop,spBot,baseDisk,ceramic])=>{
+  load(SPLIT+'02_Bottom_Cap.glb'+V),
+]).then(([inner,outer,support,spTop,spBot,spSeat,baseDisk,ceramic,cap])=>{
   const grp=new THREE.Group();
   paint(inner,{color:0xb8bec5,metalness:0.5,roughness:0.4,transparent:true,opacity:0.12,depthWrite:false});
   paint(outer,{color:0x6f9bd8,metalness:0.4,roughness:0.4,transparent:true,opacity:0.13,depthWrite:false});
   paint(support,{color:0x4f8f7a,metalness:0.55,roughness:0.4});
   paint(spTop,{color:0xe7d9b0,metalness:0.0,roughness:0.78});
   paint(spBot,{color:0xe7d9b0,metalness:0.0,roughness:0.78});
+  paint(spSeat,{color:0xe7d9b0,metalness:0.0,roughness:0.78});
   paint(baseDisk,{color:0xe7d9b0,metalness:0.0,roughness:0.7});
   paint(ceramic,{color:0xf2f0ea,metalness:0.0,roughness:0.6});  // the ceramic core
+  paint(cap,{color:0xdcb48c,metalness:0.55,roughness:0.45});    // bottom cap
   inner.traverse(c=>{if(c.isMesh)tubeMats.push(c.material);});
   outer.traverse(c=>{if(c.isMesh)tubeMats.push(c.material);});
-  spTop.position.z=59;     // top spacer at the top screw ring
-  spBot.position.z=-19.7;  // bottom spacer at the bottom screw ring
-  grp.add(inner,outer,support,spTop,spBot,baseDisk,ceramic);
-  grp.add(screwRing(59,8,Math.PI/8), screwRing(-19.7,8,Math.PI/8), screwRing(2.15,6,Math.PI/6));
+  spTop.position.z=59;     // top spacer at the top ring
+  spBot.position.z=-24;    // bottom spacer at the consolidated bottom ring
+  spSeat.position.z=2.15;  // NEW third spacer at the seat ring — braces against bending when torqued
+  grp.add(inner,outer,support,spTop,spBot,spSeat,baseDisk,ceramic,cap);
+  grp.add(screwRing(59,6,BOLT_OFF), screwRingLong(-24,6,BOLT_OFF), screwRing(2.15,6,BOLT_OFF));
   // center the whole assembly for viewing
   const c=new THREE.Box3().setFromObject(grp).getCenter(new THREE.Vector3());
   grp.position.sub(c); scene.add(grp);
