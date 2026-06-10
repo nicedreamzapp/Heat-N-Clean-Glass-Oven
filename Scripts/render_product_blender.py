@@ -143,6 +143,9 @@ for z, lng, lid in [(59, True, False), (-24, True, False), (2.15, False, False),
     bolt_ring(z, lng, lid)
 
 # ---------- scale mm -> m ----------
+VIEW_ROT = math.radians(float(os.environ.get("VIEW_ROT", "-158")))  # spin oven: hinge to the back
+root.rotation_euler = (0, 0, VIEW_ROT)
+bolt_root.rotation_euler = (0, 0, VIEW_ROT)
 root.scale = (0.001, 0.001, 0.001)
 bolt_root.scale = (0.001, 0.001, 0.001)
 scene.view_settings.exposure = -0.35
