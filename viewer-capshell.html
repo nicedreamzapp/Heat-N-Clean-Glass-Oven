@@ -27,7 +27,7 @@ scene.add(new THREE.AmbientLight(0xffffff,0.95));
 const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
 const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
 scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
-new GLTFLoader().load('CAD Exports/Individual Parts/GLB/04a_Cap_Shell.glb?v=cs1', g=>{
+new GLTFLoader().load('CAD Exports/Individual Parts/GLB/04a_Cap_Shell.glb?v=cs2', g=>{
   const m=g.scene;
   m.traverse(ch=>{ if(ch.isMesh){
     const dark=ch.geometry.attributes.color && ch.geometry.attributes.color.getX(0)<0.3;

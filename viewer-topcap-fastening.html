@@ -26,7 +26,7 @@ button{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:6;bac
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-const V='?v=fa17';
+const V='?v=fa18';
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
 renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
@@ -77,7 +77,7 @@ function rbolt(long){ const s=new THREE.Group();
 function screwRing(z,long){ const g=new THREE.Group(); const OFF=52.4*Math.PI/180;
   for(let k=0;k<6;k++){ const b=rbolt(long); b.rotation.z=k*(Math.PI*2/6)+OFF; b.position.z=z; g.add(b); } return g; }
 // REAL hinge parts (05b strap + 05 pin GLBs) are loaded with everything else.
-const HINGE_A=292.4*Math.PI/180, PIVOT_R=81.5, PIVOT_Z=109;
+const HINGE_A=292.4*Math.PI/180, PIVOT_R=81.5, PIVOT_Z=97;
 function handleBolts(){ const g=new THREE.Group();
   for(const [px,py] of [[7.95,46.5],[-38.3,27.5]]){
     const sh=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,7,14),boltMat); sh.rotation.x=Math.PI/2; sh.position.set(px,py,127);

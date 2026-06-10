@@ -1025,7 +1025,8 @@ CAP_TAB_BOT = 55
 HINGE_ANGLE_DEG = 292.4                       # center of the big slot gap
 _ha = np.radians(HINGE_ANGLE_DEG)
 _htx, _hty = -np.sin(_ha), np.cos(_ha)        # hinge pin axis (tangent)
-HINGE_PIVOT_R, HINGE_PIVOT_Z = 81.5, 109   # barrel at the strap TOP edge — clears the z=99 bolt head by 2.8mm
+HINGE_PIVOT_R, HINGE_PIVOT_Z = 81.5, 97    # knuckles low, just above the rim
+HINGE_T_OFF = 14                            # knuckles slid SIDEWAYS along the hinge line, clear of the bolt head
 HINGE_KN_LEN = 25/3
 
 def _tangent_cyl(radius, length, t_off, color=None):
@@ -1051,10 +1052,12 @@ for _ang in CAP_BOLT_ANGLES:
             _radial_hole(cap_outer_r - sheet_metal_thickness/2, _ang, CAP_BOLT_Z, 1.8)], engine='manifold')
     _shell_bits.append(_tab)
 # hinge finger: strap up the outside + two curl barrels with REAL pin bores
+_f_center = HINGE_ANGLE_DEG + np.degrees(HINGE_T_OFF / cap_outer_r)
+_f_half = np.degrees(13.0 / cap_outer_r)
 _shell_bits.append(_annular_sector(cap_outer_r - sheet_metal_thickness, cap_outer_r,
                    housing_top_z - lip_drop - 3, HINGE_PIVOT_Z,
-                   HINGE_ANGLE_DEG - CAP_TAB_HALF_DEG, HINGE_ANGLE_DEG + CAP_TAB_HALF_DEG))
-for _off in (-HINGE_KN_LEN, HINGE_KN_LEN):
+                   _f_center - _f_half, _f_center + _f_half))
+for _off in (HINGE_T_OFF - HINGE_KN_LEN, HINGE_T_OFF + HINGE_KN_LEN):
     _barrel = trimesh.boolean.difference([_tangent_cyl(4, HINGE_KN_LEN, _off),
                _tangent_cyl(2.6, HINGE_KN_LEN + 2.0, _off)], engine='manifold')
     _shell_bits.append(_barrel)
@@ -1510,16 +1513,16 @@ print("Building bolted strap hinge (no welds)...")
 _rotH = trimesh.transformations.rotation_matrix(_ha, [0, 0, 1])
 # strap sized for a real M6: 20mm wide x 18mm tall (z 91-109), 6.6mm clearance
 # hole at z=99. Barrel sits at the TOP edge (z=109) so the bolt head clears it.
-_plate = trimesh.creation.box(extents=[sheet_metal_thickness, 20, 18])
+_plate = trimesh.creation.box(extents=[sheet_metal_thickness, 28, 14])
 _plate.apply_transform(_rotH)
-_plate.apply_translation([78.15*np.cos(_ha), 78.15*np.sin(_ha), 100])
+_plate.apply_translation([78.15*np.cos(_ha) + _htx*5, 78.15*np.sin(_ha) + _hty*5, 98])
 _plate = trimesh.boolean.difference([_plate, _radial_hole(78.15, HINGE_ANGLE_DEG, 99, 3.3)], engine='manifold')
-_strap_barrel = trimesh.boolean.difference([_tangent_cyl(4, HINGE_KN_LEN, 0),
-                 _tangent_cyl(2.6, HINGE_KN_LEN + 2.0, 0)], engine='manifold')
+_strap_barrel = trimesh.boolean.difference([_tangent_cyl(4, HINGE_KN_LEN, HINGE_T_OFF),
+                 _tangent_cyl(2.6, HINGE_KN_LEN + 2.0, HINGE_T_OFF)], engine='manifold')
 lid_hinge_strap = trimesh.util.concatenate([_plate, _strap_barrel])
 lid_hinge_strap.visual.face_colors = [138, 144, 152, 255]
 
-hinge_pin = _tangent_cyl(2.5, 30, 0)
+hinge_pin = _tangent_cyl(2.5, 30, HINGE_T_OFF)
 hinge_pin.visual.face_colors = [180, 185, 190, 255]
 print("  Lid strap (1 bolt-on part) + pin. Cap-side barrels live on the shell.")
 
