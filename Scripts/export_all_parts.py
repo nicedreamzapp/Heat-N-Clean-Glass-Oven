@@ -1506,7 +1506,11 @@ _rotH = trimesh.transformations.rotation_matrix(_ha, [0, 0, 1])
 _plate = trimesh.creation.box(extents=[sheet_metal_thickness, 14, 9])
 _plate.apply_transform(_rotH)
 _plate.apply_translation([78.15*np.cos(_ha), 78.15*np.sin(_ha), 99.5])
-lid_hinge_strap = trimesh.util.concatenate([_plate, _tangent_cyl(4, HINGE_KN_LEN, 0)])
+_strap_hole = trimesh.creation.cylinder(radius=1.8, height=4.5, sections=16)
+_strap_hole.apply_transform(trimesh.geometry.align_vectors([0,0,1],[np.cos(_ha),np.sin(_ha),0]))
+_strap_hole.apply_translation([78.15*np.cos(_ha), 78.15*np.sin(_ha), 99])
+_strap_hole.visual.face_colors = [40, 40, 45, 255]
+lid_hinge_strap = trimesh.util.concatenate([_plate, _tangent_cyl(4, HINGE_KN_LEN, 0), _strap_hole])
 lid_hinge_strap.visual.face_colors = [138, 144, 152, 255]
 
 hinge_pin = _tangent_cyl(2.5, 30, 0)

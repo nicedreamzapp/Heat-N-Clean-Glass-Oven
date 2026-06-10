@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Hinge close-up — how the strap attaches</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#e8e8ec;overflow:hidden;font-family:-apple-system,sans-serif}
+canvas{display:block;width:100vw;height:100vh}
+button{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:6;background:#2f7fd6;color:#fff;border:none;padding:9px 24px;border-radius:8px;font-size:15px;cursor:pointer}
+#loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+</style></head><body>
+<button id="go">Attach the strap</button>
+<div id="loading">Loading…</div>
+<canvas id="c"></canvas>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const V='?v=hc3';
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const A=292.4*Math.PI/180, RX=Math.cos(A), RY=Math.sin(A);
+const TX=-Math.sin(A), TY=Math.cos(A);
+const PIV=new THREE.Vector3(81.5*RX,81.5*RY,95);
+const cam=new THREE.PerspectiveCamera(38,innerWidth/innerHeight,0.1,9000);
+cam.up.set(0,0,1); cam.position.set(PIV.x+RX*170+TX*90, PIV.y+RY*170+TY*90, 150);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.copy(PIV);
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+const loader=new GLTFLoader();
+const load=p=>new Promise(res=>loader.load(p,g=>res(g.scene)));
+function paint(o,opt){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,metalness:0.5,roughness:0.42,...opt}); } }); }
+function makeLabel(txt){ const c=document.createElement('canvas');
+  let x=c.getContext('2d'); x.font='bold 28px -apple-system, sans-serif';
+  const w=Math.ceil(x.measureText(txt).width)+28; c.width=w; c.height=44; x=c.getContext('2d');
+  x.fillStyle='rgba(18,18,24,0.9)'; x.beginPath(); x.roundRect(0,0,w,44,10); x.fill();
+  x.font='bold 28px -apple-system, sans-serif'; x.fillStyle='#fff'; x.textBaseline='middle'; x.fillText(txt,14,23);
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false}));
+  spr.scale.set(w*0.18,44*0.18,1); spr.renderOrder=10; return spr; }
+const boltMat=new THREE.MeshStandardMaterial({color:0xd9a521,metalness:0.7,roughness:0.3});
+const nutMat=new THREE.MeshStandardMaterial({color:0xc8ccd2,metalness:0.85,roughness:0.3});
+// the lid's existing M6 bolt at the hinge angle, z=99 — head sits OUTSIDE the strap
+function hingeBolt(){ const s=new THREE.Group();
+  const sh=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,13,16),boltMat); sh.rotation.z=Math.PI/2; sh.position.set(73.5,0,0);
+  const hd=new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.2,2.8,6),boltMat); hd.rotation.z=Math.PI/2; hd.position.set(80.9,0,0);
+  const nut=new THREE.Mesh(new THREE.CylinderGeometry(3.6,3.6,3,6),nutMat); nut.rotation.z=Math.PI/2; nut.position.set(69.35,0,0);
+  s.add(sh,hd,nut); s.rotation.z=A; s.position.z=99; return s; }
+const CH='CAD Exports/Core Split/', LID='CAD Exports/Lid Split/', IND='CAD Exports/Individual Parts/GLB/';
+Promise.all([
+  load(LID+'2_Lid_Outer_Perforated_Tube.glb'+V),
+  load(LID+'3_Lid_Top_Disk.glb'+V),
+  load(LID+'4_Lid_Spacer.glb'+V),
+  load(IND+'04a_Cap_Shell.glb'+V),
+  load(CH+'2_Outer_Perforated_Tube.glb'+V),
+  load(IND+'05b_Lid_Hinge_Strap.glb'+V),
+  load(IND+'05_Hinge_Pin.glb'+V),
+]).then(([lo,ltp,sp,shell,bodyTube,strap,pin])=>{
+  paint(lo,{color:0x6f9bd8,transparent:true,opacity:0.45,depthWrite:false});
+  paint(ltp,{color:0x4f8f7a,transparent:true,opacity:0.5,depthWrite:false});
+  paint(sp,{color:0xe7d9b0});
+  paint(shell,{color:0x7fbf6a});
+  paint(bodyTube,{color:0x6f9bd8,transparent:true,opacity:0.25,depthWrite:false});
+  paint(strap,{color:0xd9534f});           // bright red so it pops
+  paint(pin,{color:0xb4b9be,metalness:0.8,roughness:0.3});
+  sp.position.z=99;
+  scene.add(lo,ltp,sp,shell,bodyTube);
+  const bolt=hingeBolt(); scene.add(bolt);
+  const gStrap=new THREE.Group(); gStrap.add(strap); scene.add(gStrap);
+  const gPin=new THREE.Group(); gPin.add(pin); scene.add(gPin);
+  const gBolt=new THREE.Group(); scene.add(gBolt); gBolt.add(bolt);
+  // labels
+  const L1=makeLabel('12 STRAP — bolts to the lid here'); L1.position.set(PIV.x+RX*8,PIV.y+RY*8,126); scene.add(L1);
+  const L2=makeLabel('13 PIN — slides through 3 barrels'); L2.position.set(PIV.x+RX*16,PIV.y+RY*16,86); scene.add(L2);
+  const L3=makeLabel('lid bolt — was already there'); L3.position.set((80.9)*RX, (80.9)*RY, 112); scene.add(L3);
+  const L4=makeLabel('green barrels — part of the cap shell'); L4.position.set(PIV.x-TX*40,PIV.y-TY*40,64); scene.add(L4);
+  document.getElementById('loading').remove();
+  let on=false, t=0;   // start DETACHED so the attach motion tells the story
+  const btn=document.getElementById('go');
+  btn.onclick=()=>{ on=!on; btn.textContent=on?'Take it apart':'Attach the strap'; };
+  (function anim(){ requestAnimationFrame(anim);
+    t+=(on?1:-1)*0.012; t=Math.max(0,Math.min(1,t));
+    const s1=Math.min(1,t*2), s2=Math.max(0,(t-0.5)*2);
+    const e1=s1*s1*(3-2*s1), e2=s2*s2*(3-2*s2);
+    gStrap.position.set(RX*60*(1-e1), RY*60*(1-e1), 0);            // strap flies in radially
+    gBolt.position.set(RX*35*(1-e2), RY*35*(1-e2), 0);             // bolt drives in
+    gPin.position.set(TX*55*(1-e2), TY*55*(1-e2), 0);              // pin slides along the hinge line
+    ctl.update(); renderer.render(scene,cam); })();
+});
+</script>
+</body></html>

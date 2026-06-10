@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>All 13 metal parts to manufacture</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#e8e8ec;overflow:hidden;font-family:-apple-system,sans-serif}
+canvas{display:block;width:100vw;height:100vh}
+#loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+</style></head><body>
+<div id="loading">Loading…</div>
+<canvas id="c"></canvas>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const V='?v=mp2';
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,0.1,9000);
+cam.up.set(0,0,1); cam.position.set(0,-1250,800);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.set(0,0,40);
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+const loader=new GLTFLoader();
+const load=p=>new Promise(res=>loader.load(p,g=>res(g.scene)));
+function paint(o,opt){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,metalness:0.55,roughness:0.4,...opt}); } }); }
+function makeLabel(txt){ const c=document.createElement('canvas');
+  let x=c.getContext('2d'); x.font='bold 30px -apple-system, sans-serif';
+  const w=Math.ceil(x.measureText(txt).width)+30; c.width=w; c.height=46; x=c.getContext('2d');
+  x.fillStyle='rgba(18,18,24,0.88)'; x.beginPath(); x.roundRect(0,0,w,46,11); x.fill();
+  x.font='bold 30px -apple-system, sans-serif'; x.fillStyle='#fff'; x.textBaseline='middle'; x.fillText(txt,15,24);
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false}));
+  spr.scale.set(w*0.42,46*0.42,1); spr.renderOrder=10; return spr; }
+const steel={color:0xb8c0c8};
+const CH='CAD Exports/Core Split/', LID='CAD Exports/Lid Split/', IND='CAD Exports/Individual Parts/GLB/';
+// [path, label, gridX, gridY]
+const PARTS=[
+  [CH+'1_Inner_Wall_Tube.glb',       '1 Inner Wall Tube',        -480,  230],
+  [CH+'2_Outer_Perforated_Tube.glb', '2 Outer Perforated Tube',  -240,  230],
+  [CH+'3_Support_Ring_Full.glb',     '3 Support Ring',              0,  230],
+  [CH+'02_Bottom_Cap.glb',           '4 Bottom Cap',              240,  230],
+  [IND+'04a_Cap_Shell.glb',          '5 Cap Shell',               480,  230],
+  [IND+'04b_Cap_HoldDown_Ring.glb',  '6 Hold-Down Ring',         -480,  -30],
+  [LID+'1_Lid_Inner_Tube.glb',       '7 Lid Inner Tube',         -240,  -30],
+  [LID+'2_Lid_Outer_Perforated_Tube.glb','8 Lid Outer Perf Tube',    0,  -30],
+  [LID+'3_Lid_Top_Disk.glb',         '9 Lid Top Disk',            240,  -30],
+  [LID+'4_Lid_Ceramic_Holder.glb',   '10 Lid Ceramic Holder',     480,  -30],
+  [LID+'5_Lid_Handle.glb',           '11 Handle (threaded studs)',-360, -280],
+  [IND+'05b_Lid_Hinge_Strap.glb',    '12 Lid Hinge Strap',          0, -280],
+  [IND+'05_Hinge_Pin.glb',           '13 Hinge Pin',              360, -280],
+];
+Promise.all(PARTS.map(p=>load(p[0]+V))).then(models=>{
+  models.forEach((m,i)=>{ const [_,label,gx,gy]=PARTS[i];
+    paint(m,steel);
+    const g=new THREE.Group(); g.add(m);
+    const bb=new THREE.Box3().setFromObject(m);
+    const cph=new THREE.Vector3(); bb.getCenter(cph);
+    m.position.set(-cph.x,-cph.y,-bb.min.z);          // center, sit on ground
+    const topZ=bb.max.z-bb.min.z;
+    const lbl=makeLabel(label); lbl.position.set(0,0,topZ+42); g.add(lbl);
+    g.position.set(gx,gy,0); scene.add(g); });
+  document.getElementById('loading').remove();
+  (function anim(){ requestAnimationFrame(anim); ctl.update(); renderer.render(scene,cam); })();
+});
+</script>
+</body></html>
