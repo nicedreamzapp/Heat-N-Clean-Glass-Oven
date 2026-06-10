@@ -16,7 +16,7 @@ button{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:6;bac
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-const V='?v=hc4';
+const V='?v=hc5';
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
 renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
@@ -25,7 +25,7 @@ renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1
 const scene=new THREE.Scene();
 const A=292.4*Math.PI/180, RX=Math.cos(A), RY=Math.sin(A);
 const TX=-Math.sin(A), TY=Math.cos(A);
-const PIV=new THREE.Vector3(81.5*RX,81.5*RY,95);
+const PIV=new THREE.Vector3(81.5*RX,81.5*RY,109);
 const cam=new THREE.PerspectiveCamera(38,innerWidth/innerHeight,0.1,9000);
 cam.up.set(0,0,1); cam.position.set(PIV.x+RX*170+TX*90, PIV.y+RY*170+TY*90, 150);
 const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.copy(PIV);

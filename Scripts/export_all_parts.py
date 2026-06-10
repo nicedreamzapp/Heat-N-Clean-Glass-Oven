@@ -1025,7 +1025,7 @@ CAP_TAB_BOT = 55
 HINGE_ANGLE_DEG = 292.4                       # center of the big slot gap
 _ha = np.radians(HINGE_ANGLE_DEG)
 _htx, _hty = -np.sin(_ha), np.cos(_ha)        # hinge pin axis (tangent)
-HINGE_PIVOT_R, HINGE_PIVOT_Z = 81.5, 95
+HINGE_PIVOT_R, HINGE_PIVOT_Z = 81.5, 109   # barrel at the strap TOP edge — clears the z=99 bolt head by 2.8mm
 HINGE_KN_LEN = 25/3
 
 def _tangent_cyl(radius, length, t_off, color=None):
@@ -1503,10 +1503,11 @@ for angle_deg in leg_angles:
 print("Building bolted strap hinge (no welds)...")
 
 _rotH = trimesh.transformations.rotation_matrix(_ha, [0, 0, 1])
-# strap sized for a real M6: 20mm wide x 16mm tall, 6.6mm clearance hole
-_plate = trimesh.creation.box(extents=[sheet_metal_thickness, 20, 16])
+# strap sized for a real M6: 20mm wide x 18mm tall (z 91-109), 6.6mm clearance
+# hole at z=99. Barrel sits at the TOP edge (z=109) so the bolt head clears it.
+_plate = trimesh.creation.box(extents=[sheet_metal_thickness, 20, 18])
 _plate.apply_transform(_rotH)
-_plate.apply_translation([78.15*np.cos(_ha), 78.15*np.sin(_ha), 99])
+_plate.apply_translation([78.15*np.cos(_ha), 78.15*np.sin(_ha), 100])
 _strap_hole = trimesh.creation.cylinder(radius=3.3, height=5.0, sections=20)
 _strap_hole.apply_transform(trimesh.geometry.align_vectors([0,0,1],[np.cos(_ha),np.sin(_ha),0]))
 _strap_hole.apply_translation([78.15*np.cos(_ha), 78.15*np.sin(_ha), 99])
