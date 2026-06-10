@@ -41,7 +41,7 @@ STEEL_D  = make_mat("steel_d",  (0.44, 0.45, 0.48), 1.0, 0.36, bump=0.05)
 CERAMIC  = make_mat("ceramic",  (0.93, 0.92, 0.88), 0.0, 0.55)
 HANDLE   = make_mat("handle",   (0.05, 0.05, 0.06), 0.2, 0.45)
 BOLT     = make_mat("bolt",     (0.55, 0.55, 0.58), 1.0, 0.22)
-FLOOR_M  = make_mat("floor",    (0.42, 0.43, 0.45), 0.0, 0.45)
+FLOOR_M  = make_mat("floor",    (0.10, 0.10, 0.11), 0.0, 0.28)
 
 # ---------- import parts (exact CAD, mm coordinates) ----------
 PARTS = [
@@ -143,12 +143,12 @@ for z, lng, lid in [(59, True, False), (-24, True, False), (2.15, False, False),
     bolt_ring(z, lng, lid)
 
 # ---------- scale mm -> m ----------
-VIEW_ROT = math.radians(float(os.environ.get("VIEW_ROT", "-158")))  # spin oven: hinge to the back
+VIEW_ROT = math.radians(float(os.environ.get("VIEW_ROT", "-200")))  # hinge at the back-left: lid opens away and to the side
 root.rotation_euler = (0, 0, VIEW_ROT)
 bolt_root.rotation_euler = (0, 0, VIEW_ROT)
 root.scale = (0.001, 0.001, 0.001)
 bolt_root.scale = (0.001, 0.001, 0.001)
-scene.view_settings.exposure = -0.35
+scene.view_settings.exposure = -0.85
 
 # ---------- floor ----------
 bpy.ops.mesh.primitive_plane_add(size=8, location=(0, 0, -0.0615))
@@ -165,8 +165,8 @@ def area(name, loc, rot, size, power):
     o.rotation_euler = rot
     bpy.context.collection.objects.link(o)
 
-area("key",  (0.55, -0.65, 0.75), (math.radians(35), 0, math.radians(40)), 1.0, 220)
-area("fill", (-0.8, -0.35, 0.45), (math.radians(60), 0, math.radians(-60)), 1.8, 60)
+area("key",  (0.55, -0.65, 0.75), (math.radians(35), 0, math.radians(40)), 0.9, 170)
+area("fill", (-0.8, -0.35, 0.45), (math.radians(60), 0, math.radians(-60)), 1.8, 35)
 area("rim",  (0.15, 0.9, 0.55),  (math.radians(-50), 0, 0), 0.9, 160)
 
 world = bpy.data.worlds.new("w")
@@ -178,7 +178,7 @@ _hdri = glob.glob("/Applications/Blender.app/Contents/Resources/*/datafiles/stud
 if _hdri:
     _env.image = bpy.data.images.load(_hdri[0])
     _wn.links.new(_env.outputs["Color"], _wn.nodes["Background"].inputs["Color"])
-    _wn.nodes["Background"].inputs["Strength"].default_value = 0.9
+    _wn.nodes["Background"].inputs["Strength"].default_value = 0.5
 else:
     _wn.nodes["Background"].inputs["Color"].default_value = (0.16, 0.17, 0.20, 1)
     _wn.nodes["Background"].inputs["Strength"].default_value = 0.35
