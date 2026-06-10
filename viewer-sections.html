@@ -19,7 +19,7 @@ button{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:6;bac
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-const V='?v=sec8';
+const V='?v=sec9';
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
 renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
@@ -52,8 +52,8 @@ const HANDLE_PTS=[[7.95,46.5],[-38.3,27.5]];
 // studs pass down through the lid top disk; hex nuts grab them underneath.
 function handleStuds(){ const g=new THREE.Group();
   for(const [px,py] of HANDLE_PTS){
-    const st=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,18,14),boltMat);
-    st.rotation.x=Math.PI/2; st.position.set(px,py,127.5-9); g.add(st); }
+    const st=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,6,14),boltMat);
+    st.rotation.x=Math.PI/2; st.position.set(px,py,124.8); g.add(st); }
   return g; }
 function handleNuts(){ const g=new THREE.Group();
   for(const [px,py] of HANDLE_PTS){
