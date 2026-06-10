@@ -26,7 +26,7 @@ button{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:6;bac
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-const V='?v=fa12';
+const V='?v=fa15';
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
 renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
@@ -91,8 +91,7 @@ function barrel(mat,tOff){ const k=new THREE.Mesh(new THREE.CylinderGeometry(4,4
   const tx=-Math.sin(HINGE_A), ty=Math.cos(HINGE_A);
   k.position.set(PIVOT_R*Math.cos(HINGE_A)+tx*tOff, PIVOT_R*Math.sin(HINGE_A)+ty*tOff, PIVOT_Z);
   return k; }
-function capStrap(){ const g=new THREE.Group();   // part of the CAP — same green sheet
-  g.add(strapBox(capGreen,94,20), barrel(capGreen,-KN_LEN), barrel(capGreen,KN_LEN));
+function capStrap(){ const g=new THREE.Group();   // finger + barrels live in the shell GLB now — only the pin is drawn here
   const pin=new THREE.Mesh(new THREE.CylinderGeometry(2.2,2.2,30,16),new THREE.MeshStandardMaterial({color:0xb4b9be,metalness:0.8,roughness:0.3}));
   pin.rotation.z=HINGE_A;
   pin.position.set(PIVOT_R*Math.cos(HINGE_A),PIVOT_R*Math.sin(HINGE_A),PIVOT_Z);
@@ -131,7 +130,8 @@ Promise.all([
   load(LID+'5_Lid_Handle.glb'+V),
   load(LID+'4_Lid_Spacer.glb'+V),
   load(LID+'4_Lid_Spacer.glb'+V),
-]).then(([cap,capRing,inner,outer,support,ceramic,bcap,spTop,spBot,spSeat,baseDisk,li,lo,ltp,lh,lhand,ls1,ls2])=>{
+  load(IND+'07b_Ceramic_Lid_Disk.glb'+V),
+]).then(([cap,capRing,inner,outer,support,ceramic,bcap,spTop,spBot,spSeat,baseDisk,li,lo,ltp,lh,lhand,ls1,ls2,cerLid])=>{
   paint(cap,{color:0x7fbf6a});
   paint(capRing,{color:0x6fa3d8});
   paint(inner,{color:0xb8bec5});
@@ -155,8 +155,10 @@ Promise.all([
   paint(lhand,{color:0x9098a0,metalness:0.7,roughness:0.35});
   for(const sp of [ls1,ls2]) paint(sp,{color:0xe7d9b0,metalness:0,roughness:0.78});
   ls1.position.z=119; ls2.position.z=99;
+  paint(cerLid,{color:0xf2f0ea,metalness:0,roughness:0.6});
+  cerLid.position.z=92;
   const gLid=new THREE.Group();
-  gLid.add(li,lo,ltp,lh,lhand,ls1,ls2,screwRing(119,false),screwRing(99,false),handleBolts(),lidStrap());
+  gLid.add(cerLid,li,lo,ltp,lh,lhand,ls1,ls2,screwRing(119,false),screwRing(99,false),handleBolts(),lidStrap());
   gCap.add(capStrap());
   scene.add(gLid);
   // the 6 top-ring bolts: longer (like the bottom cap's), they drive in radially

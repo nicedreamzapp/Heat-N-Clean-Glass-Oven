@@ -1053,6 +1053,8 @@ _shell_bits.append(_annular_sector(cap_outer_r - sheet_metal_thickness, cap_oute
                    HINGE_ANGLE_DEG - CAP_TAB_HALF_DEG, HINGE_ANGLE_DEG + CAP_TAB_HALF_DEG))
 _shell_bits.append(_tangent_cyl(4, HINGE_KN_LEN, -HINGE_KN_LEN))
 _shell_bits.append(_tangent_cyl(4, HINGE_KN_LEN,  HINGE_KN_LEN))
+_shell_bits.append(_tangent_cyl(2.6, HINGE_KN_LEN + 0.6, -HINGE_KN_LEN, [40, 40, 45, 255]))
+_shell_bits.append(_tangent_cyl(2.6, HINGE_KN_LEN + 0.6,  HINGE_KN_LEN, [40, 40, 45, 255]))
 
 cap_shell = trimesh.util.concatenate(_shell_bits)
 cap_shell.visual.face_colors = [180, 220, 140, 255]
@@ -1512,7 +1514,7 @@ _strap_hole = trimesh.creation.cylinder(radius=3.3, height=5.0, sections=20)
 _strap_hole.apply_transform(trimesh.geometry.align_vectors([0,0,1],[np.cos(_ha),np.sin(_ha),0]))
 _strap_hole.apply_translation([78.15*np.cos(_ha), 78.15*np.sin(_ha), 99])
 _strap_hole.visual.face_colors = [40, 40, 45, 255]
-lid_hinge_strap = trimesh.util.concatenate([_plate, _tangent_cyl(4, HINGE_KN_LEN, 0), _strap_hole])
+lid_hinge_strap = trimesh.util.concatenate([_plate, _tangent_cyl(4, HINGE_KN_LEN, 0), _tangent_cyl(2.6, HINGE_KN_LEN + 0.6, 0, [40, 40, 45, 255]), _strap_hole])
 lid_hinge_strap.visual.face_colors = [138, 144, 152, 255]
 
 hinge_pin = _tangent_cyl(2.5, 30, 0)
