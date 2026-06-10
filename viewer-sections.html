@@ -19,7 +19,7 @@ button{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:6;bac
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-const V='?v=sec10';
+const V='?v=sec11';
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
 renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
@@ -106,7 +106,7 @@ const SECTIONS=[
    [IND+'04a_Cap_Shell.glb',{color:0x7fbf6a},0,55, 14,'Cap Shell (6 fingers + hinge)',79,75,1]],
   bolts:[]},
  {x:420, zs:-99, parts:[
-   [IND+'07b_Ceramic_Lid_Disk.glb',{color:0xe7d9b0,metalness:0,roughness:0.7},92,-60, 15,'Ceramic Lid Disk',46,95,1],
+   [IND+'07b_Ceramic_Lid_Disk.glb',{color:0xe7d9b0,metalness:0,roughness:0.7},91,-60, 15,'Ceramic Lid Disk',46,95,1],
    [LID+'4_Lid_Ceramic_Holder.glb',{color:0xcfa98a,metalness:0,roughness:0.7},0,-30, 16,'Lid Ceramic Holder',55,98,-1],
    [LID+'4_Lid_Spacer.glb',cream,99,0, 17,'Lower Lid Spacer Ring',75,99,1],
    [LID+'1_Lid_Inner_Tube.glb',seeIn,0,35, 18,'Lid Inner Tube',72,108,-1],

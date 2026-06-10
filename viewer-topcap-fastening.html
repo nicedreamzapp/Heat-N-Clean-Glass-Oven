@@ -26,7 +26,7 @@ button{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:6;bac
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-const V='?v=fa18';
+const V='?v=fa19';
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
 renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
@@ -131,7 +131,7 @@ Promise.all([
   for(const sp of [ls1,ls2]) paint(sp,{color:0xe7d9b0,metalness:0,roughness:0.78});
   ls1.position.z=119; ls2.position.z=99;
   paint(cerLid,{color:0xf2f0ea,metalness:0,roughness:0.6});
-  cerLid.position.z=92;
+  cerLid.position.z=91;   // ceramic face FLUSH with the lid bottom
   const gLid=new THREE.Group();
   paint(strapP,{color:0x8a9098,metalness:0.6,roughness:0.4});
   paint(pinP,{color:0xb4b9be,metalness:0.8,roughness:0.3});

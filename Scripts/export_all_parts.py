@@ -1249,7 +1249,7 @@ lid_bottom_ring.fix_normals()
 # Side wall
 lid_ring_inner_r = ceramic_outer_r - 10
 lid_wall_bottom = lid_bottom_z + sheet_metal_thickness
-lid_wall_height = disk_body_h - sheet_metal_thickness  # 3.3mm — flush: body at lid base, only lip below
+lid_wall_height = 6.0 - sheet_metal_thickness  # 4.8mm — shelf lands at z97 so the 6mm ceramic face sits FLUSH with the lid bottom (Matt 2026-06-10)
 lid_wall = create_hollow_cylinder(ceramic_outer_r, ceramic_outer_r + sheet_metal_thickness, lid_wall_height)
 lid_wall.apply_translation([0, 0, lid_wall_bottom])
 
