@@ -1,0 +1,18 @@
+part,name_en,name_cn,qty,material
+02_Bottom_Cap,Bottom Cap,底盖,1,304SS
+01_Base_Body,Body Tubes (inner wall + outer perforated),机体筒（内壁筒 + 外冲孔筒）,1,304SS
+04a_Cap_Shell,Cap Shell,顶盖壳,1,304SS
+04b_Cap_HoldDown_Ring,Ceramic Hold-Down Ring,陶瓷压紧环,1,304SS
+04_Lid_Assembly,"Lid (twin-wall, same construction as body)",上盖（双层壁，结构与机体相同）,1,304SS
+05b_Lid_Hinge_Strap,Lid Hinge Strap,上盖铰链带,1,304SS
+05_Hinge_Pin,Hinge Pin,铰链销,1,304SS
+12_Steel_Tray,Steel Tray,钢托盘,1,304SS
+06_Ceramic_Cylinder,Ceramic Heater Core,陶瓷加热芯,1,ceramic
+07_Ceramic_Base_Disk,Ceramic Base Disk,陶瓷底片,1,ceramic
+07b_Ceramic_Lid_Disk,Ceramic Lid Disk,陶瓷盖片,1,ceramic
+SPACER_14,Spacer Ring 14mm,陶瓷垫环 14mm,3,ceramic
+SPACER_10,Spacer Ring 10mm,陶瓷垫环 10mm,2,ceramic
+,M6 short hex bolt,M6 短六角螺栓,18,A2 stainless
+,M6 long hex bolt,M6 加长六角螺栓,12,A2 stainless
+,M6 hex nut,M6 六角螺母,30,A2 stainless
+,Handle nut (matches handle studs),提手螺母（配提手螺柱）,2,A2 stainless
