@@ -57,42 +57,61 @@ PARTS = [
     (GLB("Core Split", "4_Spacer_Ring.glb"),          2.15,  CERAMIC),
     (GLB("Individual Parts", "GLB", "04a_Cap_Shell.glb"),        0, STEEL),
     (GLB("Individual Parts", "GLB", "04b_Cap_HoldDown_Ring.glb"),0, STEEL_D),
-    (GLB("Lid Split", "1_Lid_Inner_Tube.glb"),           0,  STEEL_D),
-    (GLB("Lid Split", "2_Lid_Outer_Perforated_Tube.glb"),0,  STEEL),
-    (GLB("Lid Split", "3_Lid_Top_Disk.glb"),             0,  STEEL),
-    (GLB("Lid Split", "4_Lid_Ceramic_Holder.glb"),       0,  STEEL_D),
-    (GLB("Lid Split", "5_Lid_Handle.glb"),               0,  HANDLE),
-    (GLB("Lid Split", "4_Lid_Spacer.glb"),              99,  CERAMIC),
-    (GLB("Lid Split", "4_Lid_Spacer.glb"),             119,  CERAMIC),
-    (GLB("Individual Parts", "GLB", "07b_Ceramic_Lid_Disk.glb"), 91, CERAMIC),
-    (GLB("Individual Parts", "GLB", "05b_Lid_Hinge_Strap.glb"),  0, STEEL_D),
+    (GLB("Lid Split", "1_Lid_Inner_Tube.glb"),           0,  STEEL_D, True),
+    (GLB("Lid Split", "2_Lid_Outer_Perforated_Tube.glb"),0,  STEEL, True),
+    (GLB("Lid Split", "3_Lid_Top_Disk.glb"),             0,  STEEL, True),
+    (GLB("Lid Split", "4_Lid_Ceramic_Holder.glb"),       0,  STEEL_D, True),
+    (GLB("Lid Split", "5_Lid_Handle.glb"),               0,  HANDLE, True),
+    (GLB("Lid Split", "4_Lid_Spacer.glb"),              99,  CERAMIC, True),
+    (GLB("Lid Split", "4_Lid_Spacer.glb"),             119,  CERAMIC, True),
+    (GLB("Individual Parts", "GLB", "07b_Ceramic_Lid_Disk.glb"), 91, CERAMIC, True),
+    (GLB("Individual Parts", "GLB", "05b_Lid_Hinge_Strap.glb"),  0, STEEL_D, True),
     (GLB("Individual Parts", "GLB", "05_Hinge_Pin.glb"),         0, BOLT),
     (GLB("Individual Parts", "GLB", "12_Steel_Tray.glb"),        0, STEEL),
     (GLB("Individual Parts", "GLB", "10_Ceramic_Feet.glb"),      0, CERAMIC),
     (GLB("Individual Parts", "GLB", "11_Controller_Box.glb"),    0, HANDLE),
 ]
 
+LID_OPEN_DEG = float(os.environ.get("LID_OPEN", "0"))   # 0 = closed, e.g. 110 = open
+
 root = bpy.data.objects.new("oven_root", None)
-root.rotation_euler = (math.radians(-90), 0, 0)   # tip the whole assembly upright
 bpy.context.collection.objects.link(root)
 
-def import_glb(path, dz, mat):
+# hinge pivot (mm, true z-up coords) — the lid swings on this
+_HA = math.radians(292.4)
+_axis_t = (-math.sin(_HA), math.cos(_HA), 0)
+lid_pivot = bpy.data.objects.new("lid_pivot", None)
+lid_pivot.location = (81.5*math.cos(_HA), 81.5*math.sin(_HA), 97)
+lid_pivot.rotation_mode = "AXIS_ANGLE"
+lid_pivot.rotation_axis_angle = (math.radians(LID_OPEN_DEG), *_axis_t)
+lid_pivot.parent = root
+bpy.context.collection.objects.link(lid_pivot)
+
+def import_glb(path, dz, mat, lid=False):
     before = set(bpy.data.objects)
     bpy.ops.import_scene.gltf(filepath=path)
+    par = lid_pivot if lid else root
     for o in set(bpy.data.objects) - before:
         if o.type == "MESH":
-            o.location = (0, -dz, 0)   # local -Y maps to world +Z under the root's -90x
+            o.parent = par
+            o.rotation_mode = "XYZ"   # importer leaves QUATERNION mode; euler is ignored without this
+            o.rotation_euler = (math.radians(-90), 0, 0)   # data is glTF y-up; stand it upright
+            loc = (0, 0, dz)
+            if lid:   # express relative to the pivot
+                loc = (-lid_pivot.location.x, -lid_pivot.location.y, dz - lid_pivot.location.z)
+            o.location = loc
             o.data.materials.clear()
             o.data.materials.append(mat)
             for poly in o.data.polygons:
                 poly.use_smooth = True
-            o.parent = root
         elif o.type == "EMPTY":
-            o.parent = root
+            o.parent = par
 
-for path, dz, mat in PARTS:
+for entry in PARTS:
+    path, dz, mat = entry[0], entry[1], entry[2]
+    lid = len(entry) > 3 and entry[3]
     if os.path.exists(path):
-        import_glb(path, dz, mat)
+        import_glb(path, dz, mat, lid)
     else:
         print("MISSING:", path)
 
@@ -100,31 +119,33 @@ for path, dz, mat in PARTS:
 bolt_root = bpy.data.objects.new("bolt_root", None)
 bpy.context.collection.objects.link(bolt_root)
 OFF = math.radians(52.4)
-def bolt_ring(z, long_):
+def bolt_ring(z, long_, lid=False):
+    par = lid_pivot if lid else bolt_root
     for k in range(6):
         a = OFF + k * math.pi / 3
         ca, sa = math.cos(a), math.sin(a)
         sx = 73.5 if long_ else 72.5
         hx = 80.6 if long_ else 78.6
         ln = 13 if long_ else 9.5
-        bpy.ops.mesh.primitive_cylinder_add(radius=1.5, depth=ln, vertices=16)
-        sh = bpy.context.object
-        sh.rotation_euler = (0, math.pi/2, a)
-        sh.location = (sx*ca, sx*sa, z)
-        bpy.ops.mesh.primitive_cylinder_add(radius=3.2, depth=2.8, vertices=6)
-        hd = bpy.context.object
-        hd.rotation_euler = (0, math.pi/2, a)
-        hd.location = (hx*ca, hx*sa, z)
-        for o in (sh, hd):
+        for rad, dep, vx, rx in ((1.5, ln, 16, sx), (3.2, 2.8, 6, hx)):
+            bpy.ops.mesh.primitive_cylinder_add(radius=rad, depth=dep, vertices=vx)
+            o = bpy.context.object
+            o.parent = par
+            px, py, pz = rx*ca, rx*sa, z
+            if lid:
+                px -= lid_pivot.location.x; py -= lid_pivot.location.y; pz -= lid_pivot.location.z
+            o.rotation_euler = (0, math.pi/2, a)
+            o.location = (px, py, pz)
             o.data.materials.append(BOLT)
-            o.parent = bolt_root
 
-for z, lng in [(59, True), (-24, True), (2.15, False), (99, False), (119, False)]:
-    bolt_ring(z, lng)
+for z, lng, lid in [(59, True, False), (-24, True, False), (2.15, False, False),
+                    (99, False, True), (119, False, True)]:
+    bolt_ring(z, lng, lid)
 
 # ---------- scale mm -> m ----------
 root.scale = (0.001, 0.001, 0.001)
 bolt_root.scale = (0.001, 0.001, 0.001)
+scene.view_settings.exposure = -0.35
 
 # ---------- floor ----------
 bpy.ops.mesh.primitive_plane_add(size=8, location=(0, 0, -0.0615))
@@ -164,11 +185,11 @@ scene.render.film_transparent = False
 cam = bpy.data.cameras.new("cam")
 cam.lens = 85
 cam_o = bpy.data.objects.new("cam", cam)
-cam_o.location = (0.55, -0.62, 0.34)
+cam_o.location = (0.58, -0.60, 0.40)
 bpy.context.collection.objects.link(cam_o)
 scene.camera = cam_o
 tgt = bpy.data.objects.new("tgt", None)
-tgt.location = (0, 0, 0.055)
+tgt.location = (0, 0, 0.075)
 bpy.context.collection.objects.link(tgt)
 tr = cam_o.constraints.new("TRACK_TO")
 tr.target = tgt
