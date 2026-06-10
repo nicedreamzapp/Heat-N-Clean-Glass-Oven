@@ -20,7 +20,7 @@ button{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:6;bac
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-const V='?v=full2';
+const V='?v=full3';
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
 renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
@@ -50,8 +50,8 @@ function ring(z,long){ const g=new THREE.Group();
   for(let k=0;k<6;k++){ const b=long?bolt(13,73.5,80.6,69.35):bolt(9.5,72.5,78.6,69.35); b.rotation.z=k*Math.PI/3+OFF; b.position.z=z; g.add(b);} return g; }
 function handleBolts(){ const g=new THREE.Group();   // threaded studs in the handle + nuts below
   for(const [px,py] of [[7.95,46.5],[-38.3,27.5]]){
-    const st=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,18,14),boltMat); st.rotation.x=Math.PI/2; st.position.set(px,py,118.5);
-    const nut=new THREE.Mesh(new THREE.CylinderGeometry(3.4,3.4,2.8,6),nutMat); nut.rotation.x=Math.PI/2; nut.position.set(px,py,111.5);
+    const st=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,6,14),boltMat); st.rotation.x=Math.PI/2; st.position.set(px,py,124.8);
+    const nut=new THREE.Mesh(new THREE.CylinderGeometry(3.4,3.4,2.8,6),nutMat); nut.rotation.x=Math.PI/2; nut.position.set(px,py,124.4);
     g.add(st,nut);} return g; }
 const CH='CAD Exports/Core Split/', LID='CAD Exports/Lid Split/', IND='CAD Exports/Individual Parts/GLB/';
 const cream={color:0xe7d9b0,metalness:0,roughness:0.78};

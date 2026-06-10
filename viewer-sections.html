@@ -19,7 +19,7 @@ button{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:6;bac
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-const V='?v=sec7';
+const V='?v=sec8';
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
 renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
@@ -58,7 +58,7 @@ function handleStuds(){ const g=new THREE.Group();
 function handleNuts(){ const g=new THREE.Group();
   for(const [px,py] of HANDLE_PTS){
     const nut=new THREE.Mesh(new THREE.CylinderGeometry(3.4,3.4,2.8,6),nutMat);
-    nut.rotation.x=Math.PI/2; nut.position.set(px,py,111.5); g.add(nut); }
+    nut.rotation.x=Math.PI/2; nut.position.set(px,py,124.4); g.add(nut); }
   return g; }
 // ---------- labels ----------
 const labelMats=[];
@@ -141,7 +141,7 @@ Promise.all(jobs).then(models=>{
   const gSt=handleStuds(); gSt.position.set(lidSec.x,0,lidSec.zs);
   scene.add(gSt); movers.push({g:gSt,base:lidSec.zs,dz:185});
   const gNut=handleNuts(); gNut.position.set(lidSec.x,0,lidSec.zs);
-  addLabel(gNut,23,'Handle Nuts x2',42,111,-1);
+  addLabel(gNut,23,'Handle Nuts x2',42,124,-1);
   scene.add(gNut); movers.push({g:gNut,base:lidSec.zs,dz:158});
   document.getElementById('loading').remove();
   let apart=location.hash!=='#together', t=apart?1:0;
