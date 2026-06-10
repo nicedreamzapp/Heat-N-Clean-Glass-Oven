@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Heat-N-Clean — every piece, apart and together</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#e8e8ec;overflow:hidden;font-family:-apple-system,sans-serif}
+canvas{display:block;width:100vw;height:100vh}
+.tag{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;padding:8px 22px;border-radius:9px;font-size:15px;font-weight:600;z-index:5}
+button{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:6;background:#2f7fd6;color:#fff;border:none;padding:9px 24px;border-radius:8px;font-size:15px;cursor:pointer}
+#loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+.legend{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.68);color:#eee;padding:8px 16px;border-radius:8px;font-size:12.5px;z-index:5}
+</style></head><body>
+<div class="tag">The whole oven — every piece</div>
+<button id="go">Put it all together</button>
+<div id="loading">Loading…</div>
+<div class="legend">drag to rotate &nbsp;·&nbsp; scroll to zoom</div>
+<canvas id="c"></canvas>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const V='?v=full2';
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,0.1,9000);
+cam.up.set(0,0,1); cam.position.set(500,-620,380);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.set(0,0,160);
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+const loader=new GLTFLoader();
+const load=p=>new Promise(res=>loader.load(p,g=>res(g.scene)));
+function paint(o,opt){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,metalness:0.5,roughness:0.42,...opt}); } }); }
+const boltMat=new THREE.MeshStandardMaterial({color:0xd9a521,metalness:0.7,roughness:0.3});
+const nutMat=new THREE.MeshStandardMaterial({color:0xc8ccd2,metalness:0.85,roughness:0.3});
+const OFF=52.4*Math.PI/180;
+function bolt(len,sx,hx,nx){ const s=new THREE.Group();
+  const sh=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,len,16),boltMat); sh.rotation.z=Math.PI/2; sh.position.set(sx,0,0);
+  const hd=new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.2,2.8,6),boltMat); hd.rotation.z=Math.PI/2; hd.position.set(hx,0,0);
+  const nut=new THREE.Mesh(new THREE.CylinderGeometry(3.6,3.6,3,6),nutMat); nut.rotation.z=Math.PI/2; nut.position.set(nx,0,0);
+  s.add(sh,hd,nut); return s; }
+function ring(z,long){ const g=new THREE.Group();
+  for(let k=0;k<6;k++){ const b=long?bolt(13,73.5,80.6,69.35):bolt(9.5,72.5,78.6,69.35); b.rotation.z=k*Math.PI/3+OFF; b.position.z=z; g.add(b);} return g; }
+function handleBolts(){ const g=new THREE.Group();   // threaded studs in the handle + nuts below
+  for(const [px,py] of [[7.95,46.5],[-38.3,27.5]]){
+    const st=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,18,14),boltMat); st.rotation.x=Math.PI/2; st.position.set(px,py,118.5);
+    const nut=new THREE.Mesh(new THREE.CylinderGeometry(3.4,3.4,2.8,6),nutMat); nut.rotation.x=Math.PI/2; nut.position.set(px,py,111.5);
+    g.add(st,nut);} return g; }
+const CH='CAD Exports/Core Split/', LID='CAD Exports/Lid Split/', IND='CAD Exports/Individual Parts/GLB/';
+const cream={color:0xe7d9b0,metalness:0,roughness:0.78};
+// [path, paintOpts, restZ, explodeDZ]
+const PARTS=[
+  [CH+'02_Bottom_Cap.glb',      {color:0xdcb48c},                          0,  -75],
+  [CH+'6_Ceramic_Base_Disk.glb',cream,                                     0,  -40],
+  [CH+'3_Support_Ring_Full.glb',{color:0x4f8f7a},                          0,  -18],
+  [CH+'1_Inner_Wall_Tube.glb',  {color:0xb8bec5,transparent:true,opacity:0.18,depthWrite:false}, 0, 0],
+  [CH+'2_Outer_Perforated_Tube.glb',{color:0x6f9bd8,transparent:true,opacity:0.15,depthWrite:false}, 0, 0],
+  [CH+'4_Spacer_Ring.glb',      cream,                                    59,  45],
+  [CH+'4_Spacer_Ring.glb',      cream,                                   -24, -58],
+  [CH+'4_Spacer_Ring.glb',      cream,                                  2.15,  0],
+  [CH+'06_Ceramic_Cylinder.glb',{color:0xf2f0ea,metalness:0,roughness:0.6}, 0,  22],
+  [IND+'04b_Cap_HoldDown_Ring.glb', {color:0x6fa3d8},                      0,  72],
+  [IND+'04a_Cap_Shell.glb',     {color:0x7fbf6a},                          0, 118],
+  [LID+'4_Lid_Ceramic_Holder.glb',{color:0xcfa98a,metalness:0,roughness:0.7},0,150],
+  [LID+'1_Lid_Inner_Tube.glb',  {color:0xb8bec5,transparent:true,opacity:0.18,depthWrite:false}, 0, 168],
+  [LID+'2_Lid_Outer_Perforated_Tube.glb',{color:0x6f9bd8,transparent:true,opacity:0.15,depthWrite:false}, 0, 168],
+  [LID+'4_Lid_Spacer.glb',      cream,                                    99, 140],
+  [LID+'4_Lid_Spacer.glb',      cream,                                   119, 200],
+  [LID+'3_Lid_Top_Disk.glb',    {color:0x4f8f7a},                          0, 225],
+  [LID+'5_Lid_Handle.glb',      {color:0x9098a0,metalness:0.7,roughness:0.35}, 0, 262],
+];
+Promise.all(PARTS.map(p=>load(p[0]+V))).then(models=>{
+  const movers=[];
+  models.forEach((m,i)=>{ const [_,opt,restZ,dz]=PARTS[i];
+    paint(m,opt); m.position.z=restZ;
+    const g=new THREE.Group(); g.add(m); scene.add(g);
+    movers.push({g,dz}); });
+  // bolts: 3 chamber rings (top one long for the cap fingers), 2 lid rings, handle screws
+  const boltSets=[
+    {g:ring(59,true),  dz:45},
+    {g:ring(-24,true), dz:-58},
+    {g:ring(2.15,false), dz:0},
+    {g:ring(99,false), dz:140},
+    {g:ring(119,false),dz:200},
+    {g:handleBolts(),  dz:262},
+  ];
+  boltSets.forEach(b=>{ scene.add(b.g); movers.push(b); });
+  document.getElementById('loading').remove();
+  let together=false, t=0;   // start all apart
+  const btn=document.getElementById('go');
+  btn.onclick=()=>{ together=!together; btn.textContent=together?'Take it all apart':'Put it all together'; };
+  (function anim(){ requestAnimationFrame(anim);
+    t+=(together?-1:1)*0.012; t=Math.max(0,Math.min(1,t));
+    const e=t*t*(3-2*t);
+    movers.forEach(({g,dz})=>{ g.position.z=dz*e; });
+    ctl.update(); renderer.render(scene,cam); })();
+});
+</script>
+</body></html>

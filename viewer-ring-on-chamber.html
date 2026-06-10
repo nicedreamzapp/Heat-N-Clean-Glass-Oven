@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Blue ring on the chamber — no green</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#e8e8ec;overflow:hidden;font-family:-apple-system,sans-serif}
+canvas{display:block;width:100vw;height:100vh}
+.tag{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;padding:8px 22px;border-radius:9px;font-size:15px;font-weight:600;z-index:5}
+.legend{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.68);color:#eee;padding:10px 18px;border-radius:8px;font-size:13.5px;z-index:5;text-align:center;line-height:1.8}
+.sw{display:inline-block;width:13px;height:13px;border-radius:2px;margin:0 6px 0 14px;vertical-align:middle}
+button{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:6;background:#2f7fd6;color:#fff;border:none;padding:7px 18px;border-radius:7px;font-size:13px;cursor:pointer}
+#loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+</style></head><body>
+<div class="tag">Blue ring drops in → green clamps it → bolts lock it. No little screws.</div>
+<button id="go">Put it together</button>
+<div id="loading">Loading…</div>
+<div class="legend">
+  <span class="sw" style="background:#6fa3d8"></span>blue ring
+  <span class="sw" style="background:#7fbf6a"></span>green top — clamps the blue down, no screws between them
+  <span class="sw" style="background:#d9a521"></span>6 bolts &nbsp;·&nbsp; drag to rotate
+</div>
+<canvas id="c"></canvas>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const V='?v=rc4x';
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,0.1,9000);
+cam.up.set(0,0,1); cam.position.set(260,-320,210);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.set(0,0,75);
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+const loader=new GLTFLoader();
+const load=p=>new Promise(res=>loader.load(p,g=>res(g.scene)));
+function paint(o,opt){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,metalness:0.5,roughness:0.42,...opt}); } }); }
+const CH='CAD Exports/Core Split/', IND='CAD Exports/Individual Parts/GLB/';
+const boltMat=new THREE.MeshStandardMaterial({color:0xd9a521,metalness:0.7,roughness:0.3});
+const nutMat=new THREE.MeshStandardMaterial({color:0xc8ccd2,metalness:0.85,roughness:0.3});
+function rbolt(){ const s=new THREE.Group();
+  const sh=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,13,16),boltMat); sh.rotation.z=Math.PI/2; sh.position.set(73.5,0,0);
+  const hd=new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.2,2.8,6),boltMat); hd.rotation.z=Math.PI/2; hd.position.set(80.6,0,0);
+  const nut=new THREE.Mesh(new THREE.CylinderGeometry(3.6,3.6,3.0,6),nutMat); nut.rotation.z=Math.PI/2; nut.position.set(69.35,0,0);
+  s.add(sh,hd,nut); return s; }
+Promise.all([
+  load(IND+'04b_Cap_HoldDown_Ring.glb'+V),
+  load(CH+'1_Inner_Wall_Tube.glb'+V),
+  load(CH+'2_Outer_Perforated_Tube.glb'+V),
+  load(CH+'06_Ceramic_Cylinder.glb'+V),
+  load(CH+'02_Bottom_Cap.glb'+V),
+  load(CH+'4_Spacer_Ring.glb'+V),
+  load(CH+'6_Ceramic_Base_Disk.glb'+V),
+  load(IND+'04a_Cap_Shell.glb'+V),
+]).then(([ring,inner,outer,ceramic,bcap,spTop,baseDisk,shell])=>{
+  paint(ring,{color:0x6fa3d8});
+  paint(inner,{color:0xb8bec5,transparent:true,opacity:0.12,depthWrite:false});
+  paint(outer,{color:0x6f9bd8,transparent:true,opacity:0.10,depthWrite:false});
+  paint(ceramic,{color:0xf2f0ea,metalness:0,roughness:0.6});
+  paint(bcap,{color:0xdcb48c});
+  paint(spTop,{color:0xe7d9b0,metalness:0,roughness:0.78});
+  paint(baseDisk,{color:0xe7d9b0,metalness:0,roughness:0.7});
+  spTop.position.z=59;
+  scene.add(inner,outer,ceramic,bcap,spTop,baseDisk);
+  paint(shell,{color:0x7fbf6a});
+  const gR=new THREE.Group(); gR.add(ring); scene.add(gR);
+  const gG=new THREE.Group(); gG.add(shell); scene.add(gG);
+  const OFF=52.4*Math.PI/180, bolts=[];
+  for(let k=0;k<6;k++){ const ang=OFF+k*Math.PI/3;
+    const w=new THREE.Group(); const b=rbolt(); b.rotation.z=ang; b.position.z=59;
+    w.add(b); w.userData.dir=[Math.cos(ang),Math.sin(ang)];
+    scene.add(w); bolts.push(w); }
+  document.getElementById('loading').remove();
+  let on=false, t=0;   // start fully apart
+  const btn=document.getElementById('go');
+  btn.onclick=()=>{ on=!on; btn.textContent=on?'Take it apart':'Put it together'; };
+  (function anim(){ requestAnimationFrame(anim);
+    t+=(on?1:-1)*0.006; t=Math.max(0,Math.min(1,t));
+    const s1=Math.min(1,t*3), s2=Math.max(0,Math.min(1,(t-1/3)*3)), s3=Math.max(0,(t-2/3)*3);
+    const e1=s1*s1*(3-2*s1), e2=s2*s2*(3-2*s2), e3=s3*s3*(3-2*s3);
+    gR.position.z=55*(1-e1);
+    gG.position.z=110*(1-e2);
+    bolts.forEach(w=>{ const d=35*(1-e3); w.position.set(w.userData.dir[0]*d,w.userData.dir[1]*d,0); });
+    ctl.update(); renderer.render(scene,cam); })();
+});
+</script>
+</body></html>

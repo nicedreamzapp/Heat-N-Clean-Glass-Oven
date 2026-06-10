@@ -7,7 +7,7 @@ canvas{display:block;width:100vw;height:100vh}
 .legend{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.68);color:#eee;padding:9px 16px;border-radius:8px;font-size:12.5px;z-index:5;text-align:center}
 #loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
 </style></head><body>
-<div class="tag">Heat &amp; Clean — exploded (back) and completed (front): base left, lid right</div>
+<div class="tag">Heat &amp; Clean — exploded (back) and completed (front): base + top cap left, lid right</div>
 <div id="loading">Loading…</div>
 <div class="legend">back row = parts separated &nbsp;·&nbsp; front row = completed assembly &nbsp;·&nbsp; drag to rotate · scroll to zoom</div>
 <canvas id="c"></canvas>
@@ -18,7 +18,7 @@ canvas{display:block;width:100vw;height:100vh}
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-const V='?v=ec1';
+const V='?v=ec4';
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
 renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xe8e8ec);
@@ -57,7 +57,7 @@ function handleBolts(){ const g=new THREE.Group();
     g.add(sh,hd);} return g; }
 function place(grp,x,y){ const c=new THREE.Box3().setFromObject(grp).getCenter(new THREE.Vector3()); grp.position.set(x-c.x,y-c.y,-c.z); }
 
-function buildChamber(P,exp){ const [ci,co,csup,cs1,cs2,cs3,cbd,ccer,ccap]=P; const t=exp;
+function buildChamber(P,exp){ const [ci,co,csup,cs1,cs2,cs3,cbd,ccer,ccap,tcap]=P; const t=exp;
   paint(ci,{color:0xb8bec5,metalness:0.5,roughness:0.4,transparent:t,opacity:t?0.10:1,depthWrite:!t});
   paint(co,{color:0x6f9bd8,metalness:0.4,roughness:0.4,transparent:t,opacity:t?0.08:1,depthWrite:!t});
   paint(csup,{color:0x4f8f7a,metalness:0.55,roughness:0.4});
@@ -65,9 +65,9 @@ function buildChamber(P,exp){ const [ci,co,csup,cs1,cs2,cs3,cbd,ccer,ccap]=P; co
   paint(cbd,{color:0xe7d9b0,metalness:0,roughness:0.7}); paint(ccer,{color:0xf2f0ea,metalness:0,roughness:0.6});
   paint(ccap,{color:0xdcb48c,metalness:0.55,roughness:0.45});
   cs1.position.z=59+(t?46:0); cs2.position.z=-24-(t?36:0); cs3.position.z=2.15;
-  ccap.position.z=t?-44:0; csup.position.z=t?-8:0;
-  const g=new THREE.Group(); g.add(ci,co,csup,cs1,cs2,cs3,cbd,ccer,ccap,
-    ring(cs1.position.z,9.5,72.5,78.6,69.35),ring(-24-(t?36:0),13,73.5,80.6,69.35),ring(2.15,9.5,72.5,78.6,69.35)); return g; }
+  ccap.position.z=t?-44:0; csup.position.z=t?-8:0; tcap.position.z=t?96:0;
+  const g=new THREE.Group(); g.add(ci,co,csup,cs1,cs2,cs3,cbd,ccer,ccap,tcap,
+    ring(cs1.position.z,t?9.5:13,t?72.5:73.5,t?78.6:80.6,69.35),ring(-24-(t?36:0),13,73.5,80.6,69.35),ring(2.15,9.5,72.5,78.6,69.35)); return g; }
 
 function buildLid(P,exp){ const [li,lo,ltp,lh,lhand,ls1,ls2]=P; const t=exp;
   paint(li,{color:0xb8bec5,metalness:0.5,roughness:0.4,transparent:t,opacity:t?0.12:1,depthWrite:!t});
@@ -81,10 +81,17 @@ function buildLid(P,exp){ const [li,lo,ltp,lh,lhand,ls1,ls2]=P; const t=exp;
     ring(ls1.position.z,9.5,72.5,78.6,69.35),ring(ls2.position.z,9.5,72.5,78.6,69.35),hinge(115),handleBolts()); return g; }
 
 const CH=['1_Inner_Wall_Tube','2_Outer_Perforated_Tube','3_Support_Ring_Full','4_Spacer_Ring','4_Spacer_Ring','4_Spacer_Ring','6_Ceramic_Base_Disk','06_Ceramic_Cylinder','02_Bottom_Cap'];
+const TCAP='CAD Exports/Individual Parts/GLB/04a_Cap_Shell.glb';
+const TRING='CAD Exports/Individual Parts/GLB/04b_Cap_HoldDown_Ring.glb';
 const LD=['1_Lid_Inner_Tube','2_Lid_Outer_Perforated_Tube','3_Lid_Top_Disk','4_Lid_Ceramic_Holder','5_Lid_Handle','4_Lid_Spacer','4_Lid_Spacer'];
-Promise.all([...CH.map(n=>load(CHAM+n+'.glb'+V)), ...LD.map(n=>load(LID+n+'.glb'+V))]).then(all=>{
-  const ch=all.slice(0,9), ld=all.slice(9);
+Promise.all([...CH.map(n=>load(CHAM+n+'.glb'+V)), ...LD.map(n=>load(LID+n+'.glb'+V)), load(TCAP+V), load(TRING+V)]).then(all=>{
+  const ch=all.slice(0,9), ld=all.slice(9,16);
+  paint(all[16],{color:0x7fbf6a,metalness:0.5,roughness:0.42});
+  paint(all[17],{color:0x6fa3d8,metalness:0.5,roughness:0.42});
+  const tc=new THREE.Group(); tc.add(all[16],all[17]);
+  ch.push(tc);
   const chC=ch.map(s=>s.clone(true)), ldC=ld.map(s=>s.clone(true));   // clones share geometry
+  // exploded top cap sits high above the chamber stack; completed it's seated
   const expBase=buildChamber(ch,true);  place(expBase,-130,150); scene.add(expBase);
   const expLid =buildLid(ld,true);      place(expLid, 130,150); scene.add(expLid);
   const cmpBase=buildChamber(chC,false); place(cmpBase,-130,-150); scene.add(cmpBase);

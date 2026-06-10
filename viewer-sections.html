@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Heat-N-Clean — every piece named and numbered</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#e8e8ec;overflow:hidden;font-family:-apple-system,sans-serif}
+canvas{display:block;width:100vw;height:100vh}
+.tag{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;padding:8px 22px;border-radius:9px;font-size:15px;font-weight:600;z-index:5}
+button{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:6;background:#2f7fd6;color:#fff;border:none;padding:9px 24px;border-radius:8px;font-size:15px;cursor:pointer}
+#loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+.lbl{position:fixed;bottom:14px;width:100%;display:flex;justify-content:center;gap:120px;z-index:5}
+.lbl span{background:rgba(0,0,0,.68);color:#eee;padding:7px 18px;border-radius:8px;font-size:14px;font-weight:600}
+</style></head><body>
+<button id="go">Separate every piece</button>
+<div id="loading">Loading…</div>
+<canvas id="c"></canvas>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const V='?v=sec7';
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,0.1,9000);
+cam.up.set(0,0,1); cam.position.set(0,-1600,640);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.set(0,0,130);
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+const loader=new GLTFLoader();
+const load=p=>new Promise(res=>loader.load(p,g=>res(g.scene)));
+function paint(o,opt){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,metalness:0.5,roughness:0.42,...opt}); } }); }
+const boltMat=new THREE.MeshStandardMaterial({color:0xd9a521,metalness:0.7,roughness:0.3});
+const nutMat=new THREE.MeshStandardMaterial({color:0xc8ccd2,metalness:0.85,roughness:0.3});
+const OFF=52.4*Math.PI/180;
+function bolt(long){ const s=new THREE.Group();
+  const sh=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,long?13:9.5,16),boltMat); sh.rotation.z=Math.PI/2; sh.position.set(long?73.5:72.5,0,0);
+  const hd=new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.2,2.8,6),boltMat); hd.rotation.z=Math.PI/2; hd.position.set(long?80.6:78.6,0,0);
+  const nut=new THREE.Mesh(new THREE.CylinderGeometry(3.6,3.6,3,6),nutMat); nut.rotation.z=Math.PI/2; nut.position.set(69.35,0,0);
+  s.add(sh,hd,nut); return s; }
+function ring(z,long){ const g=new THREE.Group();
+  for(let k=0;k<6;k++){ const b=bolt(long); b.rotation.z=k*Math.PI/3+OFF; b.position.z=z; g.add(b);} return g; }
+const HANDLE_PTS=[[7.95,46.5],[-38.3,27.5]];
+// the handle has THREADED STUDS built into its feet — no screw heads on top.
+// studs pass down through the lid top disk; hex nuts grab them underneath.
+function handleStuds(){ const g=new THREE.Group();
+  for(const [px,py] of HANDLE_PTS){
+    const st=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,18,14),boltMat);
+    st.rotation.x=Math.PI/2; st.position.set(px,py,127.5-9); g.add(st); }
+  return g; }
+function handleNuts(){ const g=new THREE.Group();
+  for(const [px,py] of HANDLE_PTS){
+    const nut=new THREE.Mesh(new THREE.CylinderGeometry(3.4,3.4,2.8,6),nutMat);
+    nut.rotation.x=Math.PI/2; nut.position.set(px,py,111.5); g.add(nut); }
+  return g; }
+// ---------- labels ----------
+const labelMats=[];
+function makeLabel(num,name){ const c=document.createElement('canvas');
+  let x=c.getContext('2d'); x.font='bold 30px -apple-system, sans-serif';
+  const txt=num+'  '+name; const w=Math.ceil(x.measureText(txt).width)+30;
+  c.width=w; c.height=46; x=c.getContext('2d');
+  x.fillStyle='rgba(18,18,24,0.88)'; x.beginPath(); x.roundRect(0,0,w,46,11); x.fill();
+  x.font='bold 30px -apple-system, sans-serif'; x.fillStyle='#fff'; x.textBaseline='middle'; x.fillText(txt,15,24);
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
+  const mat=new THREE.SpriteMaterial({map:tex,transparent:true,opacity:0,depthTest:false});
+  const spr=new THREE.Sprite(mat); spr.scale.set(w*0.40,46*0.40,1); spr.renderOrder=10;
+  return spr; }
+function addLabel(group,num,name,R,az,side){
+  const spr=makeLabel(num,name);
+  const lx=side*(120+ (side>0? spr.scale.x/2 : spr.scale.x/2));
+  spr.position.set(side*120 + side*spr.scale.x/2, 0, az);
+  const geo=new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(side*R,0,az), new THREE.Vector3(side*120,0,az)]);
+  const ln=new THREE.Line(geo,new THREE.LineBasicMaterial({color:0x33343a,transparent:true,opacity:0}));
+  ln.renderOrder=9;
+  group.add(spr,ln); labelMats.push(spr.material,ln.material); }
+// ---------- parts ----------
+const CH='CAD Exports/Core Split/', LID='CAD Exports/Lid Split/', IND='CAD Exports/Individual Parts/GLB/';
+const cream={color:0xe7d9b0,metalness:0,roughness:0.78};
+const seeIn ={color:0xb8bec5,transparent:true,opacity:0.35,depthWrite:false};
+const seeOut={color:0x6f9bd8,transparent:true,opacity:0.30,depthWrite:false};
+// [path, paint, restZ, dz, num, name, anchorR, anchorZ, side]
+const SECTIONS=[
+ {x:-420, zs:32, parts:[
+   [CH+'02_Bottom_Cap.glb',{color:0xdcb48c},0,-72, 1,'Bottom Cap',86,-25,-1],
+   [CH+'6_Ceramic_Base_Disk.glb',cream,0,-20, 2,'Ceramic Base Disk',46,-26,1],
+   [CH+'3_Support_Ring_Full.glb',{color:0x4f8f7a},0,-14, 3,'Support Ring',74,-5,-1],
+   [CH+'06_Ceramic_Cylinder.glb',{color:0xf2f0ea,metalness:0,roughness:0.6},0,0, 4,'Ceramic Heater Core',46,70,1],
+   [CH+'4_Spacer_Ring.glb',cream,2.15,30, 5,'Seat Spacer Ring',75,2,1],
+   [CH+'1_Inner_Wall_Tube.glb',seeIn,0,70, 6,'Inner Wall Tube',72,35,-1],
+   [CH+'4_Spacer_Ring.glb',cream,59,135, 7,'Top Spacer Ring',75,59,1],
+   [CH+'2_Outer_Perforated_Tube.glb',seeOut,0,165, 8,'Outer Perforated Tube',78,80,-1],
+   [CH+'4_Spacer_Ring.glb',cream,-24,-42, 9,'Bottom Spacer Ring',75,-24,1]],
+  bolts:[[2.15,false,30, 10,'Seat Bolts x6 + Nuts x6',82,2,-1],
+         [59,true,135,   11,'Cap-Finger Bolts x6 + Nuts x6',82,59,-1],
+         [-24,true,-42,  12,'Bottom Bolts x6 + Nuts x6',82,-24,-1]]},
+ {x:0, zs:-55, parts:[
+   [IND+'04b_Cap_HoldDown_Ring.glb',{color:0x6fa3d8},0,0, 13,'Ceramic Hold-Down Ring',70,85,-1],
+   [IND+'04a_Cap_Shell.glb',{color:0x7fbf6a},0,55, 14,'Cap Shell (6 fingers + hinge)',79,75,1]],
+  bolts:[]},
+ {x:420, zs:-99, parts:[
+   [IND+'07b_Ceramic_Lid_Disk.glb',{color:0xe7d9b0,metalness:0,roughness:0.7},92,-60, 15,'Ceramic Lid Disk',46,95,1],
+   [LID+'4_Lid_Ceramic_Holder.glb',{color:0xcfa98a,metalness:0,roughness:0.7},0,-30, 16,'Lid Ceramic Holder',55,98,-1],
+   [LID+'4_Lid_Spacer.glb',cream,99,0, 17,'Lower Lid Spacer Ring',75,99,1],
+   [LID+'1_Lid_Inner_Tube.glb',seeIn,0,35, 18,'Lid Inner Tube',72,108,-1],
+   [LID+'4_Lid_Spacer.glb',cream,119,70, 19,'Upper Lid Spacer Ring',75,119,-1],
+   [LID+'2_Lid_Outer_Perforated_Tube.glb',seeOut,0,105, 20,'Lid Outer Perforated Tube',78,115,-1],
+   [LID+'3_Lid_Top_Disk.glb',{color:0x4f8f7a},0,145, 21,'Lid Top Disk',78,120,1],
+   [LID+'5_Lid_Handle.glb',{color:0x9098a0,metalness:0.7,roughness:0.35},0,185, 22,'Handle (threaded studs)',40,138,-1]],
+  bolts:[[99,false,0,  24,'Lower Lid Bolts x6 + Nuts x6',82,99,-1],
+         [119,false,70, 25,'Upper Lid Bolts x6 + Nuts x6',82,119,1]]}
+];
+const jobs=[];
+for(const sec of SECTIONS) for(const p of sec.parts) jobs.push(load(p[0]+V));
+const movers=[];
+Promise.all(jobs).then(models=>{
+  let i=0;
+  for(const sec of SECTIONS){
+    for(const [path,opt,restZ,dz,num,name,R,az,side] of sec.parts){
+      const m=models[i++]; paint(m,opt); m.position.z=restZ;
+      const g=new THREE.Group(); g.add(m);
+      g.position.set(sec.x,0,sec.zs);
+      addLabel(g,num,name,R,az,side);
+      scene.add(g); movers.push({g,base:sec.zs,dz});
+    }
+    for(const [z,long,dz,num,name,R,az,side] of sec.bolts){
+      const g=ring(z,long); g.position.set(sec.x,0,sec.zs);
+      addLabel(g,num,name,R,az,side);
+      scene.add(g); movers.push({g,base:sec.zs,dz});
+    }
+  }
+  // handle: studs ride WITH the handle (threaded in); nuts are their own piece
+  const lidSec=SECTIONS[2];
+  const gSt=handleStuds(); gSt.position.set(lidSec.x,0,lidSec.zs);
+  scene.add(gSt); movers.push({g:gSt,base:lidSec.zs,dz:185});
+  const gNut=handleNuts(); gNut.position.set(lidSec.x,0,lidSec.zs);
+  addLabel(gNut,23,'Handle Nuts x2',42,111,-1);
+  scene.add(gNut); movers.push({g:gNut,base:lidSec.zs,dz:158});
+  document.getElementById('loading').remove();
+  let apart=location.hash!=='#together', t=apart?1:0;
+  const btn=document.getElementById('go');
+  if(apart) btn.textContent='Put the sections back';
+  btn.onclick=()=>{ apart=!apart; btn.textContent=apart?'Put the sections back':'Separate every piece'; };
+  (function anim(){ requestAnimationFrame(anim);
+    t+=(apart?1:-1)*0.012; t=Math.max(0,Math.min(1,t));
+    const e=t*t*(3-2*t);
+    movers.forEach(({g,base,dz})=>{ g.position.z=base+dz*1.8*e; });
+    labelMats.forEach(m=>{ m.opacity=(m.isSpriteMaterial?0.96:0.75)*e; });
+    ctl.update(); renderer.render(scene,cam); })();
+});
+</script>
+</body></html>

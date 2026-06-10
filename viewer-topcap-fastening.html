@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Top cap fastening onto the chamber</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#e8e8ec;overflow:hidden;font-family:-apple-system,sans-serif}
+canvas{display:block;width:100vw;height:100vh}
+.tag{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;padding:8px 22px;border-radius:9px;font-size:15px;font-weight:600;z-index:5}
+.legend{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.68);color:#eee;padding:9px 16px;border-radius:8px;font-size:12.5px;z-index:5;text-align:center;line-height:1.7}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin:0 5px 0 12px;vertical-align:middle}
+button{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:6;background:#2f7fd6;color:#fff;border:none;padding:6px 16px;border-radius:7px;font-size:13px;cursor:pointer}
+#loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+</style></head><body>
+<div class="tag">Assembled — drop-tab cap + bolted strap hinge, zero welds</div>
+<button id="go">Fasten the cap</button>
+<button id="open" style="top:88px">Open the lid</button>
+<div id="loading">Loading…</div>
+<div class="legend">
+  <span class="sw" style="background:#7fbf6a"></span>Top cap — one piece, 6 narrow tabs drop to the bolt line
+  <span class="sw" style="background:#d9a521"></span>6 spacer bolts (already in the design, just longer)
+  <span class="sw" style="background:#6f9bd8"></span>chamber &nbsp;·&nbsp; lid on top &nbsp;·&nbsp; drag to rotate
+</div>
+<canvas id="c"></canvas>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const V='?v=fa10';
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,0.1,9000);
+cam.up.set(0,0,1); cam.position.set(300,-370,230);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.set(0,0,85);
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+const loader=new GLTFLoader();
+const load=p=>new Promise(res=>loader.load(p,g=>res(g.scene)));
+function paint(o,opt){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,metalness:0.5,roughness:0.42,...opt}); } }); }
+const boltMat=new THREE.MeshStandardMaterial({color:0xd9a521,metalness:0.7,roughness:0.3});
+const postMat=new THREE.MeshStandardMaterial({color:0x9aa0aa,metalness:0.6,roughness:0.4});
+const TABS=[41.8,112.4,183.1,258.6,326.2].map(d=>d*Math.PI/180);
+const TR=84.75;          // screw hole radius (same as cap tab holes)
+const TUBE_R=77.25;      // outer surface of the chamber's outer tube
+const TAB_BOTTOM=81;     // underside of the cap tabs when seated
+// bracket: a foot plate welded flat against the tube wall + a boss the screw threads into
+function bracket(a){ const g=new THREE.Group();
+  const x=Math.cos(a), y=Math.sin(a);
+  const boss=new THREE.Mesh(new THREE.CylinderGeometry(5,5,14,20),postMat);
+  boss.rotation.x=Math.PI/2; boss.position.set(TR*x,TR*y,TAB_BOTTOM-7); g.add(boss);
+  const arm=new THREE.Mesh(new THREE.BoxGeometry(10,3.2,10),postMat);
+  arm.position.set((TUBE_R+ (TR-TUBE_R)/2 )*x,(TUBE_R+(TR-TUBE_R)/2)*y,TAB_BOTTOM-12);
+  arm.rotation.z=Math.atan2(y,x); g.add(arm);
+  const foot=new THREE.Mesh(new THREE.BoxGeometry(2.6,14,16),postMat);
+  foot.position.set((TUBE_R+1.3)*x,(TUBE_R+1.3)*y,TAB_BOTTOM-12);
+  foot.rotation.z=Math.atan2(y,x); g.add(foot);
+  return g; }
+function screw(a,zc){ const g=new THREE.Group();
+  const x=TR*Math.cos(a),y=TR*Math.sin(a);
+  const sh=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,12,16),boltMat); sh.rotation.x=Math.PI/2; sh.position.set(x,y,zc);
+  const hd=new THREE.Mesh(new THREE.CylinderGeometry(3,3,2.2,12),boltMat); hd.rotation.x=Math.PI/2; hd.position.set(x,y,zc+7);
+  g.add(sh,hd); return g; }
+// radial M6 bolts + nuts at the 3 spacer rings — same as the chamber-assembled viewer
+const nutMat=new THREE.MeshStandardMaterial({color:0xc8ccd2,metalness:0.85,roughness:0.3});
+function rbolt(long){ const s=new THREE.Group();
+  const sh=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,long?13:9.5,16),boltMat); sh.rotation.z=Math.PI/2; sh.position.set(long?73.5:72.5,0,0);
+  const hd=new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.2,2.8,6),boltMat); hd.rotation.z=Math.PI/2; hd.position.set(long?80.6:78.6,0,0);
+  const nut=new THREE.Mesh(new THREE.CylinderGeometry(3.6,3.6,3.0,6),nutMat); nut.rotation.z=Math.PI/2; nut.position.set(69.35,0,0);
+  s.add(sh,hd,nut); return s; }
+function screwRing(z,long){ const g=new THREE.Group(); const OFF=52.4*Math.PI/180;
+  for(let k=0;k<6;k++){ const b=rbolt(long); b.rotation.z=k*(Math.PI*2/6)+OFF; b.position.z=z; g.add(b); } return g; }
+// BOLTED STRAP HINGE at 292.4 deg — no welds.
+// Chamber side: the cap's drop tab at this angle continues UP past the rim and
+// curls into 2 barrels (piano-hinge style). Already pinned by its spacer bolt.
+// Lid side: a small strap bolts under the lid's existing bolt at the same
+// angle, hangs down, curls into 1 barrel between the other two. Pin through.
+const HINGE_A=292.4*Math.PI/180, PIVOT_R=81.5, PIVOT_Z=95, KN_LEN=8.3;
+const strapSteel=new THREE.MeshStandardMaterial({color:0x8a9098,metalness:0.6,roughness:0.4});
+const capGreen=new THREE.MeshStandardMaterial({color:0x7fbf6a,metalness:0.5,roughness:0.42});
+function strapBox(mat,zc,h){ const b=new THREE.Mesh(new THREE.BoxGeometry(1.2,14,h),mat);
+  b.rotation.z=HINGE_A; b.position.set(78.15*Math.cos(HINGE_A),78.15*Math.sin(HINGE_A),zc); return b; }
+function barrel(mat,tOff){ const k=new THREE.Mesh(new THREE.CylinderGeometry(4,4,KN_LEN,20),mat);
+  k.rotation.z=HINGE_A;
+  const tx=-Math.sin(HINGE_A), ty=Math.cos(HINGE_A);
+  k.position.set(PIVOT_R*Math.cos(HINGE_A)+tx*tOff, PIVOT_R*Math.sin(HINGE_A)+ty*tOff, PIVOT_Z);
+  return k; }
+function capStrap(){ const g=new THREE.Group();   // part of the CAP — same green sheet
+  g.add(strapBox(capGreen,89.5,11), barrel(capGreen,-KN_LEN), barrel(capGreen,KN_LEN));
+  const pin=new THREE.Mesh(new THREE.CylinderGeometry(2.2,2.2,30,16),new THREE.MeshStandardMaterial({color:0xb4b9be,metalness:0.8,roughness:0.3}));
+  pin.rotation.z=HINGE_A;
+  pin.position.set(PIVOT_R*Math.cos(HINGE_A),PIVOT_R*Math.sin(HINGE_A),PIVOT_Z);
+  g.add(pin); return g; }
+function lidStrap(){ const g=new THREE.Group();   // bolts under the lid's bolt at this angle
+  g.add(strapBox(strapSteel,99.5,9), barrel(strapSteel,0));
+  return g; }
+function handleBolts(){ const g=new THREE.Group();
+  for(const [px,py] of [[7.95,46.5],[-38.3,27.5]]){
+    const sh=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,7,14),boltMat); sh.rotation.x=Math.PI/2; sh.position.set(px,py,127);
+    const hd=new THREE.Mesh(new THREE.CylinderGeometry(2.6,2.6,1.6,12),boltMat); hd.rotation.x=Math.PI/2; hd.position.set(px,py,130.5);
+    g.add(sh,hd);} return g; }
+const CH='CAD Exports/Core Split/', IND='CAD Exports/Individual Parts/GLB/', LID='CAD Exports/Lid Split/';
+Promise.all([
+  load(IND+'04a_Cap_Shell.glb'+V),
+  load(IND+'04b_Cap_HoldDown_Ring.glb'+V),
+  load(CH+'1_Inner_Wall_Tube.glb'+V),
+  load(CH+'2_Outer_Perforated_Tube.glb'+V),
+  load(CH+'3_Support_Ring_Full.glb'+V),
+  load(CH+'06_Ceramic_Cylinder.glb'+V),
+  load(CH+'02_Bottom_Cap.glb'+V),
+  load(CH+'4_Spacer_Ring.glb'+V),
+  load(CH+'4_Spacer_Ring.glb'+V),
+  load(CH+'4_Spacer_Ring.glb'+V),
+  load(CH+'6_Ceramic_Base_Disk.glb'+V),
+  load(LID+'1_Lid_Inner_Tube.glb'+V),
+  load(LID+'2_Lid_Outer_Perforated_Tube.glb'+V),
+  load(LID+'3_Lid_Top_Disk.glb'+V),
+  load(LID+'4_Lid_Ceramic_Holder.glb'+V),
+  load(LID+'5_Lid_Handle.glb'+V),
+  load(LID+'4_Lid_Spacer.glb'+V),
+  load(LID+'4_Lid_Spacer.glb'+V),
+]).then(([cap,capRing,inner,outer,support,ceramic,bcap,spTop,spBot,spSeat,baseDisk,li,lo,ltp,lh,lhand,ls1,ls2])=>{
+  paint(cap,{color:0x7fbf6a});
+  paint(capRing,{color:0x6fa3d8});
+  paint(inner,{color:0xb8bec5});
+  paint(outer,{color:0x6f9bd8});
+  paint(support,{color:0x4f8f7a});
+  paint(ceramic,{color:0xf2f0ea,metalness:0,roughness:0.6});
+  paint(bcap,{color:0xdcb48c});
+  for(const sp of [spTop,spBot,spSeat]) paint(sp,{color:0xe7d9b0,metalness:0,roughness:0.78});
+  paint(baseDisk,{color:0xe7d9b0,metalness:0,roughness:0.7});
+  spTop.position.z=59; spBot.position.z=-24; spSeat.position.z=2.15;
+  scene.add(inner,outer,support,ceramic,bcap,spTop,spBot,spSeat,baseDisk);
+  scene.add(screwRing(-24,true), screwRing(2.15,false));
+  const gCap=new THREE.Group();
+  gCap.add(cap,capRing);
+  scene.add(gCap);
+  // the lid, fully assembled, riding above the cap
+  paint(li,{color:0xb8bec5});
+  paint(lo,{color:0x6f9bd8});
+  paint(ltp,{color:0x4f8f7a});
+  paint(lh,{color:0xcfa98a,metalness:0,roughness:0.7});
+  paint(lhand,{color:0x9098a0,metalness:0.7,roughness:0.35});
+  for(const sp of [ls1,ls2]) paint(sp,{color:0xe7d9b0,metalness:0,roughness:0.78});
+  ls1.position.z=119; ls2.position.z=99;
+  const gLid=new THREE.Group();
+  gLid.add(li,lo,ltp,lh,lhand,ls1,ls2,screwRing(119,false),screwRing(99,false),handleBolts(),lidStrap());
+  gCap.add(capStrap());
+  scene.add(gLid);
+  // the 6 top-ring bolts: longer (like the bottom cap's), they drive in radially
+  const topBolts=[];
+  const OFF=52.4*Math.PI/180;
+  for(let k=0;k<6;k++){ const ang=OFF+k*(Math.PI*2/6);
+    const w=new THREE.Group(); const b=rbolt(true); b.rotation.z=ang; b.position.z=59;
+    w.add(b); w.userData.dir=[Math.cos(ang),Math.sin(ang)];
+    scene.add(w); topBolts.push(w); }
+  document.getElementById('loading').remove();
+  // start lifted: cap +55, screws +85. Stage 1: cap lands. Stage 2: screws drive in.
+  let t=1, fasten=true, ot=0, lidOpen=location.hash==='#open';
+  if(lidOpen) ot=1;
+  const btn=document.getElementById('go');
+  btn.textContent='Take it off';
+  btn.onclick=()=>{ fasten=!fasten; btn.textContent=fasten?'Take it off':'Fasten the cap'; };
+  const btnO=document.getElementById('open');
+  btnO.onclick=()=>{ lidOpen=!lidOpen; btnO.textContent=lidOpen?'Close the lid':'Open the lid'; };
+  if(lidOpen) btnO.textContent='Close the lid';
+  const hingeAxis=new THREE.Vector3(-Math.sin(HINGE_A),Math.cos(HINGE_A),0);
+  const hingePivot=new THREE.Vector3(PIVOT_R*Math.cos(HINGE_A),PIVOT_R*Math.sin(HINGE_A),PIVOT_Z);
+  const _q=new THREE.Quaternion(), _v=new THREE.Vector3();
+  (function anim(){ requestAnimationFrame(anim);
+    t+=(fasten?1:-1)*0.012; t=Math.max(0,Math.min(1,t));
+    const capT=Math.min(1,t*2), scrT=Math.max(0,(t-0.5)*2);
+    const e1=capT*capT*(3-2*capT), e2=scrT*scrT*(3-2*scrT);
+    gCap.position.z=55*(1-e1);
+    ot+=(lidOpen?1:-1)*0.02; ot=Math.max(0,Math.min(1,ot));
+    const oe=ot*ot*(3-2*ot), th=oe*1.92;          // swing back ~110 deg on the pin
+    _q.setFromAxisAngle(hingeAxis,th);
+    gLid.quaternion.copy(_q);
+    _v.copy(hingePivot).applyQuaternion(_q);
+    gLid.position.set(hingePivot.x-_v.x, hingePivot.y-_v.y, hingePivot.z-_v.z+115*(1-e1));
+    topBolts.forEach(w=>{ const d=30*(1-e2); w.position.set(w.userData.dir[0]*d,w.userData.dir[1]*d,0); });
+    ctl.update(); renderer.render(scene,cam); })();
+});
+</script>
+</body></html>

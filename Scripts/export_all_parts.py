@@ -983,70 +983,108 @@ top_cap = top_cap_full
 top_cap.visual.face_colors = [180, 220, 140, 255]
 
 # =============================================================================
-# SCREW TABS - Connect top cap to base body
+# TOP CAP — FINAL DESIGN (2026-06-10): TWO PIECES, no welded bosses, no cap screws
+#   04a_Cap_Shell        — cap_flat + skirt + 6 drop tabs reaching the top spacer
+#                          bolt ring, + hinge finger (the tab at 292.4 deg keeps
+#                          going UP past the rim and curls into 2 hinge barrels)
+#   04b_Cap_HoldDown_Ring — flat ring w/ slot notches + 3 short walls (grips the
+#                          ceramic + tucks inside the chamber wall). NO fasteners:
+#                          clamped between shell and chamber when the cap bolts on.
+# Fastening: the 6 EXISTING top-ring spacer bolts pass through the drop tabs.
 # =============================================================================
-print("Adding screw tabs to top cap...")
+print("Building final two-piece top cap (shell + hold-down ring)...")
 
-screw_hole_r = 2.25  # M4 clearance hole (4.5mm diameter per ISO 273)
-tab_width = 15
-tab_depth = 12
-tab_thickness = sheet_metal_thickness
+def _annular_sector(r0, r1, z0, z1, a0, a1, steps=None):
+    if steps is None: steps = max(6, int(a1 - a0))
+    V, F = [], []
+    for si in range(steps + 1):
+        a = np.radians(a0 + (a1 - a0) * si / steps)
+        ca, sa = np.cos(a), np.sin(a)
+        for r in (r0, r1):
+            for z in (z0, z1):
+                V.append([r * ca, r * sa, z])
+    def vi(si, ri, zi): return si * 4 + ri * 2 + zi
+    for si in range(steps):
+        n = si + 1
+        for (ri, zi, rj, zj) in ((0,1,1,1),(1,0,0,0),(0,0,0,1),(1,1,1,0)):
+            a_, b_, c_, d_ = vi(si,ri,zi), vi(si,rj,zj), vi(n,ri,zi), vi(n,rj,zj)
+            F += [[a_, b_, c_], [c_, b_, d_]]
+    for si in (0, steps):
+        a_, b_, c_, d_ = vi(si,0,0), vi(si,0,1), vi(si,1,0), vi(si,1,1)
+        F += [[a_, b_, c_], [c_, b_, d_]]
+    m = trimesh.Trimesh(vertices=np.array(V), faces=np.array(F))
+    m.fix_normals()
+    return m
 
-# Use same flange positions as bottom cap
-tab_angles = bottom_cap_tab_angles.copy()
+CAP_BOLT_Z = 59                               # top spacer ring bolt circle
+CAP_BOLT_ANGLES = [52.4 + k*60 for k in range(6)]   # same clocking as the bolts
+CAP_TAB_HALF_DEG = np.degrees(6.0 / cap_outer_r)    # ~12mm-wide fingers
+CAP_TAB_TOP = housing_top_z - lip_drop + 3
+CAP_TAB_BOT = 55
 
-screw_tabs = []
-screw_hole_markers = []
+HINGE_ANGLE_DEG = 292.4                       # center of the big slot gap
+_ha = np.radians(HINGE_ANGLE_DEG)
+_htx, _hty = -np.sin(_ha), np.cos(_ha)        # hinge pin axis (tangent)
+HINGE_PIVOT_R, HINGE_PIVOT_Z = 81.5, 95
+HINGE_KN_LEN = 25/3
 
-for ang_deg in tab_angles:
-    ang_rad = np.radians(ang_deg)
-    tab_r = cap_outer_r + tab_depth/2 - 2
-    tab_x = tab_r * np.cos(ang_rad)
-    tab_y = tab_r * np.sin(ang_rad)
-    tab_z = housing_top_z - lip_drop/2
+def _tangent_cyl(radius, length, t_off, color=None):
+    c = trimesh.creation.cylinder(radius=radius, height=length, sections=20)
+    c.apply_transform(trimesh.geometry.align_vectors([0,0,1],[_htx,_hty,0]))
+    c.apply_translation([HINGE_PIVOT_R*np.cos(_ha)+_htx*t_off,
+                         HINGE_PIVOT_R*np.sin(_ha)+_hty*t_off, HINGE_PIVOT_Z])
+    if color: c.visual.face_colors = color
+    return c
 
-    # Round flange (cylinder) instead of square tab
-    tab = trimesh.creation.cylinder(radius=tab_width/2, height=lip_drop, sections=32)
-    tab.apply_translation([tab_x, tab_y, tab_z])
-    tab.visual.face_colors = [180, 220, 140, 255]
-    screw_tabs.append(tab)
+_shell_bits = [cap_flat, cap_lip]
+for _ang in CAP_BOLT_ANGLES:
+    _shell_bits.append(_annular_sector(cap_outer_r - sheet_metal_thickness, cap_outer_r,
+                       CAP_TAB_BOT, CAP_TAB_TOP, _ang - CAP_TAB_HALF_DEG, _ang + CAP_TAB_HALF_DEG))
+    _a = np.radians(_ang)
+    _h = trimesh.creation.cylinder(radius=1.8, height=4.5, sections=16)
+    _h.apply_transform(trimesh.geometry.align_vectors([0,0,1],[np.cos(_a),np.sin(_a),0]))
+    _h.apply_translation([(cap_outer_r - sheet_metal_thickness/2)*np.cos(_a),
+                          (cap_outer_r - sheet_metal_thickness/2)*np.sin(_a), CAP_BOLT_Z])
+    _h.visual.face_colors = [40, 40, 45, 255]
+    _shell_bits.append(_h)
+# hinge finger: strap up the outside + two curl barrels (piano-hinge style)
+_shell_bits.append(_annular_sector(cap_outer_r - sheet_metal_thickness, cap_outer_r,
+                   housing_top_z - lip_drop - 3, HINGE_PIVOT_Z,
+                   HINGE_ANGLE_DEG - CAP_TAB_HALF_DEG, HINGE_ANGLE_DEG + CAP_TAB_HALF_DEG))
+_shell_bits.append(_tangent_cyl(4, HINGE_KN_LEN, -HINGE_KN_LEN))
+_shell_bits.append(_tangent_cyl(4, HINGE_KN_LEN,  HINGE_KN_LEN))
 
-    hole_r_pos = cap_outer_r + tab_depth/2
-    hole_x = hole_r_pos * np.cos(ang_rad)
-    hole_y = hole_r_pos * np.sin(ang_rad)
-    hole = trimesh.creation.cylinder(radius=screw_hole_r, height=lip_drop + 2, sections=16)
-    hole.apply_translation([hole_x, hole_y, tab_z])
-    hole.visual.face_colors = [40, 40, 45, 255]
-    screw_hole_markers.append(hole)
+cap_shell = trimesh.util.concatenate(_shell_bits)
+cap_shell.visual.face_colors = [180, 220, 140, 255]
+print(f"  Cap shell: 6 drop tabs to z={CAP_BOLT_Z} bolts + hinge finger at {HINGE_ANGLE_DEG} deg")
 
-top_cap = trimesh.util.concatenate([top_cap] + screw_tabs + screw_hole_markers)
-top_cap.visual.face_colors = [180, 220, 140, 255]
+# hold-down ring — DEAD FLAT top, walls only hang down
+_web_top = housing_top_z - sheet_metal_thickness
+_slot_gaps = []
+_sorted_slots = sorted(slot_positions)
+for _i in range(len(_sorted_slots)):
+    _a0 = _sorted_slots[_i] + slot_arc_half_deg
+    _a1 = (_sorted_slots[_i+1] if _i+1 < len(_sorted_slots) else _sorted_slots[0]+360) - slot_arc_half_deg
+    _slot_gaps.append((_a0, _a1))
+_ring_bits = []
+for _a0, _a1 in _slot_gaps:
+    _ring_bits.append(_annular_sector(ceramic_inner_r, ceramic_inner_r + sheet_metal_thickness,
+                      _web_top - 3.0, _web_top, _a0, _a1))                       # grab lip (in the bore)
+    _ring_bits.append(_annular_sector(ceramic_outer_r, ceramic_outer_r + sheet_metal_thickness,
+                      _web_top - 10.0, _web_top, _a0, _a1))                      # flaps (hug ceramic OD)
+    _ring_bits.append(_annular_sector(housing_inner_r - sheet_metal_thickness, housing_inner_r,
+                      _web_top - 6.0, _web_top, _a0, _a1))                       # edge wall (inside chamber)
+    _m0 = _a0 + 4.0; _m1 = _a1 - 4.0
+    _ring_bits.append(_annular_sector(ceramic_inner_r, housing_inner_r,
+                      _web_top - 2.0, _web_top, _m0, _m1))                       # flat web
+hold_down_ring = trimesh.util.concatenate(_ring_bits)
+hold_down_ring.visual.face_colors = [120, 170, 220, 255]
+print("  Hold-down ring: flat web + 3 hanging walls, clamp-fit (no fasteners)")
 
-# =============================================================================
-# SCREW BOSSES on base body outer mesh
-# =============================================================================
-print("Adding screw bosses to base body...")
+top_cap = cap_shell   # legacy alias
 
-screw_bosses = []
-for ang_deg in tab_angles:
-    ang_rad = np.radians(ang_deg)
-    boss_r = mesh_outer_r + 3
-    boss_x = boss_r * np.cos(ang_rad)
-    boss_y = boss_r * np.sin(ang_rad)
-    boss_z = housing_top_z - lip_drop/2
-
-    boss = trimesh.creation.cylinder(radius=5, height=lip_drop - 2, sections=16)
-    boss.apply_translation([boss_x, boss_y, boss_z])
-    boss.visual.face_colors = stainless_color
-    screw_bosses.append(boss)
-
-    thread_hole = trimesh.creation.cylinder(radius=2, height=lip_drop, sections=12)
-    thread_hole.apply_translation([boss_x, boss_y, boss_z])
-    thread_hole.visual.face_colors = [30, 30, 35, 255]
-    screw_bosses.append(thread_hole)
-
-base_body = trimesh.util.concatenate([base_body] + screw_bosses)
-base_body.visual.face_colors = stainless_color
+# (2026-06-10) Welded screw bosses DELETED — the cap now fastens through its
+# 6 drop tabs using the existing top spacer-ring bolts. Nothing welds to the body.
 
 # =============================================================================
 # PART 3: LID ASSEMBLY
@@ -1457,103 +1495,23 @@ for angle_deg in leg_angles:
     feet.append(foot_solid)
 
 # =============================================================================
-# PART 9: HINGE - Split into base and lid portions
+# BOLTED STRAP HINGE (2026-06-10) — zero welds.
+# Cap side: the shell's hinge finger (built into 04a_Cap_Shell) carries 2 barrels.
+# Lid side: 05b_Lid_Hinge_Strap bolts under the lid's existing bolt at 292.4 deg
+#           and carries 1 barrel between them. 05_Hinge_Pin slides through all 3.
 # =============================================================================
-print("Building hinge (integrated into base body and lid)...")
+print("Building bolted strap hinge (no welds)...")
 
-slot_4_end_angle = slot_positions[3] + (slot_width * scale_factor / 2 / circumference * 360)
-large_gap_arc_deg = gaps[3] * scale_factor / circumference * 360
-hinge_angle = slot_4_end_angle + large_gap_arc_deg / 2
-if hinge_angle >= 360:
-    hinge_angle -= 360
-hinge_angle_rad = np.radians(hinge_angle)
-print(f"  Hinge at {hinge_angle:.1f} deg (center of {gaps[3]}mm gap)")
+_rotH = trimesh.transformations.rotation_matrix(_ha, [0, 0, 1])
+_plate = trimesh.creation.box(extents=[sheet_metal_thickness, 14, 9])
+_plate.apply_transform(_rotH)
+_plate.apply_translation([78.15*np.cos(_ha), 78.15*np.sin(_ha), 99.5])
+lid_hinge_strap = trimesh.util.concatenate([_plate, _tangent_cyl(4, HINGE_KN_LEN, 0)])
+lid_hinge_strap.visual.face_colors = [138, 144, 152, 255]
 
-hinge_width = 25
-hinge_depth = 12
-hinge_height = 15
-knuckle_r = 5
-pin_r = 2.5
-
-pivot_r = mesh_outer_r + hinge_depth
-pivot_x = pivot_r * np.cos(hinge_angle_rad)
-pivot_y = pivot_r * np.sin(hinge_angle_rad)
-pivot = np.array([pivot_x, pivot_y, housing_top_z])
-knuckle_len = hinge_width / 3
-
-# Hinge axis is TANGENT to the circle (perpendicular to radius)
-# This allows the lid to flip up and back (clamshell style)
-# Tangent direction at angle θ: (-sin(θ), cos(θ), 0)
-tangent_x = -np.sin(hinge_angle_rad)
-tangent_y = np.cos(hinge_angle_rad)
-
-# Rotation to align cylinder (default Z axis) with tangent direction
-# First rotate 90° around Y to lay it horizontal, then rotate around Z to align with tangent
-cyl_to_tangent = trimesh.transformations.rotation_matrix(np.pi/2, [0, 1, 0])
-tangent_angle = np.arctan2(tangent_y, tangent_x)
-cyl_to_tangent = np.dot(
-    trimesh.transformations.rotation_matrix(tangent_angle, [0, 0, 1]),
-    cyl_to_tangent
-)
-
-# BASE HINGE
-base_hinge_parts = []
-hinge_rotation = trimesh.transformations.rotation_matrix(hinge_angle_rad, [0, 0, 1])
-
-for offset in [-hinge_width/3, hinge_width/3]:
-    bk = trimesh.creation.cylinder(radius=knuckle_r, height=knuckle_len, sections=24)
-    bk.apply_transform(cyl_to_tangent)
-    # Offset along tangent direction
-    local_offset = np.array([tangent_x * offset, tangent_y * offset, 0])
-    bk.apply_translation([pivot[0] + local_offset[0], pivot[1] + local_offset[1], pivot[2]])
-    base_hinge_parts.append(bk)
-
-base_plate = trimesh.creation.box(extents=[hinge_depth, hinge_width, hinge_height])
-plate_r = mesh_outer_r + hinge_depth/2
-plate_x = plate_r * np.cos(hinge_angle_rad)
-plate_y = plate_r * np.sin(hinge_angle_rad)
-base_plate.apply_transform(hinge_rotation)
-base_plate.apply_translation([plate_x, plate_y, housing_top_z + hinge_height/2 - 5])
-base_hinge_parts.append(base_plate)
-
-base_hinge = trimesh.util.concatenate(base_hinge_parts)
-base_hinge.visual.face_colors = stainless_color
-
-# LID HINGE
-lid_hinge_parts = []
-lk = trimesh.creation.cylinder(radius=knuckle_r, height=knuckle_len, sections=24)
-lk.apply_transform(cyl_to_tangent)
-lk.apply_translation([pivot[0], pivot[1], pivot[2]])
-lid_hinge_parts.append(lk)
-
-lid_plate = trimesh.creation.box(extents=[hinge_depth, hinge_width, hinge_height])
-lid_plate.apply_transform(hinge_rotation)
-lid_plate.apply_translation([plate_x, plate_y, housing_top_z + hinge_height/2 + 5])
-lid_hinge_parts.append(lid_plate)
-
-lid_hinge = trimesh.util.concatenate(lid_hinge_parts)
-lid_hinge.visual.face_colors = stainless_color
-
-# HINGE PIN
-hinge_pin = trimesh.creation.cylinder(radius=pin_r, height=hinge_width + 4, sections=16)
-hinge_pin.apply_transform(cyl_to_tangent)
-hinge_pin.apply_translation([pivot[0], pivot[1], pivot[2]])
+hinge_pin = _tangent_cyl(2.5, 30, 0)
 hinge_pin.visual.face_colors = [180, 185, 190, 255]
-
-# =============================================================================
-# GAS STRUT - REMOVED (placeholder for future implementation)
-# =============================================================================
-gas_strut = None
-print("  Gas strut: removed from design")
-
-# Integrate hinges
-base_body = trimesh.util.concatenate([base_body, base_hinge])
-base_body.visual.face_colors = stainless_color
-print("  Base hinge integrated into base body")
-
-lid_assembly = trimesh.util.concatenate([lid_assembly, lid_hinge])
-lid_assembly.visual.face_colors = [140, 180, 220, 255]
-print("  Lid hinge integrated into lid assembly")
+print("  Lid strap (1 bolt-on part) + pin. Cap-side barrels live on the shell.")
 
 # =============================================================================
 # PART 11: CONTROLLER BOX
@@ -1817,65 +1775,8 @@ for angle_deg in leg_angles:
 leg_screws_combined = trimesh.util.concatenate(leg_screws)
 print(f"  3x M6 x 40mm hex bolts at angles: {leg_angles}")
 
-# =============================================================================
-# M4 x 12mm CAP FASTENER SCREWS (bottom cap + top cap flanges)
-# =============================================================================
-print("Building M4 x 12mm cap fastener screws...")
-m4_head_r = 4.0       # 8mm pan head diameter
-m4_head_h = 3.2       # pan head height
-m4_shaft_r = 2.0      # 4mm shaft diameter
-m4_shaft_h = 12       # 12mm length
-m4_nut_af = 7         # across flats
-m4_nut_r = m4_nut_af / 2 / np.cos(np.pi/6)
-m4_nut_h = 3.2
-m4_color = [70, 70, 75, 255]
-
-cap_screws = []
-
-# Bottom cap screws (5x) - head on top (inside housing), shaft goes down
-for ang_deg in bottom_cap_tab_angles:
-    ang_rad = np.radians(ang_deg)
-    hole_r_pos = bottom_cap_outer_r + tab_depth/2
-    sx = hole_r_pos * np.cos(ang_rad)
-    sy = hole_r_pos * np.sin(ang_rad)
-    # Flange top z
-    flange_top_z = bottom_cap_z + sheet_metal_thickness + bottom_cap_lip_height
-    # Head sits on top of flange (inside housing)
-    head_z = flange_top_z + m4_head_h/2
-    head = trimesh.creation.cylinder(radius=m4_head_r, height=m4_head_h, sections=24)
-    head.apply_translation([sx, sy, head_z])
-    head.visual.face_colors = m4_color
-    cap_screws.append(head)
-    # Shaft goes down through flange
-    shaft_z = flange_top_z - m4_shaft_h/2
-    shaft = trimesh.creation.cylinder(radius=m4_shaft_r, height=m4_shaft_h, sections=16)
-    shaft.apply_translation([sx, sy, shaft_z])
-    shaft.visual.face_colors = m4_color
-    cap_screws.append(shaft)
-
-# Top cap screws (5x) - head on outside of flange, shaft into boss
-for ang_deg in bottom_cap_tab_angles:
-    ang_rad = np.radians(ang_deg)
-    hole_r_pos = cap_outer_r + tab_depth/2
-    sx = hole_r_pos * np.cos(ang_rad)
-    sy = hole_r_pos * np.sin(ang_rad)
-    # Flange center z
-    flange_z = housing_top_z - lip_drop/2
-    # Head sits above the flange (outside)
-    head_z = flange_z + lip_drop/2 + m4_head_h/2
-    head = trimesh.creation.cylinder(radius=m4_head_r, height=m4_head_h, sections=24)
-    head.apply_translation([sx, sy, head_z])
-    head.visual.face_colors = m4_color
-    cap_screws.append(head)
-    # Shaft goes down through flange into boss
-    shaft_z = head_z - m4_head_h/2 - m4_shaft_h/2
-    shaft = trimesh.creation.cylinder(radius=m4_shaft_r, height=m4_shaft_h, sections=16)
-    shaft.apply_translation([sx, sy, shaft_z])
-    shaft.visual.face_colors = m4_color
-    cap_screws.append(shaft)
-
-cap_screws_combined = trimesh.util.concatenate(cap_screws)
-print(f"  10x M4 x 12mm pan head screws (5 bottom cap + 5 top cap)")
+# (2026-06-10) M4 cap fastener screws DELETED — both caps now fasten with the
+# existing M6 spacer-ring bolts (long pattern). No separate cap screws exist.
 
 # =============================================================================
 # ALL PARTS BUILT - Now concatenate feet into single mesh
@@ -1894,9 +1795,11 @@ feet_combined.visual.face_colors = ceramic_body_color
 parts = [
     ("01_Base_Body",        base_body),
     ("02_Bottom_Cap",       bottom_cap),
-    ("03_Top_Cap",          top_cap),
+    ("04a_Cap_Shell",       cap_shell),
+    ("04b_Cap_HoldDown_Ring", hold_down_ring),
     ("04_Lid_Assembly",     lid_assembly),
     ("05_Hinge_Pin",        hinge_pin),
+    ("05b_Lid_Hinge_Strap", lid_hinge_strap),
     ("06_Ceramic_Cylinder", ceramic_cylinder),
     ("07_Ceramic_Base_Disk", ceramic_base),
     ("07b_Ceramic_Lid_Disk", ceramic_lid),
@@ -1907,7 +1810,6 @@ parts = [
     ("12_Steel_Tray",       platform),
     ("13_Wiring_Conduit",   wiring_conduit),
     ("14_Leg_Screws",       leg_screws_combined),
-    ("15_Cap_Screws",       cap_screws_combined),
 ]
 
 # =============================================================================

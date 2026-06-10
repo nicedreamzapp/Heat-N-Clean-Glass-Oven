@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>The green cap — just 2 pieces</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#e8e8ec;overflow:hidden;font-family:-apple-system,sans-serif}
+canvas{display:block;width:100vw;height:100vh}
+.tag{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;padding:8px 22px;border-radius:9px;font-size:16px;font-weight:600;z-index:5}
+.legend{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.68);color:#eee;padding:10px 18px;border-radius:8px;font-size:14px;z-index:5;text-align:center;line-height:1.8}
+.sw{display:inline-block;width:13px;height:13px;border-radius:2px;margin:0 6px 0 14px;vertical-align:middle}
+button{position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:6;background:#2f7fd6;color:#fff;border:none;padding:8px 20px;border-radius:7px;font-size:14px;cursor:pointer}
+#loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+</style></head><body>
+<div class="tag">The green cap, cut into 2 pieces</div>
+<button id="go">Put them together</button>
+<div id="loading">Loading…</div>
+<div class="legend">
+  <span class="sw" style="background:#7fbf6a"></span>TOP PIECE — the part you see. Flat metal, cut and bent. Cheap.
+  <br><span class="sw" style="background:#6fa3d8"></span>HIDDEN RING — holds the ceramic. No screws needed: the top clamps it down. Cheap.
+</div>
+<canvas id="c"></canvas>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const V='?v=2p2x';
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,0.1,9000);
+cam.up.set(0,0,1); cam.position.set(240,-300,190);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.set(0,0,80);
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+const loader=new GLTFLoader();
+const load=p=>new Promise(res=>loader.load(p,g=>res(g.scene)));
+function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){
+  const dark=ch.geometry.attributes.color && ch.geometry.attributes.color.getX(0)<0.3;
+  ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,metalness:0.5,roughness:0.42,color:dark?0x28282d:color}); } }); }
+const boltMat=new THREE.MeshStandardMaterial({color:0xd9a521,metalness:0.7,roughness:0.3});
+const TOPZ=91;
+// the little flush screws that hold the ring up against the top piece
+const M3A=[31.92,51.73,102.51,122.32,173.09,192.9,266.97,317.85].map(d=>d*Math.PI/180);
+function flushScrew(x,y,topZ){ const g=new THREE.Group();
+  const sh=new THREE.Mesh(new THREE.CylinderGeometry(1.2,1.2,4.5,16),boltMat); sh.rotation.x=Math.PI/2; sh.position.set(x,y,topZ-2.25);
+  const hd=new THREE.Mesh(new THREE.CylinderGeometry(2.4,1.0,1.6,14),boltMat); hd.rotation.x=Math.PI/2; hd.position.set(x,y,topZ-0.8);
+  g.add(sh,hd); return g; }
+Promise.all([
+  load('CAD Exports/Individual Parts/GLB/04a_Cap_Shell.glb'+V),
+  load('CAD Exports/Individual Parts/GLB/04b_Cap_HoldDown_Ring.glb'+V),
+]).then(([shell,ring])=>{
+  paint(shell,0x7fbf6a); paint(ring,0x6fa3d8);
+  const gS=new THREE.Group(), gR=new THREE.Group();
+  gS.add(shell); gR.add(ring);
+  scene.add(gS,gR);
+  document.getElementById('loading').remove();
+  let together=false, t=1;     // start pulled apart
+  const btn=document.getElementById('go');
+  btn.onclick=()=>{ together=!together; btn.textContent=together?'Pull them apart':'Put them together'; };
+  (function anim(){ requestAnimationFrame(anim);
+    t+=(together?-1:1)*0.03; t=Math.max(0,Math.min(1,t));
+    const e=t*t*(3-2*t);
+    gS.position.z=45*e; gR.position.z=-25*e;
+    ctl.update(); renderer.render(scene,cam); })();
+});
+</script>
+</body></html>
