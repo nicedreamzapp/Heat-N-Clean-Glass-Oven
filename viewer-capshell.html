@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Cap Shell — the green part</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#e8e8ec;overflow:hidden;font-family:-apple-system,sans-serif}
+canvas{display:block;width:100vw;height:100vh}
+#loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+</style></head><body>
+<div id="loading">Loading…</div>
+<canvas id="c"></canvas>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(38,innerWidth/innerHeight,0.1,9000);
+cam.up.set(0,0,1); cam.position.set(220,-260,200);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.set(0,0,80);
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+new GLTFLoader().load('CAD Exports/Individual Parts/GLB/04a_Cap_Shell.glb?v=cs1', g=>{
+  const m=g.scene;
+  m.traverse(ch=>{ if(ch.isMesh){
+    const dark=ch.geometry.attributes.color && ch.geometry.attributes.color.getX(0)<0.3;
+    ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+    ch.material=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,metalness:0.5,roughness:0.42,color:dark?0x202024:0x7fbf6a}); }});
+  scene.add(m);
+  document.getElementById('loading').remove();
+  (function anim(){ requestAnimationFrame(anim); ctl.update(); renderer.render(scene,cam); })();
+});
+</script>
+</body></html>

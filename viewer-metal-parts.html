@@ -14,7 +14,7 @@ canvas{display:block;width:100vw;height:100vh}
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-const V='?v=mp3';
+const V='?v=mp4';
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
 renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
@@ -35,8 +35,8 @@ function paint(o,opt){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribu
 function makeLabel(txt){ const c=document.createElement('canvas');
   let x=c.getContext('2d'); x.font='bold 30px -apple-system, sans-serif';
   const w=Math.ceil(x.measureText(txt).width)+30; c.width=w; c.height=46; x=c.getContext('2d');
-  x.fillStyle='rgba(18,18,24,0.88)'; x.beginPath(); x.roundRect(0,0,w,46,11); x.fill();
-  x.font='bold 30px -apple-system, sans-serif'; x.fillStyle='#fff'; x.textBaseline='middle'; x.fillText(txt,15,24);
+  x.fillStyle='rgba(255,255,255,0.34)'; x.beginPath(); x.roundRect(0,0,w,46,11); x.fill();
+  x.font='bold 30px -apple-system, sans-serif'; x.fillStyle='#16181d'; x.textBaseline='middle'; x.fillText(txt,15,24);
   const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
   const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false}));
   spr.scale.set(w*0.42,46*0.42,1); spr.renderOrder=10; return spr; }

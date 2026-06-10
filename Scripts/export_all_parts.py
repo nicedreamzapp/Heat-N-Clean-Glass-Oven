@@ -1036,25 +1036,28 @@ def _tangent_cyl(radius, length, t_off, color=None):
     if color: c.visual.face_colors = color
     return c
 
+def _radial_hole(r_mid, ang_deg, z, radius, length=6.0):
+    _a = np.radians(ang_deg)
+    h = trimesh.creation.cylinder(radius=radius, height=length, sections=24)
+    h.apply_transform(trimesh.geometry.align_vectors([0,0,1],[np.cos(_a),np.sin(_a),0]))
+    h.apply_translation([r_mid*np.cos(_a), r_mid*np.sin(_a), z])
+    return h
+
 _shell_bits = [cap_flat, cap_lip]
 for _ang in CAP_BOLT_ANGLES:
-    _shell_bits.append(_annular_sector(cap_outer_r - sheet_metal_thickness, cap_outer_r,
-                       CAP_TAB_BOT, CAP_TAB_TOP, _ang - CAP_TAB_HALF_DEG, _ang + CAP_TAB_HALF_DEG))
-    _a = np.radians(_ang)
-    _h = trimesh.creation.cylinder(radius=1.8, height=4.5, sections=16)
-    _h.apply_transform(trimesh.geometry.align_vectors([0,0,1],[np.cos(_a),np.sin(_a),0]))
-    _h.apply_translation([(cap_outer_r - sheet_metal_thickness/2)*np.cos(_a),
-                          (cap_outer_r - sheet_metal_thickness/2)*np.sin(_a), CAP_BOLT_Z])
-    _h.visual.face_colors = [40, 40, 45, 255]
-    _shell_bits.append(_h)
-# hinge finger: strap up the outside + two curl barrels (piano-hinge style)
+    _tab = _annular_sector(cap_outer_r - sheet_metal_thickness, cap_outer_r,
+                           CAP_TAB_BOT, CAP_TAB_TOP, _ang - CAP_TAB_HALF_DEG, _ang + CAP_TAB_HALF_DEG)
+    _tab = trimesh.boolean.difference([_tab,
+            _radial_hole(cap_outer_r - sheet_metal_thickness/2, _ang, CAP_BOLT_Z, 1.8)], engine='manifold')
+    _shell_bits.append(_tab)
+# hinge finger: strap up the outside + two curl barrels with REAL pin bores
 _shell_bits.append(_annular_sector(cap_outer_r - sheet_metal_thickness, cap_outer_r,
                    housing_top_z - lip_drop - 3, HINGE_PIVOT_Z,
                    HINGE_ANGLE_DEG - CAP_TAB_HALF_DEG, HINGE_ANGLE_DEG + CAP_TAB_HALF_DEG))
-_shell_bits.append(_tangent_cyl(4, HINGE_KN_LEN, -HINGE_KN_LEN))
-_shell_bits.append(_tangent_cyl(4, HINGE_KN_LEN,  HINGE_KN_LEN))
-_shell_bits.append(_tangent_cyl(2.6, HINGE_KN_LEN + 0.6, -HINGE_KN_LEN, [40, 40, 45, 255]))
-_shell_bits.append(_tangent_cyl(2.6, HINGE_KN_LEN + 0.6,  HINGE_KN_LEN, [40, 40, 45, 255]))
+for _off in (-HINGE_KN_LEN, HINGE_KN_LEN):
+    _barrel = trimesh.boolean.difference([_tangent_cyl(4, HINGE_KN_LEN, _off),
+               _tangent_cyl(2.6, HINGE_KN_LEN + 2.0, _off)], engine='manifold')
+    _shell_bits.append(_barrel)
 
 cap_shell = trimesh.util.concatenate(_shell_bits)
 cap_shell.visual.face_colors = [180, 220, 140, 255]
@@ -1510,11 +1513,10 @@ _rotH = trimesh.transformations.rotation_matrix(_ha, [0, 0, 1])
 _plate = trimesh.creation.box(extents=[sheet_metal_thickness, 20, 18])
 _plate.apply_transform(_rotH)
 _plate.apply_translation([78.15*np.cos(_ha), 78.15*np.sin(_ha), 100])
-_strap_hole = trimesh.creation.cylinder(radius=3.3, height=5.0, sections=20)
-_strap_hole.apply_transform(trimesh.geometry.align_vectors([0,0,1],[np.cos(_ha),np.sin(_ha),0]))
-_strap_hole.apply_translation([78.15*np.cos(_ha), 78.15*np.sin(_ha), 99])
-_strap_hole.visual.face_colors = [40, 40, 45, 255]
-lid_hinge_strap = trimesh.util.concatenate([_plate, _tangent_cyl(4, HINGE_KN_LEN, 0), _tangent_cyl(2.6, HINGE_KN_LEN + 0.6, 0, [40, 40, 45, 255]), _strap_hole])
+_plate = trimesh.boolean.difference([_plate, _radial_hole(78.15, HINGE_ANGLE_DEG, 99, 3.3)], engine='manifold')
+_strap_barrel = trimesh.boolean.difference([_tangent_cyl(4, HINGE_KN_LEN, 0),
+                 _tangent_cyl(2.6, HINGE_KN_LEN + 2.0, 0)], engine='manifold')
+lid_hinge_strap = trimesh.util.concatenate([_plate, _strap_barrel])
 lid_hinge_strap.visual.face_colors = [138, 144, 152, 255]
 
 hinge_pin = _tangent_cyl(2.5, 30, 0)

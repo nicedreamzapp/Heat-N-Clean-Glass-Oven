@@ -16,7 +16,7 @@ button{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:6;bac
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-const V='?v=hc6';
+const V='?v=hc7';
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
 renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
@@ -40,8 +40,8 @@ function paint(o,opt){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribu
 function makeLabel(txt){ const c=document.createElement('canvas');
   let x=c.getContext('2d'); x.font='bold 28px -apple-system, sans-serif';
   const w=Math.ceil(x.measureText(txt).width)+28; c.width=w; c.height=44; x=c.getContext('2d');
-  x.fillStyle='rgba(18,18,24,0.9)'; x.beginPath(); x.roundRect(0,0,w,44,10); x.fill();
-  x.font='bold 28px -apple-system, sans-serif'; x.fillStyle='#fff'; x.textBaseline='middle'; x.fillText(txt,14,23);
+  x.fillStyle='rgba(255,255,255,0.34)'; x.beginPath(); x.roundRect(0,0,w,44,10); x.fill();
+  x.font='bold 28px -apple-system, sans-serif'; x.fillStyle='#16181d'; x.textBaseline='middle'; x.fillText(txt,14,23);
   const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
   const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false}));
   spr.scale.set(w*0.18,44*0.18,1); spr.renderOrder=10; return spr; }
