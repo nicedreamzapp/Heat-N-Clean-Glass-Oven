@@ -3,3 +3,7 @@ __pycache__/
 .DS_Store
 .claude/
 .venv/
+
+# internal — never publish
+TARGET_PRICE.md
+Invoices/
