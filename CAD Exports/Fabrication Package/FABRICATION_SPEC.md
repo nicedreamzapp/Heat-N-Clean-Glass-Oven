@@ -1,7 +1,17 @@
-# Heat-N-Clean Glass Oven — Fabrication Spec (FINAL design, 2026-06-10)
+# Heat-N-Clean Glass Oven — Fabrication Spec (FINAL design, rev 2026-06-11)
 
 This package supersedes ALL previous versions. The top cap, hinge, and every
 fastening detail changed. Please quote from THIS package only.
+
+> **Rev 2026-06-11 — please re-download.** The hinge was updated to a
+> low-profile design (pivot lowered, knuckles repositioned along the hinge
+> line) and the ceramic lid disk shelf is now flush. If you downloaded this
+> package before June 11, discard it and re-download from the same link.
+> The 3D models in THIS package are authoritative.
+
+> **Scope: METAL PARTS ONLY.** We source all ceramic parts separately —
+> please disregard them for this quote. They appear below for reference
+> only, so the metal interfaces and slot positions make sense.
 
 ## Design philosophy — bolted assembly, not welded
 - The ONLY welds in the product are the longitudinal seams of the rolled tubes.
@@ -22,7 +32,10 @@ fastening detail changed. Please quote from THIS package only.
 | Hinge Pin | 1 | Ø5 304SS rod, 30mm, one end bent or clipped | Slides through the 3 hinge barrels. |
 | Steel Tray | 1 | Laser cut 3mm 304SS + bend | Unchanged from previous quote. |
 
-## Ceramic parts
+## Ceramic parts — REFERENCE ONLY, do NOT quote
+
+We supply the ceramics ourselves. Listed only so the metal slot positions
+and clearances make sense.
 
 | Part | Qty | Dimensions (mm) |
 |---|---|---|
@@ -51,10 +64,13 @@ fastening detail changed. Please quote from THIS package only.
 
 ## 3D files
 - `3D Reference/` — STL per part + complete assembly GLB (open in any viewer)
-- `DXF/` — flat patterns for the rolled/flat parts (cap shell unfold to be
-  confirmed by your sheet-metal engineer; 3D model is authoritative)
+- `DXF/` — flat patterns for the rolled/flat parts. NOTE: the Cap Shell
+  flat pattern predates the 2026-06-11 hinge revision — its hinge tab is
+  approximate. Please unfold the Cap Shell from the 3D model; the 3D model
+  is authoritative, and we ask for your engineering CAD back before
+  production in any case.
 
-## Quote request
-- Unit price at qty 50 / 100 / 500
+## Quote request — METAL PARTS ONLY (no ceramics)
+- Unit price for the metal set at qty 50 / 100 / 500
 - One-time tooling (spin/press die for the cap skirt, if needed)
 - Lead time for first articles + production

@@ -91,10 +91,20 @@ def spec_en():
         f"| {n} | {q} | {p} | {x} |" for _, n, _, q, p, _, x, _ in METAL_PARTS)
     cer = "\n".join(f"| {n} | {q} | {d} |" for _, n, _, q, d in CERAMICS)
     fas = "\n".join(f"| {n} | {q} | {u.split(' / ')[0]} |" for n, _, q, u in FASTENERS)
-    return f"""# Heat-N-Clean Glass Oven — Fabrication Spec (FINAL design, 2026-06-10)
+    return f"""# Heat-N-Clean Glass Oven — Fabrication Spec (FINAL design, rev 2026-06-11)
 
 This package supersedes ALL previous versions. The top cap, hinge, and every
 fastening detail changed. Please quote from THIS package only.
+
+> **Rev 2026-06-11 — please re-download.** The hinge was updated to a
+> low-profile design (pivot lowered, knuckles repositioned along the hinge
+> line) and the ceramic lid disk shelf is now flush. If you downloaded this
+> package before June 11, discard it and re-download from the same link.
+> The 3D models in THIS package are authoritative.
+
+> **Scope: METAL PARTS ONLY.** We source all ceramic parts separately —
+> please disregard them for this quote. They appear below for reference
+> only, so the metal interfaces and slot positions make sense.
 
 ## Design philosophy — bolted assembly, not welded
 - The ONLY welds in the product are the longitudinal seams of the rolled tubes.
@@ -108,7 +118,10 @@ fastening detail changed. Please quote from THIS package only.
 |---|---|---|---|
 {rows}
 
-## Ceramic parts
+## Ceramic parts — REFERENCE ONLY, do NOT quote
+
+We supply the ceramics ourselves. Listed only so the metal slot positions
+and clearances make sense.
 
 | Part | Qty | Dimensions (mm) |
 |---|---|---|
@@ -130,11 +143,14 @@ fastening detail changed. Please quote from THIS package only.
 
 ## 3D files
 - `3D Reference/` — STL per part + complete assembly GLB (open in any viewer)
-- `DXF/` — flat patterns for the rolled/flat parts (cap shell unfold to be
-  confirmed by your sheet-metal engineer; 3D model is authoritative)
+- `DXF/` — flat patterns for the rolled/flat parts. NOTE: the Cap Shell
+  flat pattern predates the 2026-06-11 hinge revision — its hinge tab is
+  approximate. Please unfold the Cap Shell from the 3D model; the 3D model
+  is authoritative, and we ask for your engineering CAD back before
+  production in any case.
 
-## Quote request
-- Unit price at qty 50 / 100 / 500
+## Quote request — METAL PARTS ONLY (no ceramics)
+- Unit price for the metal set at qty 50 / 100 / 500
 - One-time tooling (spin/press die for the cap skirt, if needed)
 - Lead time for first articles + production
 """
@@ -144,9 +160,17 @@ def spec_cn():
         f"| {cn} | {q} | {pcn} | {xcn} |" for _, _, cn, q, _, pcn, _, xcn in METAL_PARTS)
     cer = "\n".join(f"| {cn} | {q} | {d} |" for _, _, cn, q, d in CERAMICS)
     fas = "\n".join(f"| {cn} | {q} | {u.split(' / ')[-1]} |" for _, cn, q, u in FASTENERS)
-    return f"""# Heat-N-Clean 玻璃烤炉 — 加工规格书（最终设计版，2026-06-10）
+    return f"""# Heat-N-Clean 玻璃烤炉 — 加工规格书（最终设计版，2026-06-11 修订）
 
 本资料包取代之前所有版本。顶盖、铰链及所有紧固方式均已更改，请仅按本包报价。
+
+> **2026-06-11 修订 —— 请重新下载。** 铰链已改为低位设计（转轴高度降低、
+> 卷筒沿铰链轴线移位），上盖陶瓷片托面改为平齐。如您在 6 月 11 日之前
+> 下载过本资料包，请删除旧版，并通过原链接重新下载。本包内的 3D 模型
+> 为最终依据。
+
+> **报价范围：仅金属件。** 所有陶瓷件由我方另行采购，本次询价请忽略
+> 陶瓷件。下文列出陶瓷件仅供参考，便于理解金属件的配合关系与槽口位置。
 
 ## 设计思路 —— 螺栓装配，非焊接
 - 整机唯一的焊缝是卷圆筒体的纵向接缝。
@@ -160,7 +184,9 @@ def spec_cn():
 |---|---|---|---|
 {rows}
 
-## 陶瓷件
+## 陶瓷件 —— 仅供参考，无需报价
+
+陶瓷件由我方自行供应。列出仅为便于理解金属件的槽口位置与配合间隙。
 
 | 零件 | 数量 | 尺寸 (mm) |
 |---|---|---|
@@ -182,11 +208,12 @@ def spec_cn():
 
 ## 3D 文件
 - `3D Reference/` —— 每个零件的 STL + 整机 GLB
-- `DXF/` —— 卷板/平板件展开图（顶盖壳展开图请贵司钣金工程师
-  以 3D 模型为准最终确认）
+- `DXF/` —— 卷板/平板件展开图。注意：顶盖壳展开图为 2026-06-11 铰链
+  修订之前的版本，其铰链翻边仅供参考。请贵司钣金工程师按 3D 模型
+  重新展开；一切以 3D 模型为准，且投产前请将贵司工程图发回我方确认。
 
-## 报价请求
-- 50 / 100 / 500 台的单价
+## 报价请求 —— 仅金属件（不含陶瓷件）
+- 金属件整套 50 / 100 / 500 台的单价
 - 一次性模具费（如顶盖裙边需旋压/冲压模）
 - 首件及量产交期
 """
@@ -206,7 +233,7 @@ def main():
         for base, en, cn, q, *_ in METAL_PARTS:
             w.writerow([base, en, cn, q, "304SS"])
         for base, en, cn, q, d in CERAMICS:
-            w.writerow([base, en, cn, q, "ceramic"])
+            w.writerow([base, en, cn, q, "ceramic — REFERENCE ONLY, do not quote / 仅供参考，无需报价"])
         for en, cn, q, u in FASTENERS:
             w.writerow(["", en, cn, q, "A2 stainless"])
 
