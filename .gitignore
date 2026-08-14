@@ -3,7 +3,28 @@ __pycache__/
 .DS_Store
 .claude/
 .venv/
+.venv-cad/
 
-# internal — never publish
+# ── internal — never publish ────────────────────────────────────────
+# THIS REPO IS PUBLIC. Anything below is either a supplier's own work,
+# their commercial terms, or our private assessment of them. None of it
+# goes out. When in doubt, add it here rather than committing it.
 TARGET_PRICE.md
 Invoices/
+Quotes/
+Factory Files/
+
+# Supplier-supplied CAD in any form — their intellectual property, not ours
+*.dwg
+banjin*
+
+# Private correspondence and internal reviews
+MESSAGE-TO-*
+CHANGE-LIST.md
+COMPARISON.md
+
+# ── generated, rebuildable — keep the repo light ────────────────────
+# Assembly_*.glb rebuild from Scripts/view_lid_open.py / view_lid_off.py
+CAD Exports/Assembly_*.glb
+*.step.zip
+Heat-N-Clean_Fabrication_STEP.zip
