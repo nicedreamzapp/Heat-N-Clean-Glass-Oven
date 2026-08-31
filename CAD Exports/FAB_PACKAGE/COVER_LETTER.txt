@@ -1,0 +1,40 @@
+Hi Cindy,
+
+Thanks for reviewing the drawings and letting me know the STL files weren't
+measurable. I've converted everything to STEP. You can download the updated
+package here:
+
+  https://nicedreamzwholesale.com/heat-n-clean-viewer/Heat-N-Clean_Fabrication_STEP.zip
+
+(I've also attached the one-page parts overview to this email.)
+
+What's included:
+  • STEP/ — STEP (AP214) solid models of all 14 metal parts, individually,
+    so your engineers can measure every dimension directly.
+  • Drawings/ — dimensioned PDF drawings for the body, lid, bottom cap and
+    overall assembly.
+  • Heat-N-Clean_Metal_Parts_Overview.png — a one-page visual of every part.
+  • BOM_metal_parts.csv — the metal parts list with material, process and key
+    dimensions.
+
+A couple of notes so we're quoting the same thing:
+  • METAL PARTS ONLY. All parts in this package are 304 stainless. The ceramic
+    parts (heater core, base/lid disks, spacer rings) are reference-only —
+    please disregard them for this quote.
+  • Material is 304SS, 1.2 mm sheet unless the drawing notes otherwise (the
+    Steel Tray is 3 mm). #4 brushed finish on visible faces.
+  • The only welds are the longitudinal seams of the rolled tubes; everything
+    else is bolted or clamped.
+
+Could you please quote:
+  • Unit price for the full metal set at qty 50 / 100 / 500
+  • Any one-time tooling (e.g. the press die for the cap skirt, if needed)
+  • Lead time for first articles, then production
+  • FOB your nearest port
+
+Native CAD or any other format is available on request, and I'm happy to jump
+on a quick call if anything in the geometry needs clarifying.
+
+Thanks again,
+Matt
+Nice Dreamz / Divine Tribe

@@ -170,6 +170,7 @@ straight_bot = slot_bottom_z + half_w           # bottom of straight section
 box_h = straight_top - straight_bot
 
 slot_cutters = []
+slot_round_cutters = []
 for slot_center in slot_positions:
     slot_box = Box(slot_radial_depth, slot_width, box_h + 0.01,
                    align=(Align.CENTER, Align.CENTER, Align.CENTER))
@@ -180,9 +181,12 @@ for slot_center in slot_positions:
     round_cyl = round_cyl.rotate(Axis.Y, 90)
     round_cyl = round_cyl.locate(Pos((r_in + r_out) / 2 - slot_radial_depth / 2,
                                      0, straight_bot))
-    cutter = slot_box.fuse(round_cyl)
-    cutter = single_solid(cutter).rotate(Axis.Z, slot_center)
-    slot_cutters.append(cutter)
+    # 2026-08-24: do NOT fuse box+cylinder, and do NOT put overlapping tools
+    # in one Compound — OCC then returns the wall UNCHANGED (5 loose solids,
+    # original volume). This is why the 17 Jun STEP had no slots. Boxes are
+    # cut as one group, the rounded bottoms as a second group.
+    slot_cutters.append(slot_box.rotate(Axis.Z, slot_center))
+    slot_round_cutters.append(round_cyl.rotate(Axis.Z, slot_center))
 
 
 # ---- perforation cutters (outer wall only) -------------------------------
@@ -262,7 +266,10 @@ def cut_many(solid, cutters, chunk=30, label=""):
 # ===========================================================================
 print("Machining INNER tube...")
 inner_solid = inner_wall
+_v0 = inner_solid.volume
 inner_solid = cut_many(inner_solid, slot_cutters, label="inner-slot")
+inner_solid = cut_many(inner_solid, slot_round_cutters, label="inner-slot-round")
+assert inner_solid.volume < _v0 - 100, "slot cut did not take on the inner wall"
 inner_solid = cut_many(inner_solid, m6_cutters, label="inner-M6")
 inner_solid = cut_many(inner_solid, func_cutters, label="inner-func")
 inner_solid = single_solid(inner_solid)
@@ -273,7 +280,10 @@ print(f"  inner tube volume {inner_solid.volume:.1f} mm^3")
 # ===========================================================================
 print("Machining OUTER tube...")
 outer_solid = outer_wall
+_v0 = outer_solid.volume
 outer_solid = cut_many(outer_solid, slot_cutters, label="outer-slot")
+outer_solid = cut_many(outer_solid, slot_round_cutters, label="outer-slot-round")
+assert outer_solid.volume < _v0 - 100, "slot cut did not take on the outer wall"
 outer_solid = cut_many(outer_solid, perf_cutters, chunk=30, label="outer-perf")
 outer_solid = cut_many(outer_solid, m6_cutters, label="outer-M6")
 outer_solid = single_solid(outer_solid)

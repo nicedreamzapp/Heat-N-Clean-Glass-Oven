@@ -321,15 +321,25 @@ def save_dxf(doc, filename):
     return dxf_path
 
 
-def get_slot_z_offset(angle_deg):
-    """Calculate how deep a slot cuts at the given angle."""
+def get_slot_z_offset(angle_deg, radius=None):
+    """Calculate how deep a slot cuts at the given angle.
+
+    2026-08-24: pass the unroll `radius` of the part being drawn. The old
+    version reused slot_arc_half_deg (an angle computed on the CERAMIC
+    radius, 46.25) on the inner housing flat (r 72.05), which made that slot
+    15.7 mm wide instead of 10.5 — Tianrun built exactly that."""
     half_w = slot_width / 2
     straight_h = slot_depth - half_w
     for slot_center in slot_positions:
         diff = abs(angle_deg - slot_center)
         if diff > 180:
             diff = 360 - diff
-        if diff <= slot_arc_half_deg:
+        if radius is not None:
+            arc_dist = math.radians(diff) * radius
+            if arc_dist <= half_w:
+                t = 1.0 - (arc_dist / half_w)
+                return straight_h + half_w * math.sqrt(max(0, t * (2 - t)))
+        elif diff <= slot_arc_half_deg:
             t = 1.0 - (diff / slot_arc_half_deg)
             return straight_h + half_w * math.sqrt(max(0, t * (2 - t)))
     return 0
@@ -354,7 +364,7 @@ def generate_inner_housing():
     for i in range(n_points + 1):
         x = (i / n_points) * width
         ang = (x / width) * 360
-        z_off = get_slot_z_offset(ang)
+        z_off = get_slot_z_offset(ang, housing_outer_r)
         top_profile.append((x, height - z_off))
 
     # Bottom edge

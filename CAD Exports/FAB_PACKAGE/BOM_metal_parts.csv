@@ -1,0 +1,15 @@
+part_no,name,material,qty_per_unit,process,key_dims_mm
+01,Inner Wall Tube,304SS 1.2mm,1,laser cut + roll + seam weld,ID141.7 / OD144.1 / H122.7
+02,Outer Perforated Tube,304SS 1.2mm,1,laser cut + roll + seam weld,ID152.1 / OD154.5 / H122.7; perf O4 @6mm
+03,Support Ring,304SS 1.2mm,1,laser cut + form,~O143 / H18
+04,Bottom Cap,304SS 1.2mm,1,laser cut disk + formed lip,O157.5 blank / lip 16
+05,Cap Shell,304SS 1.2mm,1,laser cut + press skirt + bend fingers,O157.5 / bore O81.5; 6 fingers; 2 hinge barrels O8
+06,Lid Inner Tube,304SS 1.2mm,1,laser cut + roll + seam weld,ID141.7 / OD144.1 / H35
+07,Lid Outer Perforated Tube,304SS 1.2mm,1,laser cut + roll + seam weld,ID152.1 / OD154.5 / H35; perf O4 @6mm
+08,Lid Top Disk,304SS 1.2mm,1,laser cut + form,~O157.5 / H14
+09,Lid Ceramic Holder,304SS 1.2mm,1,laser cut + form walls,~O154.5 / H14
+10,Lid Handle,304SS,1,bend,~54 x 27 x 29
+11,Lid Hinge Strap,304SS 1.2mm,1,laser cut + bend + curl barrel,barrel O8 bore O5.2
+12,Hold-Down Ring,304SS 1.2mm,1,laser cut + form 3 walls,O141.7; walls 3/10/6
+13,Hinge Pin,304SS rod,1,cut to length,O5 x 30
+14,Steel Tray,304SS 3mm,1,laser cut + bend,~394 x 204; walls 12
