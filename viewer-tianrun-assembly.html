@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Tianrun's latest STEP — Aug 23 assembly</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#e8e8ec;overflow:hidden;font-family:-apple-system,sans-serif}
+canvas{display:block;width:100vw;height:100vh}
+.tag{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;padding:8px 22px;border-radius:9px;font-size:15px;font-weight:600;z-index:5}
+#loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+.legend{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.68);color:#eee;padding:8px 16px;border-radius:8px;font-size:12.5px;z-index:5}
+#parts{position:fixed;top:60px;left:14px;background:rgba(0,0,0,.72);color:#eee;padding:10px 14px;border-radius:9px;font-size:13px;z-index:6;line-height:1.9}
+#parts label{display:flex;align-items:center;gap:8px;cursor:pointer}
+.sw{display:inline-block;width:13px;height:13px;border-radius:3px}
+</style></head><body>
+<div class="tag">Tianrun's design — the Aug 23 STEP he calls final</div>
+<div id="loading">Loading…</div>
+<div class="legend">drag to rotate &nbsp;·&nbsp; scroll to zoom &nbsp;·&nbsp; right-drag to pan &nbsp;·&nbsp; checkboxes hide parts</div>
+<div id="parts"></div>
+<canvas id="c"></canvas>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe8e8ec);
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,0.1,9000);
+cam.up.set(0,0,1);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true;
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+const DIR='Factory Files/2026-08-24 Tianrun/glb/';
+const PARTS=[
+  ['part_00.glb','Main body (零件3)',        0x9aa3ad, 0.35],
+  ['part_01.glb','Inner housing',            0xd06060, 1],
+  ['part_02.glb','Support ring',             0x4f8f7a, 1],
+  ['part_03.glb','Bottom cap',               0xdcb48c, 1],
+  ['part_04.glb','Top cap',                  0x7fbf6a, 1],
+  ['part_05.glb','Steel tray',               0xd9a521, 1],
+  ['part_06.glb','Lid bracket (盖子支架)',   0xb07fd0, 1],
+  ['part_07.glb','Lid assembly (顶盖组件)',  0x6f9bd8, 0.6],
+];
+const loader=new GLTFLoader();
+const load=p=>new Promise((res,rej)=>loader.load(p,g=>res(g.scene),undefined,rej));
+Promise.all(PARTS.map(p=>load(DIR+p[0]))).then(models=>{
+  const panel=document.getElementById('parts');
+  const all=new THREE.Group();
+  models.forEach((m,i)=>{ const [_,name,color,opacity]=PARTS[i];
+    m.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+      ch.material=new THREE.MeshStandardMaterial({color,side:THREE.DoubleSide,metalness:0.5,roughness:0.42,
+        transparent:opacity<1,opacity,depthWrite:opacity===1}); } });
+    all.add(m);
+    const row=document.createElement('label');
+    row.innerHTML=`<input type="checkbox" checked><span class="sw" style="background:#${color.toString(16).padStart(6,'0')}"></span>${name}`;
+    row.querySelector('input').onchange=e=>{ m.visible=e.target.checked; };
+    row.querySelector('.sw').style.cursor='pointer';
+    row.title='click the name to zoom to this part';
+    row.addEventListener('click',e=>{ if(e.target.tagName==='INPUT')return; focus(m); });
+    panel.appendChild(row);
+  });
+  scene.add(all);
+  // their STEP scatters parts far apart — re-line them up side by side on a floor
+  const boxes=models.map(m=>new THREE.Box3().setFromObject(m));
+  const gap=0.3*Math.max(...boxes.map(b=>b.getSize(new THREE.Vector3()).x));
+  let cursor=0;
+  models.forEach((m,i)=>{ const b=boxes[i];
+    const c=b.getCenter(new THREE.Vector3()), s=b.getSize(new THREE.Vector3());
+    m.position.x+= cursor + s.x/2 - c.x;
+    m.position.y+= -c.y;
+    m.position.z+= -b.min.z;
+    cursor += s.x + gap; });
+  function focus(obj){ const box=new THREE.Box3().setFromObject(obj);
+    const ctr=box.getCenter(new THREE.Vector3()); const size=box.getSize(new THREE.Vector3());
+    const r=Math.max(size.x,size.y,size.z)||100;
+    ctl.target.copy(ctr); cam.position.set(ctr.x+r*0.6,ctr.y-r*1.5,ctr.z+r*0.9); }
+  const btn=document.createElement('label');
+  btn.innerHTML='<b style="cursor:pointer">⤾ show everything</b>';
+  btn.onclick=()=>focus(all);
+  panel.prepend(btn);
+  focus(all);  // open showing all 8 parts; click a name to zoom one
+  const dbox=new THREE.Box3().setFromObject(all);
+  window.dbg={box:{min:dbox.min.toArray(),max:dbox.max.toArray()},cam:cam.position.toArray(),tgt:ctl.target.toArray(),
+    parts:models.map(m=>{const b=new THREE.Box3().setFromObject(m);return {min:b.min.toArray().map(v=>+v.toFixed(1)),max:b.max.toArray().map(v=>+v.toFixed(1))};})};
+  document.getElementById('loading').remove();
+  (function anim(){ requestAnimationFrame(anim); ctl.update(); renderer.render(scene,cam); })();
+}).catch(e=>{ document.getElementById('loading').textContent='Load failed: '+e; });
+</script>
+</body></html>
