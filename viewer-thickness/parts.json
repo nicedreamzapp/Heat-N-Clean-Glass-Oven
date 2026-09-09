@@ -1,0 +1,254 @@
+[
+ {
+  "no": "01",
+  "label": "Inner Wall Tube",
+  "kind": "inner",
+  "file": "CAD Exports/FAB_PACKAGE_2026-09-09/STEP/01_Inner_Wall_Tube.step",
+  "bbox_mm": [
+   143.3,
+   143.11,
+   122.7
+  ],
+  "thickness": {
+   "median": 0.7979427577487908,
+   "p10": 0.794103135137676,
+   "p90": 0.7999745718225248,
+   "samples": 3980
+  },
+  "volume_mm3": 42243.3
+ },
+ {
+  "no": "02",
+  "label": "Outer Perforated Tube",
+  "kind": "outer",
+  "file": "CAD Exports/FAB_PACKAGE_2026-09-09/STEP/02_Outer_Perforated_Tube.step",
+  "bbox_mm": [
+   154.5,
+   154.5,
+   122.7
+  ],
+  "thickness": {
+   "median": 1.1999432156814198,
+   "p10": 1.1981616224470284,
+   "p90": 2.8426615495294527,
+   "samples": 3966
+  },
+  "volume_mm3": 54758.0
+ },
+ {
+  "no": "03",
+  "label": "Support Ring",
+  "kind": "inner",
+  "file": "CAD Exports/FAB_PACKAGE_2026-09-09/STEP/03_Support_Ring.step",
+  "bbox_mm": [
+   141.7,
+   141.3,
+   9.3
+  ],
+  "thickness": {
+   "median": 0.8000000000000003,
+   "p10": 0.797763037744942,
+   "p90": 0.8000000000000003,
+   "samples": 3921
+  },
+  "volume_mm3": 11182.6
+ },
+ {
+  "no": "04",
+  "label": "Bottom Cap",
+  "kind": "outer",
+  "file": "CAD Exports/FAB_PACKAGE_2026-09-09/STEP/04_Bottom_Cap.step",
+  "bbox_mm": [
+   157.5,
+   157.06,
+   17.2
+  ],
+  "thickness": {
+   "median": 1.1999999999999962,
+   "p10": 1.1714592181715147,
+   "p90": 1.1999999999999997,
+   "samples": 3952
+  },
+  "volume_mm3": 31507.2
+ },
+ {
+  "no": "05",
+  "label": "Cap Shell (top cap)",
+  "kind": "outer",
+  "file": "CAD Exports/FAB_PACKAGE_2026-09-09/STEP/05_Cap_Shell.step",
+  "bbox_mm": [
+   157.37,
+   157.48,
+   46.0
+  ],
+  "thickness": {
+   "median": 1.2000000000000068,
+   "p10": 1.1661817459106263,
+   "p90": 1.222579797477486,
+   "samples": 3886
+  },
+  "volume_mm3": 24092.2
+ },
+ {
+  "no": "06",
+  "label": "Lid Inner Tube",
+  "kind": "inner",
+  "file": "CAD Exports/FAB_PACKAGE_2026-09-09/STEP/06_Lid_Inner_Tube.step",
+  "bbox_mm": [
+   143.3,
+   142.9,
+   35.0
+  ],
+  "thickness": {
+   "median": 0.7977630377449582,
+   "p10": 0.7977630377449437,
+   "p90": 0.7984182870527629,
+   "samples": 3926
+  },
+  "volume_mm3": 12165.2
+ },
+ {
+  "no": "07",
+  "label": "Lid Outer Perforated Tube",
+  "kind": "outer",
+  "file": "CAD Exports/FAB_PACKAGE_2026-09-09/STEP/07_Lid_Outer_Perforated_Tube.step",
+  "bbox_mm": [
+   154.5,
+   154.5,
+   35.0
+  ],
+  "thickness": {
+   "median": 1.1995563229534374,
+   "p10": 1.1966545765178693,
+   "p90": 3.645602694604741,
+   "samples": 3993
+  },
+  "volume_mm3": 15298.7
+ },
+ {
+  "no": "08",
+  "label": "Lid Top Disk",
+  "kind": "outer",
+  "file": "CAD Exports/FAB_PACKAGE_2026-09-09/STEP/08_Lid_Top_Disk.step",
+  "bbox_mm": [
+   157.5,
+   157.06,
+   14.2
+  ],
+  "thickness": {
+   "median": 1.2000000000000068,
+   "p10": 1.1966445566174173,
+   "p90": 1.2000000000000068,
+   "samples": 3956
+  },
+  "volume_mm3": 30923.8
+ },
+ {
+  "no": "09",
+  "label": "Lid Ceramic Holder",
+  "kind": "inner",
+  "file": "CAD Exports/FAB_PACKAGE_2026-09-09/STEP/09_Lid_Ceramic_Holder.step",
+  "bbox_mm": [
+   154.5,
+   154.07,
+   14.0
+  ],
+  "thickness": {
+   "median": 0.8000000000000012,
+   "p10": 0.7977630377449402,
+   "p90": 0.8000000000000012,
+   "samples": 3954
+  },
+  "volume_mm3": 17235.3
+ },
+ {
+  "no": "10",
+  "label": "Lid Handle",
+  "kind": "outer",
+  "file": "CAD Exports/FAB_PACKAGE_2026-09-09/STEP/10_Lid_Handle.step",
+  "bbox_mm": [
+   54.23,
+   27.04,
+   28.99
+  ],
+  "thickness": {
+   "median": 7.982421534371209,
+   "p10": 7.975917624658743,
+   "p90": 7.99031650535369,
+   "samples": 3650
+  },
+  "volume_mm3": 4841.3
+ },
+ {
+  "no": "11",
+  "label": "Lid Hinge Strap",
+  "kind": "outer",
+  "file": "CAD Exports/FAB_PACKAGE_2026-09-09/STEP/11_Lid_Hinge_Strap.step",
+  "bbox_mm": [
+   28.15,
+   11.78,
+   14.0
+  ],
+  "thickness": {
+   "median": 1.2000000000047015,
+   "p10": 1.1999999999967397,
+   "p90": 8.333333333335359,
+   "samples": 3930
+  },
+  "volume_mm3": 629.5
+ },
+ {
+  "no": "12",
+  "label": "Hold-Down Ring",
+  "kind": "inner",
+  "file": "CAD Exports/FAB_PACKAGE_2026-09-09/STEP/12_Hold_Down_Ring.step",
+  "bbox_mm": [
+   140.93,
+   141.69,
+   10.0
+  ],
+  "thickness": {
+   "median": 0.8000000000000012,
+   "p10": 0.7754264022813699,
+   "p90": 0.8102614128892505,
+   "samples": 3916
+  },
+  "volume_mm3": 9770.4
+ },
+ {
+  "no": "13",
+  "label": "Hinge Pin",
+  "kind": "rod",
+  "file": "CAD Exports/FAB_PACKAGE_2026-09-09/STEP/13_Hinge_Pin.step",
+  "bbox_mm": [
+   5.0,
+   30.0,
+   4.99
+  ],
+  "thickness": {
+   "median": 4.986018985905903,
+   "p10": 4.9860189859058925,
+   "p90": 4.9860189859059085,
+   "samples": 3704
+  },
+  "volume_mm3": 586.9
+ },
+ {
+  "no": "14",
+  "label": "Steel Tray",
+  "kind": "tray",
+  "file": "CAD Exports/FAB_PACKAGE_2026-09-09/STEP/14_Steel_Tray.step",
+  "bbox_mm": [
+   394.5,
+   204.5,
+   27.0
+  ],
+  "thickness": {
+   "median": 2.999999999999997,
+   "p10": 2.000000000000004,
+   "p90": 2.999999999999997,
+   "samples": 3824
+  },
+  "volume_mm3": 298839.0
+ }
+]

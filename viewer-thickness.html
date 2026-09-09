@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Metal parts — measured thickness</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e8e8ec;font-family:-apple-system,sans-serif;color:#16181d}
+#wrap{position:fixed;inset:0}
+#top{position:absolute;inset:0}
+canvas{display:block;width:100%;height:100%}
+#loading{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+#ctl{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.85);padding:10px 14px;border-radius:10px;display:flex;gap:12px;align-items:center;font-size:14px;z-index:10}
+#ctl button{font-size:15px;padding:6px 14px;border-radius:8px;border:1px solid #999;background:#fff;cursor:pointer}
+#ctl input{width:220px}
+#table{position:absolute;top:64px;left:12px;max-height:calc(100vh - 90px);max-width:calc(100vw - 24px);overflow:auto;background:rgba(255,255,255,.96);border:1px solid #bbb;border-radius:12px;padding:10px 16px;box-shadow:0 8px 30px rgba(0,0,0,.18);z-index:15}
+#table[hidden]{display:none}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:5px 10px;text-align:left;border-bottom:1px solid #eee;white-space:nowrap}
+th{background:#f4f4f6;position:sticky;top:0}
+.in{color:#b3441f;font-weight:600}
+.out{color:#1f5fb3;font-weight:600}
+.same{color:#2a7a2a}
+.change{color:#b3441f}
+#hint{font-size:12px;color:#666;margin-bottom:6px}
+</style></head><body>
+<div id="wrap">
+<div id="top">
+<div id="loading">Loading…</div>
+<div id="ctl"><button id="btn">Explode</button><input id="sl" type="range" min="0" max="1" step="0.01" value="0"><span id="mode">assembled</span><button id="tbtn">Parts list</button><button id="lbtn">Hide labels</button><button id="fbtn">Fit</button></div>
+<canvas id="c"></canvas>
+<div id="table" hidden><div id="hint">Drag to spin, scroll to zoom. Thickness is MEASURED from the STEP file itself (ray through the sheet, median of 4000 samples), not copied from the spec. Orange = inside parts you said should go to 0.8 mm. Blue = outside parts that stay 1.2 mm.</div>
+<table id="t"><thead><tr><th>#</th><th>Part</th><th>Inside / outside</th><th>Measured now</th><th>You asked for</th><th>Status</th><th>Size (mm)</th></tr></thead><tbody></tbody></table></div>
+</div>
+</div>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const V='?v='+Date.now();
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xe8e8ec);
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(35,1,0.1,20000);
+cam.up.set(0,0,1); cam.position.set(-120,-900,520);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.target.set(0,0,90);
+function fit(){ const w=canvas.clientWidth,h=canvas.clientHeight; renderer.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix(); }
+addEventListener('resize',fit); fit();
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+const loader=new GLTFLoader();
+const load=p=>new Promise((res,rej)=>loader.load(p,g=>res(g.scene),undefined,rej));
+function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({color,side:THREE.DoubleSide,metalness:0.55,roughness:0.4}); } }); }
+function makeLabel(lines,color){ const c=document.createElement('canvas');
+  let x=c.getContext('2d'); x.font='bold 28px -apple-system, sans-serif';
+  const w=Math.max(...lines.map(l=>Math.ceil(x.measureText(l).width)))+30; const h=lines.length*38+12; c.width=w; c.height=h; x=c.getContext('2d');
+  x.fillStyle='rgba(255,255,255,0.92)'; x.beginPath(); x.roundRect(0,0,w,h,11); x.fill();
+  x.textBaseline='middle';
+  lines.forEach((l,i)=>{ x.font=(i? 'bold 30px':'bold 26px')+' -apple-system, sans-serif'; x.fillStyle=i?color:'#000'; x.fillText(l,15,25+i*38); });
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false,transparent:true}));
+  spr.scale.set(w*0.27,h*0.27,1); spr.renderOrder=10; return spr; }
+// target thickness Matt asked for on 2026-08-07: inside parts 0.8, everything else 1.2, tray 3, pin is rod
+const TARGET={ '01':0.8,'03':0.8,'06':0.8,'09':0.8,'12':0.8, '14':3.0, '13':null };
+const COL={inner:0xd9825a, outer:0x7fa6d9, rod:0xb8c0c8, tray:0xb8c0c8};
+// where each part's CENTER lands when exploded: a 2-row grid, seen from the front, nothing overlapping
+const X=250, Z=330;
+const EXPLODE={
+  '05':[-2*X,0,Z],   '12':[-X,0,Z],   '10':[0,0,Z],    '08':[X,0,Z],    '09':[2*X,0,Z],
+  '06':[-2*X,0,0],   '07':[-X,0,0],   '11':[0,0,0],    '13':[X,0,0],    '14':[2.35*X,0,-Z*0.5],
+  '04':[-2*X,0,-Z],  '03':[-X,0,-Z],  '01':[0,0,-Z],   '02':[X,0,-Z],
+};
+const parts=await (await fetch('viewer-thickness/parts.json'+V)).json();
+const tb=document.querySelector('#t tbody');
+const models=await Promise.all(parts.map(p=>p.error?null:load('viewer-thickness/glb/'+p.no+'.glb'+V).catch(()=>null)));
+const items=[];
+parts.forEach((p,i)=>{
+  const t=p.thickness? p.thickness.median : null;
+  const target = p.no in TARGET ? TARGET[p.no] : 1.2;
+  const tTxt = t==null? 'n/a' : t.toFixed(2)+' mm';
+  const isRod = p.kind==='rod' || p.no==='10';
+  let status, cls;
+  if(isRod){ status='rod, not sheet'; cls=''; }
+  else if(t==null){ status='could not measure'; cls=''; }
+  else if(Math.abs(t-target)<0.1){ status='matches'; cls='same'; }
+  else { status='still '+t.toFixed(1)+', needs '+target.toFixed(1); cls='change'; }
+  const side = p.kind==='inner'?'<span class="in">inside</span>':(p.kind==='outer'?'<span class="out">outside</span>':p.kind);
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${p.no}</td><td>${p.label}</td><td>${side}</td><td><b>${tTxt}</b>${p.thickness?` <span style="color:#888">(${p.thickness.p10.toFixed(2)}–${p.thickness.p90.toFixed(2)})</span>`:''}</td><td>${isRod?(p.no==='10'?'Ø8 rod':'Ø5 rod'):target.toFixed(1)+' mm'}</td><td class="${cls}">${status}</td><td>${p.bbox_mm?p.bbox_mm.map(v=>v.toFixed(0)).join(' × '):''}</td>`;
+  tb.appendChild(tr);
+  const m=models[i]; if(!m) return;
+  const color=COL[p.kind]||0xb8c0c8; paint(m,color);
+  // build123d exports GLB in metres, Y-up: scale to mm and stand it up Z-up. World frame is kept, so parts assemble.
+  m.scale.setScalar(1000); m.rotation.x=Math.PI/2; m.updateMatrixWorld(true);
+  const g=new THREE.Group(); g.add(m); scene.add(g);
+  const bb=new THREE.Box3().setFromObject(m); const c=new THREE.Vector3(); bb.getCenter(c);
+  const lblColor = isRod? '#222' : (cls==='change'?'#9a2f0e':'#1d5e1d');
+  const lbl=makeLabel([p.no+' '+p.label, isRod?(p.no==='10'?'Ø8 rod':'Ø5 rod'):tTxt+(cls==='change'?'  → '+target.toFixed(1):'')], lblColor);
+  lbl.position.set(c.x, c.y, bb.min.z-70); g.add(lbl);   // label sits under its part
+  const tgt=new THREE.Vector3(...(EXPLODE[p.no]||[0,0,0]));
+  items.push({g,lbl,bb,lw:lbl.scale.x,lh:lbl.scale.y,to:tgt.sub(c)});
+});
+document.getElementById('loading').remove();
+// explode control
+const sl=document.getElementById('sl'), btn=document.getElementById('btn'), mode=document.getElementById('mode');
+const tbl=document.getElementById('table'), tbtn=document.getElementById('tbtn');
+const lbtn=document.getElementById('lbtn'); let showL=true;
+lbtn.onclick=()=>{ showL=!showL; items.forEach(it=>it.lbl.visible=showL); lbtn.textContent=showL?'Hide labels':'Show labels'; };
+tbtn.onclick=()=>{ tbl.hidden=!tbl.hidden; tbtn.textContent=tbl.hidden?'Parts list':'Hide list'; };
+let k=0, goal=0;
+// frame the camera so every part fits at explode factor f, keeping the current viewing direction
+function frame(f){ const box=new THREE.Box3();
+  items.forEach(it=>{ const b=it.bb.clone(); b.translate(it.to.clone().multiplyScalar(f)); box.union(b); });
+  const ctr=box.getCenter(new THREE.Vector3());
+  const dir=cam.position.clone().sub(ctl.target).normalize();
+  // camera basis for the current viewing direction
+  const up=new THREE.Vector3(0,0,1), right=new THREE.Vector3().crossVectors(up,dir).normalize(), cup=new THREE.Vector3().crossVectors(dir,right).normalize();
+  const tv=Math.tan(THREE.MathUtils.degToRad(cam.fov/2)), th=tv*cam.aspect;
+  let d=0;
+  for(const cx of [box.min.x,box.max.x]) for(const cy of [box.min.y,box.max.y]) for(const cz of [box.min.z,box.max.z]){
+    const v=new THREE.Vector3(cx,cy,cz).sub(ctr);
+    const depth=v.dot(dir), x=Math.abs(v.dot(right)), y=Math.abs(v.dot(cup));
+    d=Math.max(d, x/th+depth, y/tv+depth); }
+  d*=1.03;
+  ctl.target.copy(ctr); cam.position.copy(ctr).add(dir.multiplyScalar(d)); ctl.update(); }
+frame(0);
+function apply(f){ items.forEach(it=>{ it.g.position.copy(it.to).multiplyScalar(f); it.lbl.material.opacity=Math.min(1,Math.max(0,(f-0.4)/0.5)); }); mode.textContent=f<0.02?'assembled':(f>0.98?'exploded':'…'); }
+sl.oninput=()=>{ goal=k=parseFloat(sl.value); apply(k); btn.textContent=k>0.5?'Assemble':'Explode'; };
+btn.onclick=()=>{ goal=goal>0.5?0:1; btn.textContent=goal>0.5?'Assemble':'Explode'; frame(goal); };
+sl.onchange=()=>frame(k);
+document.getElementById('fbtn').onclick=()=>frame(k);
+(function anim(){ requestAnimationFrame(anim);
+  if(Math.abs(goal-k)>0.001){ k+= (goal-k)*0.08; sl.value=k; apply(k); frame(k); }
+  const ls=cam.position.distanceTo(ctl.target)/900; items.forEach(it=>{ it.lbl.scale.set(it.lw*ls,it.lh*ls,1); });
+  ctl.update(); renderer.render(scene,cam); })();
+</script>
+</body></html>

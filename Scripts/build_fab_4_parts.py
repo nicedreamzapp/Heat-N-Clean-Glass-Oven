@@ -171,7 +171,7 @@ def build_lid_ceramic_holder():
     bb, ext = glb_bbox("Lid Split/4_Lid_Ceramic_Holder.glb")
     z_lo, z_hi = float(bb[0][2]), float(bb[1][2])     # 91.0 .. 105.0
     r_out = float(ext[0]) / 2.0                        # 77.25 -> OD 154.5
-    T = sheet_metal_thickness
+    T = inner_sheet_thickness        # 0.8 — inner part (2026-09-09)
 
     r_bore   = 36.25       # grab-lip ID (mesh inner edge)
     r_cer_in = ceramic_outer_r        # 46.25  (web ID)

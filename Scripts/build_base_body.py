@@ -90,10 +90,10 @@ outer_wall = annulus(mesh_inner_r, mesh_outer_r, WALL_H, Z_BOT)
 # Support ring (PART 1C): horizontal lip @ lip_z + vertical retaining wall
 print("Building support ring...")
 l_ring_inner_r = ceramic_outer_r - 10               # 36.25
-horizontal_lip = annulus(l_ring_inner_r, housing_inner_r, sheet_metal_thickness, lip_z)
-wall_bottom = lip_z + sheet_metal_thickness
+horizontal_lip = annulus(l_ring_inner_r, housing_inner_r, inner_sheet_thickness, lip_z)
+wall_bottom = lip_z + inner_sheet_thickness
 ring_wall_h = ring_wall_top_z - wall_bottom
-vertical_wall = annulus(ceramic_outer_r, ceramic_outer_r + sheet_metal_thickness,
+vertical_wall = annulus(ceramic_outer_r, ceramic_outer_r + inner_sheet_thickness,
                         ring_wall_h, wall_bottom)
 support_ring = horizontal_lip.fuse(vertical_wall)
 
@@ -278,16 +278,21 @@ print(f"  inner tube volume {inner_solid.volume:.1f} mm^3")
 # ===========================================================================
 # 3. OUTER TUBE solid: slots + perforations + M6
 # ===========================================================================
-print("Machining OUTER tube...")
-outer_solid = outer_wall
-_v0 = outer_solid.volume
-outer_solid = cut_many(outer_solid, slot_cutters, label="outer-slot")
-outer_solid = cut_many(outer_solid, slot_round_cutters, label="outer-slot-round")
-assert outer_solid.volume < _v0 - 100, "slot cut did not take on the outer wall"
-outer_solid = cut_many(outer_solid, perf_cutters, chunk=30, label="outer-perf")
-outer_solid = cut_many(outer_solid, m6_cutters, label="outer-M6")
-outer_solid = single_solid(outer_solid)
-print(f"  outer tube volume {outer_solid.volume:.1f} mm^3")
+SKIP_OUTER = os.environ.get("SKIP_OUTER") == "1"
+if SKIP_OUTER:
+    print("Skipping OUTER tube (SKIP_OUTER=1) — unchanged 1.2 mm part")
+    outer_solid = outer_wall
+else:
+    print("Machining OUTER tube...")
+    outer_solid = outer_wall
+    _v0 = outer_solid.volume
+    outer_solid = cut_many(outer_solid, slot_cutters, label="outer-slot")
+    outer_solid = cut_many(outer_solid, slot_round_cutters, label="outer-slot-round")
+    assert outer_solid.volume < _v0 - 100, "slot cut did not take on the outer wall"
+    outer_solid = cut_many(outer_solid, perf_cutters, chunk=30, label="outer-perf")
+    outer_solid = cut_many(outer_solid, m6_cutters, label="outer-M6")
+    outer_solid = single_solid(outer_solid)
+    print(f"  outer tube volume {outer_solid.volume:.1f} mm^3")
 
 # ===========================================================================
 # 4. SUPPORT RING solid: 3 vertical leg bolt holes through the lip
@@ -296,8 +301,8 @@ print("Machining SUPPORT RING...")
 leg_cutters = []
 for ang in leg_angles:
     leg_cutters.append(vertical_hole(ang, leg_hole_r, bolt_hole_size / 2,
-                                     lip_z + sheet_metal_thickness / 2,
-                                     sheet_metal_thickness + 10))
+                                     lip_z + inner_sheet_thickness / 2,
+                                     inner_sheet_thickness + 10))
 leg_count = len(leg_cutters)
 ring_solid = cut_many(support_ring, leg_cutters, label="ring-leg")
 ring_solid = single_solid(ring_solid)
@@ -321,9 +326,18 @@ out_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 os.makedirs(out_dir, exist_ok=True)
 out_path = os.path.join(out_dir, "01_Base_Body.step")
 
-print(f"Exporting -> {out_path}")
-export_step(body, out_path)
-print("Export done.")
+PARTS_DIR = os.environ.get("PARTS_DIR")   # when set: export the tubes + ring as separate part STEPs
+if PARTS_DIR:
+    os.makedirs(PARTS_DIR, exist_ok=True)
+    export_step(inner_solid, os.path.join(PARTS_DIR, "01_Inner_Wall_Tube.step"))
+    export_step(ring_solid,  os.path.join(PARTS_DIR, "03_Support_Ring.step"))
+    if not SKIP_OUTER:
+        export_step(outer_solid, os.path.join(PARTS_DIR, "02_Outer_Perforated_Tube.step"))
+    print(f"Exported separate parts -> {PARTS_DIR}")
+else:
+    print(f"Exporting -> {out_path}")
+    export_step(body, out_path)
+    print("Export done.")
 
 print("\nBUILD SUMMARY")
 print(f"  slots cut      : {len(slot_positions)}")

@@ -232,6 +232,7 @@ def build_cap_shell():
 # 04b — CAP HOLD-DOWN RING
 # ============================================================================
 def build_hold_down_ring():
+    T = inner_sheet_thickness                       # 0.8 — inner part (2026-09-09); shadows the module-level 1.2
     web_top = HD_WEB_TOP                            # 89.8
 
     # slot gaps (between slots) — sectors get web + walls
@@ -274,7 +275,7 @@ def build_hold_down_ring():
         edge = sector(housing_inner_r - T, housing_inner_r, web_top, HD_EDGE_WALL_DROP, a0, a1)
         # flat web between ceramic_inner_r and housing_inner_r, inset 4 deg each end
         m0, m1 = a0 + 4.0, a1 - 4.0
-        web = sector(ceramic_inner_r, housing_inner_r, web_top, HD_WEB_DROP, m0, m1)
+        web = sector(ceramic_inner_r, housing_inner_r, web_top, T, m0, m1)   # web is one sheet thick, not the old 2.0 band
         for piece in (grab, flap, edge, web):
             ring = piece if ring is None else as_compound(ring + piece)
 

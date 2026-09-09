@@ -13,7 +13,12 @@ import math
 import numpy as np
 
 # ── Sheet / material ───────────────────────────────────────────────
-sheet_metal_thickness = 1.2          # 304SS, 1.2 mm everywhere unless noted
+sheet_metal_thickness = 1.2          # OUTER / structural parts: 02, 04, 05, 07, 08, 11 (304SS 1.2 mm)
+# 2026-09-09 (Matt, asked 2026-08-07): INNER parts drop to 0.8 mm — they only shield the
+# ceramic and carry no load. Applies to 01 inner wall, 03 support ring, 06 lid inner tube,
+# 09 lid ceramic holder, 12 hold-down ring. Mating diameters are held: inner-wall ID 141.7
+# (ring seats inside it), outer tube 152.1/154.5 untouched, so the air gap grows 4.0 -> 4.4.
+inner_sheet_thickness = 0.8
 
 # ── Ceramic reference dims (drive the metal interfaces) ────────────
 cylinder_height = 91
@@ -45,20 +50,21 @@ slot_arc_half_deg = (slot_width * scale_factor / 2 / circumference * 360)  # ≈
 # ── Tube walls (twin-wall chamber) ─────────────────────────────────
 insulation_gap = 24.6
 housing_inner_r = ceramic_outer_r + insulation_gap      # 70.85  -> inner tube ID 141.7
-housing_outer_r = housing_inner_r + sheet_metal_thickness  # 72.05 -> inner tube OD 144.1
+housing_outer_r = housing_inner_r + inner_sheet_thickness  # 71.65 -> inner tube OD 143.3 (was 144.1 at 1.2)
 air_gap = 4
-mesh_inner_r = housing_outer_r + air_gap                # 76.05  -> outer tube ID 152.1
+mesh_inner_r = housing_inner_r + sheet_metal_thickness + air_gap   # 76.05 -> outer tube ID 152.1 (held; real gap now 4.4)
 mesh_outer_r = mesh_inner_r + sheet_metal_thickness     # 77.25  -> outer tube OD 154.5
 perf_mid_r = (mesh_inner_r + mesh_outer_r) / 2          # 76.65
 
 # ── Z reference levels ─────────────────────────────────────────────
-lip_z = -(disk_thickness + sheet_metal_thickness)       # -6.7
+lip_top_z = -disk_thickness                             # -5.5  ceramic seat face (held)
+lip_z = lip_top_z - inner_sheet_thickness                # -6.3  (was -6.7 at 1.2)
 # 2026-08-14: REVERTED to the original -31.7 / 122.7. On 2026-08-13 this was changed to
 # -43.7 / 134.7 on the false belief that the DXF flats said 134.7 and disagreed with the
 # STEP. They never did — 134.7 was a bounding box that included the drawing's title text.
 # The DXFs state it themselves: "Flat: 452.7 x 122.7 mm" and "Flat: 485.4 x 122.7 mm".
-# 122.7 is correct and always was, and it is what Tianrun built.
-housing_bottom_z = lip_z - 25                           # -31.7
+# 122.7 is correct and always was, and it is what the fab shop built.
+housing_bottom_z = -(disk_thickness + sheet_metal_thickness) - 25   # -31.7 (held, independent of the ring lip)
 housing_top_z = cylinder_height                         # 91
 mesh_height = housing_top_z - housing_bottom_z          # 122.7  (outer tube height)
 
@@ -165,7 +171,8 @@ PRINCIPAL_DIMS = {
     "Outer tube ID (mm)": round(2*mesh_inner_r, 2),
     "Outer tube OD (mm)": round(2*mesh_outer_r, 2),
     "Outer tube height (mm)": round(mesh_height, 2),
-    "Sheet thickness (mm)": sheet_metal_thickness,
+    "Sheet thickness outer (mm)": sheet_metal_thickness,
+    "Sheet thickness inner (mm)": inner_sheet_thickness,
     "Glass slot W x D (mm)": f"{slot_width} x {slot_depth}",
     "Slot centers (deg)": [round(a, 2) for a in slot_positions],
     "Perf hole dia (mm)": 2*perf_hole_r,

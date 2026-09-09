@@ -6,8 +6,26 @@
 
 Heat & Clean is a precision ceramic oven that heats your glass pieces to the perfect dabbing or vaping temperature -- no torch, no guessing, no hot spots. Set your temp, drop in your piece, and get a perfect session every time. And when your glass gets gunked up? Same oven, higher temp, walk away. Comes back looking brand new.
 
-**See every part in 3D:** https://nicedreamzwholesale.com/heat-n-clean-viewer/all-parts.html
-**Full parts list:** [PARTS_LIST.md](PARTS_LIST.md) · **Shop quote package:** `CAD Exports/Heat-N-Clean_Fabrication_Package.zip` (bilingual EN/中文)
+**Spin every part in your browser — no CAD software needed:** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/viewer-thickness.html
+Click **Explode** to pull the oven apart, and every part is labelled with its sheet thickness.
+
+**See every part in 3D (older viewer):** https://nicedreamzwholesale.com/heat-n-clean-viewer/all-parts.html
+**Full parts list:** [PARTS_LIST.md](PARTS_LIST.md) · **Current fab package:** `CAD Exports/FAB_PACKAGE_2026-09-09/` — 14 STEP files + BOM
+
+---
+
+## Current metal spec (2026-09-09)
+
+| | Parts | Sheet | Material |
+|---|---|---|---|
+| **Outside** — seen, structural | 02 outer tube · 04 bottom cap · 05 top cap · 07 lid outer tube · 08 lid top disk · 11 hinge strap | **1.2 mm** | 304SS, #4 brushed |
+| **Inside** — hidden, no load | 01 inner wall · 03 support ring · 06 lid inner tube · 09 lid ceramic holder · 12 hold-down ring | **0.8 mm** | 304 **or** 430 SS / aluminized steel — anything rated 870 °F continuous |
+| Tray | 14 steel tray | 3 mm | 304 or mild steel |
+| Rod | 10 handle (Ø8) · 13 hinge pin (Ø5) | — | 304SS rod |
+
+Inner wall ID stays 141.7 and the outer tube stays 152.1 / 154.5, so nothing that mates
+with the ceramic or the glass moved. Every thickness above was measured back out of the
+STEP files themselves (`Scripts/measure_thickness.py`), not copied from a spec sheet.
 
 ---
 
