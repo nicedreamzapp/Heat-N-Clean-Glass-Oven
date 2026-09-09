@@ -96,8 +96,8 @@ parts.forEach((p,i)=>{
   tb.appendChild(tr);
   const m=models[i]; if(!m) return;
   const color=COL[p.kind]||0xb8c0c8; paint(m,color);
-  // build123d exports GLB in metres, Y-up: scale to mm and stand it up Z-up. World frame is kept, so parts assemble.
-  m.scale.setScalar(1000); m.rotation.x=Math.PI/2; m.updateMatrixWorld(true);
+  // GLBs are exported by trimesh: already millimetres, Z-up, world frame kept, so parts assemble as-is.
+  m.updateMatrixWorld(true);
   const g=new THREE.Group(); g.add(m); scene.add(g);
   const bb=new THREE.Box3().setFromObject(m); const c=new THREE.Vector3(); bb.getCenter(c);
   const lblColor = isRod? '#222' : (cls==='change'?'#9a2f0e':'#1d5e1d');

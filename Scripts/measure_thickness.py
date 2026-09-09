@@ -13,7 +13,7 @@ Out: viewer-thickness/glb/*.glb and viewer-thickness/parts.json
 import os, sys, json, time
 import numpy as np
 import trimesh
-from build123d import import_step, export_gltf
+from build123d import import_step
 
 PROJ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FAB = os.path.join(PROJ, "CAD Exports", "FAB_PACKAGE_2026-09-09", "STEP")   # 0.8 mm inner parts, built 2026-09-09
@@ -72,9 +72,11 @@ for no, label, path, kind in PARTS:
     if not os.path.exists(path):
         results.append({"no": no, "label": label, "error": "file missing", "path": path}); print(no, "MISSING", path); continue
     shape = import_step(path)
-    glb = os.path.join(GLB, f"{no}.glb")
-    export_gltf(shape, glb, binary=True)
     mesh = to_trimesh(shape)
+    # Export the GLB from the SAME trimesh we measure — build123d's export_gltf
+    # writes unwelded vertices (~6x bigger) and GitHub Pages has to serve these.
+    glb = os.path.join(GLB, f"{no}.glb")
+    mesh.export(glb)
     bb = mesh.bounds
     size = (bb[1] - bb[0]).tolist()
     th = thickness(mesh)

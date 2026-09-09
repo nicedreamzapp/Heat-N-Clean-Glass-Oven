@@ -2,3 +2,8 @@
 *.obj filter=lfs diff=lfs merge=lfs -text
 *.glb filter=lfs diff=lfs merge=lfs -text
 *.3mf filter=lfs diff=lfs merge=lfs -text
+
+# GitHub Pages does NOT serve Git LFS objects — it returns the pointer text and the
+# page breaks. The web viewer's meshes must be real blobs in the repo. They are
+# trimesh-exported and small (~5 MB total), so this costs nothing.
+viewer-thickness/glb/*.glb !filter !diff !merge -text
