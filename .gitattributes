@@ -7,3 +7,14 @@
 # page breaks. The web viewer's meshes must be real blobs in the repo. They are
 # trimesh-exported and small (~5 MB total), so this costs nothing.
 viewer-thickness/glb/*.glb !filter !diff !merge -text
+
+# Same reason as above: the hinge close-up viewer's 7 meshes must be real blobs,
+# not LFS pointers, or the page loads empty on GitHub Pages. gitattributes patterns
+# cannot contain spaces, and these folders do ("CAD Exports/..."), so match by basename.
+04a_Cap_Shell.glb !filter !diff !merge -text
+05_Hinge_Pin.glb !filter !diff !merge -text
+05b_Lid_Hinge_Strap.glb !filter !diff !merge -text
+2_Outer_Perforated_Tube.glb !filter !diff !merge -text
+2_Lid_Outer_Perforated_Tube.glb !filter !diff !merge -text
+3_Lid_Top_Disk.glb !filter !diff !merge -text
+4_Lid_Spacer.glb !filter !diff !merge -text
