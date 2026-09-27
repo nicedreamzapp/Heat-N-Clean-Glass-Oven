@@ -2,6 +2,10 @@
 
 **The perfect heat, every time. Drop in your terp slurper, banger, or ball vape -- the oven heats the entire barrel evenly to your exact target temperature. When you're done, crank it up and burn off all the char and resin too.**
 
+**In one sentence:** an open-hardware design for a bolt-together stainless and ceramic oven that heats glass dab pieces to a set temperature with a PID controller, then runs hotter to burn them clean.
+
+**Status:** design complete, 14-part metal fab package generated from Python CAD scripts, sheet thickness verified by measuring the STEP files. First physical articles are not in this repo yet (see [Known limits](#known-limits)).
+
 ![Nice Dreamz Heat & Clean Glass Oven - Lid Open](Renders/LidOpen_Product.png)
 
 Heat & Clean is a precision ceramic oven that heats your glass pieces to the perfect dabbing or vaping temperature -- no torch, no guessing, no hot spots. Set your temp, drop in your piece, and get a perfect session every time. And when your glass gets gunked up? Same oven, higher temp, walk away. Comes back looking brand new.
@@ -11,6 +15,20 @@ Click **Explode** to pull the oven apart, and every part is labelled with its sh
 
 **See every part in 3D (older viewer):** https://nicedreamzwholesale.com/heat-n-clean-viewer/all-parts.html
 **Full parts list:** [PARTS_LIST.md](PARTS_LIST.md) · **Current fab package:** `CAD Exports/FAB_PACKAGE_2026-09-09/` — 14 STEP files + BOM
+
+---
+
+## What I built (Matt Macosko)
+
+- **Parametric CAD generator**, all geometry in code: [Scripts/export_all_parts.py](Scripts/export_all_parts.py) (every part as STL/GLB), shared dimensions in [Scripts/hnc_params.py](Scripts/hnc_params.py), part builders [build_base_body.py](Scripts/build_base_body.py), [build_lid.py](Scripts/build_lid.py), [build_cap_shell_ring.py](Scripts/build_cap_shell_ring.py), [build_caps_tray.py](Scripts/build_caps_tray.py)
+- **Fab package builder** for the 0.8 mm inner parts: [Scripts/build_inner_parts_08.py](Scripts/build_inner_parts_08.py) -> [CAD Exports/FAB_PACKAGE_2026-09-09/](CAD%20Exports/FAB_PACKAGE_2026-09-09/) (14 STEP files + [BOM](CAD%20Exports/FAB_PACKAGE_2026-09-09/BOM_metal_parts.csv))
+- **Thickness verification** by ray-casting the STEP meshes: [Scripts/measure_thickness.py](Scripts/measure_thickness.py) -> [viewer-thickness/parts.json](viewer-thickness/parts.json), plus [Scripts/verify_steps.py](Scripts/verify_steps.py)
+- **Flat patterns and shop drawings**: [generate_flat_patterns.py](Scripts/generate_flat_patterns.py), [generate_cap_dxfs.py](Scripts/generate_cap_dxfs.py), [generate_fab_package.py](Scripts/generate_fab_package.py) (bilingual EN/中文 spec)
+- **Browser 3D viewers**: [viewer-thickness.html](viewer-thickness.html) and the other `viewer-*.html` pages
+- **Controller configuration** for the upstream REX-C100 PID and DH48S timer: [Controller_Setup_Guide.md](Controller_Setup_Guide.md)
+- **Parts list and assembly design** (25 pieces, zero welded joints): [PARTS_LIST.md](PARTS_LIST.md)
+
+Upstream tools used, not written here: [build123d](https://github.com/gumyr/build123d) (STEP I/O), [trimesh](https://github.com/mikedh/trimesh), NumPy, [three.js](https://threejs.org/) (viewers), Blender (product renders). The REX-C100, DH48S and ceramic heater are off-the-shelf parts.
 
 ---
 
@@ -128,7 +146,7 @@ decision reviewed against 3D renders before any shop quotes:
 |-----------|----------|
 | Heating chamber | High-alumina ceramic cylinder (92.5mm OD) |
 | Heating element | Kanthal wire coil (30 wraps) |
-| Inner housing | 1.2mm 304 stainless steel |
+| Inner housing | 0.8mm 304 or 430 SS / aluminized steel (see metal spec above) |
 | Outer mesh | 1.2mm perforated 304 stainless steel |
 | Insulation gap | 24.6mm air gap between ceramic and housing |
 | Spacer rings | 5x ceramic (3x 14mm body + 2x 10mm lid) |
@@ -161,9 +179,32 @@ decision reviewed against 3D renders before any shop quotes:
 
 ---
 
+## Known limits
+
+- No physical prototype results are in this repo. Temperatures and safety limits are the controller settings in [Controller_Setup_Guide.md](Controller_Setup_Guide.md), not logged test data.
+- Hinge strap stiffness with the lid open is still an open question (see the design journey above).
+- `build_inner_parts_08.py` and `measure_thickness.py` read some files from `Factory Files/`, which is gitignored, so the 2026-09-09 fab package cannot be fully rebuilt from this repo alone. The committed STEP files are the source of truth.
+- `export_all_parts.py` still models every sheet at 1.2 mm; the 0.8 mm inner parts exist only in the fab package STEP files.
+- There is no `requirements.txt`. The scripts expect a local venv (`.venv-cad`) with build123d, trimesh and numpy.
+
+---
+
+## Quick start
+
+```bash
+# View the parts in a browser (the viewers load files by relative path)
+python3 -m http.server        # then open http://localhost:8000/viewer-thickness.html
+
+# Regenerate the STL/GLB meshes
+python3 -m venv .venv-cad && .venv-cad/bin/pip install build123d trimesh numpy
+.venv-cad/bin/python Scripts/export_all_parts.py
+```
+
+---
+
 ## License
 
-All rights reserved. Nice Dreamz 2026.
+Open hardware, copyleft: CERN-OHL-S-2.0 for the hardware and CAD, GPL-3.0-or-later for code, CC-BY-SA-4.0 for docs and images. See [LICENSE](LICENSE) for which applies to what.
 
 ---
 
@@ -172,12 +213,16 @@ All rights reserved. Nice Dreamz 2026.
 ```
 PARTS_LIST.md                   -- the 25-piece kit, numbered like the viewer labels
 Scripts/
-  export_all_parts.py           -- THE master: generates every part (STL/GLB), final design
+  export_all_parts.py           -- generates every part as STL/GLB (all sheets at 1.2 mm)
+  hnc_params.py                 -- shared dimensions (outer 1.2 mm, inner 0.8 mm)
+  build_inner_parts_08.py       -- builds the 14-part STEP package in FAB_PACKAGE_2026-09-09/
+  measure_thickness.py          -- measures sheet thickness from the STEPs, feeds viewer-thickness
   generate_fab_package.py       -- builds the bilingual shop quote package + zip
   generate_cap_dxfs.py          -- cap shell flat blank + hold-down ring drawing (DXF)
   generate_flat_patterns.py     -- laser-cut flat patterns for the other parts
 
 viewer-*.html                   -- interactive 3D viewers (serve repo root, e.g. python3 -m http.server)
+  viewer-thickness.html         -- current 14 metal parts, measured thickness, explode (hosted on GitHub Pages)
   viewer-sections.html          -- all 25 pieces, separated + named (hosted: /heat-n-clean-viewer/all-parts.html)
   viewer-metal-parts.html       -- the 13 metal parts a shop quotes
   viewer-topcap-fastening.html  -- full assembly; fasten/open-lid animations
@@ -186,8 +231,9 @@ viewer-*.html                   -- interactive 3D viewers (serve repo root, e.g.
   viewer-capshell.html          -- the cap shell alone
 
 CAD Exports/
-  Individual Parts/STL|GLB/     -- every part, final design
+  FAB_PACKAGE_2026-09-09/       -- current: 14 STEP files + BOM + README
+  Individual Parts/STL|GLB/     -- every part as STL/GLB
   Core Split/ · Lid Split/      -- the split parts the viewers load
   Flat Patterns/DXF|SVG/        -- laser-cut patterns
-  Fabrication Package/          -- spec EN + 中文, BOM, DXF, 3D refs (zip alongside)
+  Fabrication Package/          -- older package: spec EN + 中文, BOM, DXF, 3D refs (zip alongside)
 ```
