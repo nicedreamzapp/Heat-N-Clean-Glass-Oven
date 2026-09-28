@@ -1,0 +1,239 @@
+# Nice Dreamz Heat & Clean Glass Oven
+
+**The perfect heat, every time. Drop in your terp slurper, banger, or ball vape -- the oven heats the entire barrel evenly to your exact target temperature. When you're done, crank it up and burn off all the char and resin too.**
+
+**In one sentence:** an open-hardware design for a bolt-together stainless and ceramic oven that heats glass dab pieces to a set temperature with a PID controller, then runs hotter to burn them clean.
+
+**Status:** design complete, 14-part metal fab package generated from Python CAD scripts, sheet thickness verified by measuring the STEP files. First physical articles are not in this repo yet (see [Known limits](#known-limits)).
+
+![Nice Dreamz Heat & Clean Glass Oven - Lid Open](Renders/LidOpen_Product.png)
+
+Heat & Clean is a precision ceramic oven that heats your glass pieces to the perfect dabbing or vaping temperature -- no torch, no guessing, no hot spots. Set your temp, drop in your piece, and get a perfect session every time. And when your glass gets gunked up? Same oven, higher temp, walk away. Comes back looking brand new.
+
+**Spin every part in your browser — no CAD software needed:** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/viewer-thickness.html
+Click **Explode** to pull the oven apart, and every part is labelled with its sheet thickness.
+
+**See every part in 3D (older viewer):** https://nicedreamzwholesale.com/heat-n-clean-viewer/all-parts.html
+**Full parts list:** [PARTS_LIST.md](PARTS_LIST.md) · **Current fab package:** `CAD Exports/FAB_PACKAGE_2026-09-09/` — 14 STEP files + BOM
+
+---
+
+## What I built (Matt Macosko)
+
+- **Parametric CAD generator**, all geometry in code: [Scripts/export_all_parts.py](Scripts/export_all_parts.py) (every part as STL/GLB), shared dimensions in [Scripts/hnc_params.py](Scripts/hnc_params.py), part builders [build_base_body.py](Scripts/build_base_body.py), [build_lid.py](Scripts/build_lid.py), [build_cap_shell_ring.py](Scripts/build_cap_shell_ring.py), [build_caps_tray.py](Scripts/build_caps_tray.py)
+- **Fab package builder** for the 0.8 mm inner parts: [Scripts/build_inner_parts_08.py](Scripts/build_inner_parts_08.py) -> [CAD Exports/FAB_PACKAGE_2026-09-09/](CAD%20Exports/FAB_PACKAGE_2026-09-09/) (14 STEP files + [BOM](CAD%20Exports/FAB_PACKAGE_2026-09-09/BOM_metal_parts.csv))
+- **Thickness verification** by ray-casting the STEP meshes: [Scripts/measure_thickness.py](Scripts/measure_thickness.py) -> [viewer-thickness/parts.json](viewer-thickness/parts.json), plus [Scripts/verify_steps.py](Scripts/verify_steps.py)
+- **Flat patterns and shop drawings**: [generate_flat_patterns.py](Scripts/generate_flat_patterns.py), [generate_cap_dxfs.py](Scripts/generate_cap_dxfs.py), [generate_fab_package.py](Scripts/generate_fab_package.py) (bilingual EN/中文 spec)
+- **Browser 3D viewers**: [viewer-thickness.html](viewer-thickness.html) and the other `viewer-*.html` pages
+- **Controller configuration** for the upstream REX-C100 PID and DH48S timer: [Controller_Setup_Guide.md](Controller_Setup_Guide.md)
+- **Parts list and assembly design** (25 pieces, zero welded joints): [PARTS_LIST.md](PARTS_LIST.md)
+
+Upstream tools used, not written here: [build123d](https://github.com/gumyr/build123d) (STEP I/O), [trimesh](https://github.com/mikedh/trimesh), NumPy, [three.js](https://threejs.org/) (viewers), Blender (product renders). The REX-C100, DH48S and ceramic heater are off-the-shelf parts.
+
+---
+
+## Current metal spec (2026-09-09)
+
+| | Parts | Sheet | Material |
+|---|---|---|---|
+| **Outside** — seen, structural | 02 outer tube · 04 bottom cap · 05 top cap · 07 lid outer tube · 08 lid top disk · 11 hinge strap | **1.2 mm** | 304SS, #4 brushed |
+| **Inside** — hidden, no load | 01 inner wall · 03 support ring · 06 lid inner tube · 09 lid ceramic holder · 12 hold-down ring | **0.8 mm** | 304 **or** 430 SS / aluminized steel — anything rated 870 °F continuous |
+| Tray | 14 steel tray | 3 mm | 304 or mild steel |
+| Rod | 10 handle (Ø8) · 13 hinge pin (Ø5) | — | 304SS rod |
+
+Inner wall ID stays 141.7 and the outer tube stays 152.1 / 154.5, so nothing that mates
+with the ceramic or the glass moved. Every thickness above was measured back out of the
+STEP files themselves (`Scripts/measure_thickness.py`), not copied from a spec sheet.
+
+---
+
+## The Problem
+
+Torches and coil heaters can't evenly heat modern glass pieces.
+
+| | |
+|---|---|
+| ![Torch only heats the bottom](Reference%20Photos/ref_torch_problem.png) | ![Coil wraps only cover half the barrel](Reference%20Photos/ref_coil_problem.png) |
+
+**With a torch**, only the bottom dish and a small portion of the barrel gets heated. You're guessing at temperature every single time -- too hot and you scorch it, too cool and you waste product.
+
+**With a coil heater**, even a 10-wrap coil only covers half the barrel. The top half never reaches temp. Uneven heat means uneven flavor.
+
+---
+
+## The Solution
+
+The Heat & Clean oven surrounds the **entire piece** in even, controlled heat.
+
+| | |
+|---|---|
+| ![Full barrel heating](Reference%20Photos/ref_full_barrel_heating.png) | ![Terp slurper dimensions](Reference%20Photos/ref_slurper_dimensions.png) |
+
+The 91mm tall ceramic chamber heats the **whole barrel** -- top to bottom, all the way around. Tower-style terp slurpers with 80mm barrels fit completely inside. Set your exact target temperature and hit it every time. Lower temps, better flavor, zero waste.
+
+---
+
+## Two Modes, One Device
+
+### Heating Mode
+Drop in your terp slurper, banger, or ball vape heater. Set your preferred dabbing or vaping temperature -- most sessions run in the 500-600 F sweet spot. The PID controller brings it to temp and holds it perfectly. Pull it out, attach it, and enjoy a perfect session every time.
+
+### Cleaning Mode
+Crank the temperature up. Walk away. The oven burns off all char, resin, and buildup. Come back to glass that looks brand new. No chemicals, no scrubbing, no soaking. The 6-hour auto-shutoff timer means you can set it and forget it.
+
+---
+
+## Built To Be Built — zero welds, all bolts
+
+The entire oven assembles with **M6 bolts and nuts**. The only welds in the
+product are the seams of the rolled tubes. No welded brackets, no welded
+bosses, no welded hinge. 25 numbered pieces per kit, 3 fastener types total.
+
+- **Two-piece top cap** -- a laser-cut-and-formed shell (flat top, skirt, 6
+  drop fingers that bolt to the existing spacer-ring bolts) plus a clamp-fit
+  hold-down ring that grips the ceramic with **zero fasteners of its own** --
+  it gets sandwiched when the cap bolts down.
+- **Bolted strap hinge** -- the cap shell carries two curled knuckles on its
+  hinge finger; a small strap bolts under one of the lid's existing bolts and
+  carries the third knuckle; a 5mm pin ties them together. Low-profile: the
+  knuckles sit just above the rim, slid sideways along the hinge line so they
+  clear the bolt head.
+- **Flush ceramic lid face** -- the ceramic disk sits dead flush with the
+  lid's bottom plane. No recess, no proud lip.
+- **Handle with threaded studs** -- no screw heads on the lid top; two nuts
+  grab the studs from underneath.
+
+## The design journey (June 2026)
+
+This repo went through a full manufacturability redesign, live, with every
+decision reviewed against 3D renders before any shop quotes:
+
+1. The original one-piece top cap had four concentric walls hanging under it
+   -- unmakeable from sheet, ~$500+ machined from billet. It became two cheap
+   parts (shell + clamp ring).
+2. Welded mounting bosses became drop fingers that reuse the spacer-ring
+   bolts. The welded plate hinge became the bolted strap hinge.
+3. Design review by eye caught and fixed, in order: a missing bolt hole in
+   the strap, a strap too small for M6 hardware, a bolt-head/knuckle
+   collision (fixed by sliding the knuckles sideways), painted-on holes that
+   weren't really cut (now real boolean-cut holes), and a recessed ceramic
+   lid face (now flush). The commit log tells the whole story.
+4. Open question for first articles: hinge strap stiffness with the lid
+   hanging open. Cheap fixes ready if needed: 1.5mm strap stock or a second
+   bolt hole.
+
+---
+
+## Features
+
+- **Precision PID temperature control** -- REX-C100 controller holds your target temp within a few degrees
+- **Locked-down interface** -- just set your temp and go, no confusing menus
+- **Triple safety system** -- software limit (870 F) + overheat alarm (900 F) + thermal fuse (930 F)
+- **6-hour auto-shutoff** -- DH48S timer relay cuts power automatically
+- **Insulated dual-wall construction** -- 31mm ceramic-to-outer-wall gap keeps exterior cool to the touch
+- **Perforated mesh exterior** -- full airflow ventilation with clean stainless steel look
+- **Ceramic feet** -- heat-insulating legs keep the steel tray cool
+- **Bolted strap hinge** -- lid swings open past vertical for easy loading; flush ceramic disk seals the chamber
+- **Clamp-fit hold-down ring** -- keeps the ceramic core centered and seated with no fasteners of its own
+
+---
+
+## What's Inside
+
+![Nice Dreamz Heat & Clean Glass Oven - Lid Removed](Renders/LidOff_Product.png)
+
+| Component | Material |
+|-----------|----------|
+| Heating chamber | High-alumina ceramic cylinder (92.5mm OD) |
+| Heating element | Kanthal wire coil (30 wraps) |
+| Inner housing | 0.8mm 304 or 430 SS / aluminized steel (see metal spec above) |
+| Outer mesh | 1.2mm perforated 304 stainless steel |
+| Insulation gap | 24.6mm air gap between ceramic and housing |
+| Spacer rings | 5x ceramic (3x 14mm body + 2x 10mm lid) |
+| Controller | REX-C100 PID + SSR + DH48S timer |
+| Legs | 3x ceramic feet with M6 mounting |
+
+---
+
+## Specifications
+
+| Spec | Value |
+|------|-------|
+| Chamber ID | 81.5 mm (3.2 in) |
+| Chamber height | 91 mm (3.6 in) |
+| Outer diameter | 154.5 mm (6.1 in) |
+| Temperature range | 100 - 870 F |
+| Power | 120V AC |
+| Auto-shutoff | 6 hours |
+| Wall thickness | 31 mm (ceramic to outer mesh) |
+| Body material | 304 stainless steel, brushed finish |
+
+---
+
+## Works With
+
+- Tower-style terp slurpers (up to 80mm barrel)
+- Standard bangers
+- Ball vape heaters
+- Any glass piece that fits the 81.5mm chamber
+
+---
+
+## Known limits
+
+- No physical prototype results are in this repo. Temperatures and safety limits are the controller settings in [Controller_Setup_Guide.md](Controller_Setup_Guide.md), not logged test data.
+- Hinge strap stiffness with the lid open is still an open question (see the design journey above).
+- `build_inner_parts_08.py` and `measure_thickness.py` read some files from `Factory Files/`, which is gitignored, so the 2026-09-09 fab package cannot be fully rebuilt from this repo alone. The committed STEP files are the source of truth.
+- `export_all_parts.py` still models every sheet at 1.2 mm; the 0.8 mm inner parts exist only in the fab package STEP files.
+- There is no `requirements.txt`. The scripts expect a local venv (`.venv-cad`) with build123d, trimesh and numpy.
+
+---
+
+## Quick start
+
+```bash
+# View the parts in a browser (the viewers load files by relative path)
+python3 -m http.server        # then open http://localhost:8000/viewer-thickness.html
+
+# Regenerate the STL/GLB meshes
+python3 -m venv .venv-cad && .venv-cad/bin/pip install build123d trimesh numpy
+.venv-cad/bin/python Scripts/export_all_parts.py
+```
+
+---
+
+## License
+
+Open hardware, copyleft: CERN-OHL-S-2.0 for the hardware and CAD, GPL-3.0-or-later for code, CC-BY-SA-4.0 for docs and images. See [LICENSE](LICENSE) for which applies to what.
+
+---
+
+## Project Structure
+
+```
+PARTS_LIST.md                   -- the 25-piece kit, numbered like the viewer labels
+Scripts/
+  export_all_parts.py           -- generates every part as STL/GLB (all sheets at 1.2 mm)
+  hnc_params.py                 -- shared dimensions (outer 1.2 mm, inner 0.8 mm)
+  build_inner_parts_08.py       -- builds the 14-part STEP package in FAB_PACKAGE_2026-09-09/
+  measure_thickness.py          -- measures sheet thickness from the STEPs, feeds viewer-thickness
+  generate_fab_package.py       -- builds the bilingual shop quote package + zip
+  generate_cap_dxfs.py          -- cap shell flat blank + hold-down ring drawing (DXF)
+  generate_flat_patterns.py     -- laser-cut flat patterns for the other parts
+
+viewer-*.html                   -- interactive 3D viewers (serve repo root, e.g. python3 -m http.server)
+  viewer-thickness.html         -- current 14 metal parts, measured thickness, explode (hosted on GitHub Pages)
+  viewer-sections.html          -- all 25 pieces, separated + named (hosted: /heat-n-clean-viewer/all-parts.html)
+  viewer-metal-parts.html       -- the 13 metal parts a shop quotes
+  viewer-topcap-fastening.html  -- full assembly; fasten/open-lid animations
+  viewer-hinge-closeup.html     -- strap hinge close-up, attach animation
+  viewer-full-assembly.html     -- every piece, apart/together
+  viewer-capshell.html          -- the cap shell alone
+
+CAD Exports/
+  FAB_PACKAGE_2026-09-09/       -- current: 14 STEP files + BOM + README
+  Individual Parts/STL|GLB/     -- every part as STL/GLB
+  Core Split/ · Lid Split/      -- the split parts the viewers load
+  Flat Patterns/DXF|SVG/        -- laser-cut patterns
+  Fabrication Package/          -- older package: spec EN + 中文, BOM, DXF, 3D refs (zip alongside)
+```

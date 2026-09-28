@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Oven base, every part</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e8e8ec;font-family:-apple-system,sans-serif;color:#16181d}
+#wrap{position:fixed;inset:0} canvas{display:block;width:100%;height:100%}
+#loading{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+#ctl{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.9);padding:10px 14px;border-radius:10px;display:flex;gap:10px;align-items:center;font-size:14px;z-index:10;flex-wrap:wrap;max-width:calc(100vw - 24px)}
+#ctl b{font-size:16px} #ctl button{font-size:15px;padding:6px 14px;border-radius:8px;border:1px solid #999;background:#fff;cursor:pointer}
+#ctl button.on{background:#1f5fb3;color:#fff;border-color:#1f5fb3} #ctl input{width:180px}
+#key{position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,.9);padding:8px 12px;border-radius:10px;font-size:13px;z-index:10;display:flex;gap:14px}
+#key i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+</style></head><body>
+<div id="wrap">
+<div id="loading">Loading…</div>
+<div id="ctl"><b>BASE — every part, one-piece top cap</b><button id="btn">Assemble</button><input id="sl" type="range" min="0" max="1" step="0.01" value="1"><span id="mode">separated</span><button id="cut">Cut in half + measurements</button><button id="lbtn">Hide labels</button><button id="fbtn">Fit</button></div>
+<div id="key"><span><i style="background:#2f6fd6"></i>bottom cap</span><span><i style="background:#2fa84f"></i>support ring</span><span><i style="background:#fff;border:1px solid #bbb"></i>base disk</span><span><i style="background:#9b59b6"></i>top cap</span><span><i style="background:#a9b4c2"></i>outer tube</span><span><i style="background:#d9825a"></i>inner tube</span><span><i style="background:#efe9da;border:1px solid #bbb"></i>ceramic</span><span><i style="background:#4a4f56"></i>bolts + nuts</span></div>
+<canvas id="c"></canvas>
+</div>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+// Base assembly with the ceramics and the fasteners in place. Metal parts are the fab-package meshes,
+// the top cap is the one-piece 03_Top_Cap from before the 2026-06-10 split, ceramics come from Core Split,
+// and the 18 ring bolts (6 per ring height, 52.4° + n·60°) are drawn M6: head outside, nut inside the inner tube.
+// "Separated" lifts parts straight up in assembly order; bolts back straight out of their holes.
+const PARTS=[ // bottom to top
+  {f:'feet',label:'Ceramic Feet (3)',col:'cer'},
+  {f:'legscrews',label:'Leg Screws',col:'bolt',side:'feet'},
+  {f:'04',label:'04 Bottom Cap',col:'cap'},
+  {f:'spacer_bot',label:'Bottom Spacer Ring (ceramic)',col:'cer'},
+  {f:'bolts_bot',label:'Bottom Bolts ×6 (also clamp the bottom cap)',col:'bolt',side:'spacer_bot',radial:true},
+  {f:'03',label:'03 Support Ring (now with bolt-on wall)',col:'sup'},
+  {f:'basedisk',label:'Ceramic Base Disk',col:'disk'},
+  {f:'spacer_seat',label:'Seat Spacer Ring (ceramic)',col:'cer'},
+  {f:'bolts_seat',label:'Seat Bolts ×6 (through the support ring wall)',col:'bolt',side:'spacer_seat',radial:true},
+  {f:'01',label:'01 Inner Wall Tube',col:'in'},
+  {f:'core',label:'Ceramic Heater Core',col:'cer'},
+  {f:'spacer_top',label:'Top Spacer Ring (ceramic)',col:'cer'},
+  {f:'bolts_top',label:'Top Bolts ×6 (also hold the top cap on)',col:'bolt',side:'spacer_top',radial:true},
+  {f:'02',label:'02 Outer Perforated Tube',col:'out'},
+  {f:'cap',label:'One-Piece Top Cap (6 tabs down to the top bolts)',col:'top'},
+];
+const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6};
+const GAP=40, RADIAL=70;
+const V='?v='+Date.now();
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xe8e8ec); renderer.localClippingEnabled=true;
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(35,1,0.1,20000); cam.up.set(0,0,1); cam.position.set(-500,-900,420);
+const H=location.hash; if(H.includes('top')) cam.position.set(0,-40,2000);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true;
+function fit(){ const w=canvas.clientWidth,h=canvas.clientHeight; renderer.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix(); }
+addEventListener('resize',()=>{fit();frame(k);}); fit();
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,-200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+// "Cut in half" removes the half facing the camera so the spacers, bolts and nuts show in section
+const clip=new THREE.Plane(new THREE.Vector3(0,1,0),0); let cutOn=false;
+const loader=new GLTFLoader();
+const load=p=>new Promise((res,rej)=>loader.load(p,g=>res(g.scene),undefined,rej));
+function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({color,side:THREE.DoubleSide,metalness:(color===COL.cer||color===COL.disk)?0.05:0.45,roughness:(color===COL.cer||color===COL.disk)?0.8:0.45,clippingPlanes:[]}); } }); }
+function makeLabel(text){ const c=document.createElement('canvas'); let x=c.getContext('2d'); x.font='bold 28px -apple-system, sans-serif';
+  const w=Math.ceil(x.measureText(text).width)+30, h=48; c.width=w; c.height=h; x=c.getContext('2d');
+  x.fillStyle='rgba(255,255,255,0.94)'; x.beginPath(); x.roundRect(0,0,w,h,11); x.fill();
+  x.font='bold 28px -apple-system, sans-serif'; x.fillStyle='#000'; x.textBaseline='middle'; x.fillText(text,15,25);
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false,transparent:true}));
+  spr.center.set(0,0.5); spr.scale.set(w*0.25,h*0.25,1); spr.renderOrder=10; return spr; }
+const models=await Promise.all(PARTS.map(p=>load('viewer-full/'+p.f+'.glb'+V).catch(()=>null)));
+const items=[]; const byF={};
+PARTS.forEach((p,i)=>{ const m=models[i]; if(!m) return; paint(m,COL[p.col]); m.updateMatrixWorld(true);
+  const g=new THREE.Group(); g.add(m); scene.add(g);
+  const bb=new THREE.Box3().setFromObject(m); const c=bb.getCenter(new THREE.Vector3());
+  const it={p,g,m,bb,c}; items.push(it); byF[p.f]=it;
+  if(p.radial){ it.kids=[]; m.traverse(ch=>{ if(ch.isMesh){ const b=new THREE.Box3().setFromObject(ch), cc=b.getCenter(new THREE.Vector3());
+    const dir=new THREE.Vector3(cc.x,cc.y,0).normalize(); it.kids.push({o:ch,dir,base:ch.position.clone()}); } }); } });
+let rx=0; items.forEach(it=>rx=Math.max(rx,it.bb.max.x));
+let top=-Infinity; items.forEach(it=>{ if(it.p.side) return;
+  const dz=Math.max(0,(top+GAP)-it.bb.min.z); it.dz=dz; top=it.bb.max.z+dz; });
+items.forEach(it=>{ if(it.p.side) it.dz=byF[it.p.side].dz;
+  it.lbl=makeLabel(it.p.label); const lx=it.p.radial? rx+RADIAL+30 : rx+40;
+  it.lbl.position.set(lx, it.c.y, it.p.side&&!it.p.radial? it.bb.min.z-10 : it.c.z); it.g.add(it.lbl); it.lw=it.lbl.scale.x; it.lh=it.lbl.scale.y; });
+
+// Measurement lines, drawn on the cut face (y = 0) and shown only when cut in half and assembled.
+// Numbers come from Scripts/hnc_params.py and were checked against these meshes 2026-09-28.
+const dimG=new THREE.Group(); scene.add(dimG); dimG.visible=false;
+function dimLine(a,b,text,lx,lz){ const A=new THREE.Vector3(...a), B=new THREE.Vector3(...b);
+  const mat=new THREE.LineBasicMaterial({color:0xd01010,depthTest:false});
+  const ln=new THREE.Line(new THREE.BufferGeometry().setFromPoints([A,B]),mat); ln.renderOrder=20; dimG.add(ln);
+  const dir=B.clone().sub(A).normalize();
+  for(const [p,d] of [[A,dir.clone().negate()],[B,dir]]){ const c=new THREE.Mesh(new THREE.ConeGeometry(1.6,5,12),new THREE.MeshBasicMaterial({color:0xd01010,depthTest:false}));
+    c.position.copy(p).addScaledVector(d,-2.5); c.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d); c.renderOrder=20; dimG.add(c); }
+  const cv=document.createElement('canvas'); let x=cv.getContext('2d'); x.font='bold 30px -apple-system, sans-serif';
+  const w=Math.ceil(x.measureText(text).width)+24, h=46; cv.width=w; cv.height=h; x=cv.getContext('2d');
+  x.fillStyle='rgba(255,255,255,0.95)'; x.beginPath(); x.roundRect(0,0,w,h,10); x.fill(); x.strokeStyle='#d01010'; x.lineWidth=3; x.stroke();
+  x.font='bold 30px -apple-system, sans-serif'; x.fillStyle='#b00000'; x.textBaseline='middle'; x.fillText(text,12,24);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false})); sp.center.set(0,0.5);
+  sp.scale.set(w*0.2,h*0.2,1); sp.position.set(lx,-2,lz); sp.renderOrder=21; sp.userData.w=w*0.2; sp.userData.h=h*0.2; dimG.add(sp); }
+dimLine([-20,-2,-6.3],[-20,-2,-31.7],'25.4 mm open space under the base',-15,-19);
+dimLine([-46.25,-2,40],[-70.85,-2,40],'24.6 mm side insulation',-150,52);
+dimLine([71.65,-2,20],[76.05,-2,20],'4.4 mm tube gap (spacer rings)',82,8);
+dimLine([55,-2,-5.5],[55,-2,-31.7],'26.2 mm base disk to floor',60,-40);
+document.getElementById('loading').remove();
+const sl=document.getElementById('sl'), btn=document.getElementById('btn'), mode=document.getElementById('mode'), lbtn=document.getElementById('lbtn'), cut=document.getElementById('cut');
+let showL=true; lbtn.onclick=()=>{ showL=!showL; items.forEach(it=>it.lbl.visible=showL); lbtn.textContent=showL?'Hide labels':'Show labels'; };
+cut.onclick=()=>{ cutOn=!cutOn; cut.classList.toggle('on',cutOn); cut.textContent=cutOn?'Whole':'Cut in half + measurements';
+  items.forEach(it=>it.m.traverse(ch=>{ if(ch.isMesh) ch.material.clippingPlanes=cutOn?[clip]:[]; }));
+  dimG.visible=cutOn&&k<0.05;
+  showL=!cutOn||k>0.5; items.forEach(it=>it.lbl.visible=showL); frame(k); lbtn.textContent=showL?'Hide labels':'Show labels'; };   // labels pile up in the section view
+function frame(f){ const box=new THREE.Box3();
+  items.forEach(it=>{ const b=it.bb.clone(); b.translate(new THREE.Vector3(0,0,it.dz*f)); if(it.p.radial){ b.expandByScalar(RADIAL*f); } box.union(b); });
+  if(showL) box.max.x=Math.max(box.max.x,rx+RADIAL+330);   // room for labels only when they show
+  const ctr=box.getCenter(new THREE.Vector3()); const dir=cam.position.clone().sub(ctl.target).normalize();
+  const up=new THREE.Vector3(0,0,1), right=new THREE.Vector3().crossVectors(up,dir).normalize(), cup=new THREE.Vector3().crossVectors(dir,right).normalize();
+  const tv=Math.tan(THREE.MathUtils.degToRad(cam.fov/2)), th=tv*cam.aspect; let d=0;
+  for(const cx of [box.min.x,box.max.x]) for(const cy of [box.min.y,box.max.y]) for(const cz of [box.min.z,box.max.z]){
+    const v=new THREE.Vector3(cx,cy,cz).sub(ctr); const depth=v.dot(dir);
+    d=Math.max(d, Math.abs(v.dot(right))/th+depth, Math.abs(v.dot(cup))/tv+depth); }
+  ctl.target.copy(ctr); cam.position.copy(ctr).add(dir.multiplyScalar(d*1.05)); ctl.update(); }
+function frameSection(){ // oven body only, seen straight on, small margin
+  const hh=150, d=hh/Math.tan(THREE.MathUtils.degToRad(cam.fov/2));
+  ctl.target.set(0,0,20); cam.position.set(0,-d,20); ctl.update(); }
+function apply(f){ items.forEach(it=>{ it.g.position.set(0,0,it.dz*f);
+  if(it.kids) it.kids.forEach(kd=>kd.o.position.copy(kd.base).addScaledVector(kd.dir,RADIAL*f)); });
+  mode.textContent=f<0.02?'assembled':(f>0.98?'separated':'…'); dimG.visible=cutOn&&f<0.05; }
+let k=H.includes('assembled')?0:1, goal=k; sl.value=k; btn.textContent=k?'Assemble':'Separate'; apply(k); frame(k);
+if(H.includes('cut')) cut.onclick();
+sl.oninput=()=>{ goal=k=parseFloat(sl.value); apply(k); btn.textContent=k>0.5?'Assemble':'Separate'; };
+sl.onchange=()=>frame(k);
+btn.onclick=()=>{ goal=goal>0.5?0:1; btn.textContent=goal>0.5?'Assemble':'Separate'; };
+document.getElementById('fbtn').onclick=()=>frame(k);
+(function anim(){ requestAnimationFrame(anim);
+  if(Math.abs(goal-k)>0.001){ k+=(goal-k)*0.08; sl.value=k; apply(k); frame(k); }
+  const ls=cam.position.distanceTo(ctl.target)/900; items.forEach(it=>it.lbl.scale.set(it.lw*ls,it.lh*ls,1));
+  dimG.children.forEach(o=>{ if(o.isSprite) o.scale.set(o.userData.w*ls*1.6,o.userData.h*ls*1.6,1); });
+  ctl.update(); renderer.render(scene,cam); })();
+</script>
+</body></html>

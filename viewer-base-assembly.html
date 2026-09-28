@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Oven base assembly</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e8e8ec;font-family:-apple-system,sans-serif;color:#16181d}
+#wrap{position:fixed;inset:0} canvas{display:block;width:100%;height:100%}
+#loading{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+#ctl{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.9);padding:10px 14px;border-radius:10px;display:flex;gap:10px;align-items:center;font-size:14px;z-index:10;flex-wrap:wrap;max-width:calc(100vw - 24px)}
+#ctl b{font-size:16px} #ctl button{font-size:15px;padding:6px 14px;border-radius:8px;border:1px solid #999;background:#fff;cursor:pointer}
+#ctl button.on{background:#1f5fb3;color:#fff;border-color:#1f5fb3} #ctl input{width:180px}
+#key{position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,.9);padding:8px 12px;border-radius:10px;font-size:13px;z-index:10;display:flex;gap:14px}
+#key i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+</style></head><body>
+<div id="wrap">
+<div id="loading">Loading…</div>
+<div id="ctl"><b>HOW THE BASE GOES TOGETHER</b><button id="prev">◀ Back</button><button id="next">Next ▶</button><button id="play">▶ Play all</button><button id="cut">Cut in half</button></div>
+<div id="step" style="position:absolute;top:70px;left:12px;right:12px;max-width:760px;background:#fff;border-left:5px solid #d08a00;padding:12px 16px;border-radius:8px;font-size:18px;line-height:1.4;z-index:10;box-shadow:0 4px 18px rgba(0,0,0,.12)"></div>
+<div id="key"><span><i style="background:#2f6fd6"></i>bottom cap</span><span><i style="background:#2fa84f"></i>support ring</span><span><i style="background:#fff;border:1px solid #bbb"></i>base disk</span><span><i style="background:#9b59b6"></i>top cap</span><span><i style="background:#a9b4c2"></i>outer tube</span><span><i style="background:#d9825a"></i>inner tube</span><span><i style="background:#efe9da;border:1px solid #bbb"></i>ceramic</span><span><i style="background:#4a4f56"></i>bolts + nuts</span></div>
+<canvas id="c"></canvas>
+</div>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+// Base assembly with the ceramics and the fasteners in place. Metal parts are the fab-package meshes,
+// the top cap is the one-piece 03_Top_Cap from before the 2026-06-10 split, ceramics come from Core Split,
+// and the 18 ring bolts (6 per ring height, 52.4° + n·60°) are drawn M6: head outside, nut inside the inner tube.
+// "Separated" lifts parts straight up in assembly order; bolts back straight out of their holes.
+const PARTS=[
+  {f:'04',label:'Bottom Cap',col:'cap'},{f:'01',label:'Inner Wall Tube',col:'in'},{f:'spacer_bot',label:'Bottom Spacer',col:'cer'},
+  {f:'02',label:'Outer Perforated Tube',col:'out'},{f:'bolts_bot',label:'Bottom Bolts',col:'bolt',radial:true},
+  {f:'03',label:'Support Ring',col:'sup'},{f:'spacer_seat',label:'Seat Spacer',col:'cer'},{f:'bolts_seat',label:'Seat Bolts',col:'bolt',radial:true},
+  {f:'spacer_top',label:'Top Spacer',col:'cer'},{f:'bolts_top',label:'Top Bolts',col:'bolt',radial:true},
+  {f:'basedisk',label:'Ceramic Base Disk',col:'disk'},{f:'core',label:'Ceramic Heater Core',col:'cer'},{f:'cap',label:'One-Piece Top Cap (6 tabs down to the top bolts)',col:'top'},
+  {f:'feet',label:'Ceramic Feet',col:'cer'},{f:'legscrews',label:'Leg Screws',col:'bolt'},
+];
+// Each step brings in parts: 'down' = lowered in from above, 'in' = pushed in from outside (bolts), 'up' = from below.
+const STEPS=[
+ {add:['04'],how:'down',t:'1. Bottom Cap on the bench, rim facing up. Everything else builds up inside it.'},
+ {add:['01'],how:'down',t:'2. Stand the Inner Wall Tube inside the Bottom Cap.'},
+ {add:['spacer_bot'],how:'down',t:'3. Slide the Bottom Spacer (ceramic) down over the inner tube until it sits in the cap. Turn it so its 6 holes line up with the tube holes.'},
+ {add:['02'],how:'down',t:'4. Slide the Outer Perforated Tube down over everything, into the cap. Line up its bottom holes.'},
+ {add:['bolts_bot'],how:'in',t:'5. Push the 6 Bottom Bolts in from outside: cap rim, outer tube, spacer, inner tube. Reach down inside the tube to thread the nuts on.'},
+ {add:[],how:'',t:'6. Pack the 25 mm of insulation into the bottom now, before the Support Ring closes it off. (Insulation not drawn.)'},
+ {add:['03'],how:'down',t:'7. Lower the Support Ring into the inner tube until its wall holes line up with the seat holes. The 25 mm insulation pad underneath holds it at the right height while you work.'},
+ {add:['spacer_seat'],how:'down',t:'8. Drop the Seat Spacer into the 4 mm gap between the tubes and hold it at the seat holes. THIS IS THE FIDDLY STEP: nothing holds it up until the bolts go in.'},
+ {add:['bolts_seat'],how:'in',t:'9. Push the 6 Seat Bolts through outer tube, seat spacer, inner tube and the Support Ring wall. Nuts on from inside, just above the plate.'},
+ {add:['spacer_top'],how:'down',t:'10. Drop the Top Spacer into the gap and hold it at the top holes. Same fiddly step as 8.'},
+ {add:['basedisk'],how:'down',t:'11. Set the Ceramic Base Disk onto the Support Ring, inside its small centering wall.'},
+ {add:['core'],how:'down',t:'12. Lower the Ceramic Heater Core onto the base disk. Line its 4 glass slots up with the tube slots. Wire it, then pack the side insulation around it.'},
+ {add:['cap'],how:'down',t:'13. Drop the One-Piece Top Cap on. Its 6 tabs slide down the outside of the tube and line up with the top holes; its slots line up with the glass slots.'},
+ {add:['bolts_top'],how:'in',t:'14. Push the 6 Top Bolts through the cap tabs, outer tube, top spacer and inner tube. Nuts on from inside. These hold the top cap on AND lock the top spacer.'},
+ {add:['feet','legscrews'],how:'up',t:'15. Screw the 3 Ceramic Feet onto the bottom. Done.'},
+];
+const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6};
+const GAP=40, RADIAL=70;
+const V='?v='+Date.now();
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xe8e8ec); renderer.localClippingEnabled=true;
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(35,1,0.1,20000); cam.up.set(0,0,1); cam.position.set(-500,-900,420);
+const H=location.hash; if(H.includes('top')) cam.position.set(0,-40,2000);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true;
+function fit(){ const w=canvas.clientWidth,h=canvas.clientHeight; renderer.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix(); }
+addEventListener('resize',fit); fit();
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,-200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+// "Cut in half" removes the half facing the camera so the spacers, bolts and nuts show in section
+const clip=new THREE.Plane(new THREE.Vector3(0,1,0),0); let cutOn=false;
+const loader=new GLTFLoader();
+const load=p=>new Promise((res,rej)=>loader.load(p,g=>res(g.scene),undefined,rej));
+function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({color,side:THREE.DoubleSide,metalness:(color===COL.cer||color===COL.disk)?0.05:0.45,roughness:(color===COL.cer||color===COL.disk)?0.8:0.45,clippingPlanes:[]}); } }); }
+function makeLabel(text){ const c=document.createElement('canvas'); let x=c.getContext('2d'); x.font='bold 28px -apple-system, sans-serif';
+  const w=Math.ceil(x.measureText(text).width)+30, h=48; c.width=w; c.height=h; x=c.getContext('2d');
+  x.fillStyle='rgba(255,255,255,0.94)'; x.beginPath(); x.roundRect(0,0,w,h,11); x.fill();
+  x.font='bold 28px -apple-system, sans-serif'; x.fillStyle='#000'; x.textBaseline='middle'; x.fillText(text,15,25);
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false,transparent:true}));
+  spr.center.set(0,0.5); spr.scale.set(w*0.25,h*0.25,1); spr.renderOrder=10; return spr; }
+const models=await Promise.all(PARTS.map(p=>load('viewer-full/'+p.f+'.glb'+V).catch(()=>null)));
+const items=[]; const byF={};
+PARTS.forEach((p,i)=>{ const m=models[i]; if(!m) return; paint(m,COL[p.col]); m.updateMatrixWorld(true);
+  const g=new THREE.Group(); g.add(m); scene.add(g);
+  const bb=new THREE.Box3().setFromObject(m); const c=bb.getCenter(new THREE.Vector3());
+  const it={p,g,m,bb,c}; items.push(it); byF[p.f]=it;
+  if(p.radial){ it.kids=[]; m.traverse(ch=>{ if(ch.isMesh){ const b=new THREE.Box3().setFromObject(ch), cc=b.getCenter(new THREE.Vector3());
+    const dir=new THREE.Vector3(cc.x,cc.y,0).normalize(); it.kids.push({o:ch,dir,base:ch.position.clone()}); } }); } });
+
+items.forEach(it=>{ it.g.visible=false; });
+const cap=document.getElementById('cap'); const stepEl=document.getElementById('step');
+let cur=-1, anim=null;
+function shownThrough(n){ const s=new Set(); for(let i=0;i<=n;i++) STEPS[i].add.forEach(f=>s.add(f)); return s; }
+function place(it,f,how){ // f: 0 = in place, 1 = fully away
+  it.g.position.set(0,0,0);
+  if(how==='down') it.g.position.z=160*f;
+  if(how==='up') it.g.position.z=-120*f;
+  if(it.kids) it.kids.forEach(kd=>kd.o.position.copy(kd.base).addScaledVector(kd.dir, how==='in'?60*f:0)); }
+function go(n){ if(n<0||n>=STEPS.length) return; cur=n; const vis=shownThrough(n);
+  items.forEach(it=>{ it.g.visible=vis.has(it.p.f); place(it,0,''); });
+  const st=STEPS[n]; stepEl.textContent=st.t; const t0=performance.now();
+  const moving=items.filter(it=>st.add.includes(it.p.f));
+  anim={moving,how:st.how,t0};
+  items.forEach(it=>it.m.traverse(ch=>{ if(ch.isMesh){ ch.material.emissive=new THREE.Color(st.add.includes(it.p.f)?0x332200:0x000000); } })); }
+document.getElementById('next').onclick=()=>go(Math.min(cur+1,STEPS.length-1));
+document.getElementById('prev').onclick=()=>go(Math.max(cur-1,0));
+let playing=null; document.getElementById('play').onclick=()=>{ if(playing){clearInterval(playing);playing=null;return;} go(0); playing=setInterval(()=>{ if(cur>=STEPS.length-1){clearInterval(playing);playing=null;return;} go(cur+1); },4200); };
+const cutb=document.getElementById('cut');
+cutb.onclick=()=>{ cutOn=!cutOn; cutb.classList.toggle('on',cutOn); cutb.textContent=cutOn?'Whole':'Cut in half';
+  items.forEach(it=>it.m.traverse(ch=>{ if(ch.isMesh) ch.material.clippingPlanes=cutOn?[clip]:[]; })); };
+// frame the finished assembly once
+{ const box=new THREE.Box3(); items.forEach(it=>box.union(it.bb)); box.max.z+=120; const ctr=box.getCenter(new THREE.Vector3());
+  const dir=cam.position.clone().sub(ctl.target).normalize(); const sz=box.getSize(new THREE.Vector3()).length();
+  ctl.target.copy(ctr); cam.position.copy(ctr).add(dir.multiplyScalar(sz*1.35)); ctl.update(); }
+document.getElementById('loading').remove();
+{ const m=location.hash.match(/step=(\d+)/); go(m? Math.min(STEPS.length,+m[1])-1 : 0); }   // #step=14 opens on that step
+(function loop(){ requestAnimationFrame(loop);
+  if(anim){ const e=Math.min(1,(performance.now()-anim.t0)/1400), f=1-(1-e)*(1-e)*(1-e);
+    anim.moving.forEach(it=>place(it,1-f,anim.how)); if(e>=1) anim=null; }
+  ctl.update(); renderer.render(scene,cam); })();
+</script>
+</body></html>

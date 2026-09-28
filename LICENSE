@@ -1,0 +1,47 @@
+Nice Dreamz Heat & Clean Glass Oven
+Copyright (C) 2026 Matt Macosko / Nice Dreamz LLC and contributors
+
+This project is multi-licensed so that it remains free and open forever.
+Each part of the project is covered by a strongly-reciprocal ("copyleft")
+license: anyone may use, study, build, modify, and redistribute it, but
+derivatives and distributed hardware/software built from it must be shared
+back under the same terms. It cannot be taken private.
+
+SPDX-License-Identifier: CERN-OHL-S-2.0 AND GPL-3.0-or-later AND CC-BY-SA-4.0
+
+-------------------------------------------------------------------------------
+1. HARDWARE, MECHANICAL DESIGN, AND CAD
+   (CAD Exports, Ceramic Parts, Dimensioned Drawings, geometry, PARTS_LIST)
+   Licensed under CERN Open Hardware Licence Version 2 - Strongly Reciprocal
+   (CERN-OHL-S-2.0).
+   Full text: https://ohwr.org/cern_ohl_s_v2.txt
+
+   You may copy, modify, and distribute these design sources and make or
+   have made products from them, provided you pass on the complete source,
+   keep the notices, and license your modifications under CERN-OHL-S-2.0.
+
+2. SOFTWARE  (Scripts, controller firmware, the 3D part viewers)
+   Licensed under the GNU General Public License v3.0 or later
+   (GPL-3.0-or-later).
+   Full text: https://www.gnu.org/licenses/gpl-3.0.txt
+
+3. DOCUMENTATION AND MEDIA
+   (README, Controller_Setup_Guide, Renders, Reference Photos, notes)
+   Licensed under Creative Commons Attribution-ShareAlike 4.0 International
+   (CC-BY-SA-4.0).
+   Full text: https://creativecommons.org/licenses/by-sa/4.0/legalcode
+
+-------------------------------------------------------------------------------
+NO WARRANTY. This project describes a mains-powered heating device that
+reaches temperatures capable of causing burns, fire, and damage to glass.
+It is provided WITHOUT ANY WARRANTY, to the extent permitted by law.
+Building, wiring, or operating a device from these files is done entirely
+at your own risk, and is your responsibility to do in accordance with the
+electrical and safety codes that apply where you live. The authors accept
+no liability for any harm resulting from use of this project.
+-------------------------------------------------------------------------------
+
+To obtain the full text of any license above, see the URLs listed or run:
+  curl -L https://ohwr.org/cern_ohl_s_v2.txt          -o LICENSE-CERN-OHL-S
+  curl -L https://www.gnu.org/licenses/gpl-3.0.txt     -o LICENSE-GPL-3.0
+  curl -L https://creativecommons.org/licenses/by-sa/4.0/legalcode -o LICENSE-CC-BY-SA-4.0
