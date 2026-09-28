@@ -9,6 +9,7 @@ Everything older was moved OFF GitHub to the local folder `Desktop/PROJECTS/Heat
 | viewer-lid-full.html | Lid, every part, cut in half |
 | viewer-lid-assembly.html | Lid, step-by-step build |
 | viewer-lid-holder.html | Lid ceramic holder + ceramic lid disk on the core |
+| viewer-complete.html | Whole oven, lid open on its hinge, cut in half / separated (one of the 3 links for Tianrun) |
 
 Meshes: `viewer-full/` (base) and `viewer-lid-full/` (lid). Those are the approved shapes.
 Still to do: a new STEP package made from these for Tianrun.
