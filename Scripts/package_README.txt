@@ -17,6 +17,7 @@ Changes from the files you have:
   08 Lid Top Disk: 6 holes in the skirt for the upper lid bolts.
   09 Lid Ceramic Holder: pocket that wraps the ceramic lid disk edge and holds it from above; 6 bolt holes in its upright wall.
   Lid parts sit 1.2 mm higher than before, on top of the top cap.
+  Hinge: use your stock stainless butt hinge (approved Sept 11). Please add its screw holes to the top cap and lid; the strap + pin in these files is only a placeholder.
   Inside parts (01, 03, 06, 09) are 0.8 mm. Outside parts are 1.2 mm. Tray 3 mm.
 
 加热清洁玻璃炉：加工文件，2026-09-28
@@ -36,4 +37,5 @@ Changes from the files you have:
   08 盖子顶盘：裙边上加6个孔，用于盖子上排螺栓。
   09 盖子陶瓷托架：包住陶瓷盖盘边缘、从上方固定的槽位；立墙上有6个螺栓孔。
   盖子所有零件比以前高1.2mm，放在顶盖上面。
+  铰链：用你们的现成不锈钢合页（9月11日已确认）。请在顶盖和盖子上加它的螺丝孔；文件里的铰链片和销只是示意。
   内部件（01、03、06、09）厚度0.8mm，外部件1.2mm，托盘3mm。
