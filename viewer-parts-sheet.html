@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Oven parts sheet</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1650px;height:1275px;background:#fff;font-family:-apple-system,"PingFang SC",sans-serif;color:#111;overflow:hidden}
+#c{position:absolute;inset:0;width:1650px;height:1275px}
+#head{position:absolute;top:22px;left:40px;right:40px;display:flex;justify-content:space-between;align-items:baseline}
+#head h1{font-size:30px} #head span{font-size:17px;color:#555}
+.row{position:absolute;left:40px;font-size:17px;font-weight:800;letter-spacing:.5px;color:#fff;padding:5px 12px;border-radius:6px}
+.cell{position:absolute;text-align:center;font-size:15px;line-height:1.25}
+.cell b{display:block;font-size:17px}
+.cell i{font-style:normal;color:#666;font-size:14px}
+.box{position:absolute;border:1.5px solid #d8d8de;border-radius:10px}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="head"><h1>Heat &amp; Clean Glass Oven: every part · 所有零件</h1><span>2026-09-28 · parts not to scale · 零件未按比例</span></div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+// One still sheet (US letter, landscape) laying out every part in 3 rows. Each part gets its own
+// viewport so small parts are as readable as big ones. Meshes are the approved ones from CURRENT.md.
+const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6};
+const ROWS=[
+ {name:'BASE METAL · 底座金属件', color:'#2f6fd6', parts:[
+  {src:'viewer-full/04',col:'cap',n:'04',en:'Bottom Cap',zh:'底盖'},
+  {src:'viewer-full/03',col:'sup',n:'03',en:'Support Ring (6 bolt holes)',zh:'支撑环（6个螺栓孔）'},
+  {src:'viewer-full/01',col:'in',n:'01',en:'Inner Wall Tube 0.8 mm',zh:'内壁管 0.8mm'},
+  {src:'viewer-full/02',col:'out',n:'02',en:'Outer Perforated Tube',zh:'外层带孔管'},
+  {src:'viewer-full/cap',col:'top',n:'05',en:'One-Piece Top Cap (6 bolt tabs)',zh:'一体顶盖（6个螺栓折边片）'},
+  {src:'viewer-full/tray',col:'out',n:'14',en:'Steel Tray 3 mm',zh:'钢托盘 3mm'},
+ ]},
+ {name:'LID METAL · 盖子金属件', color:'#9b59b6', parts:[
+  {src:'viewer-lid-full/09',col:'sup',n:'09',en:'Lid Ceramic Holder',zh:'盖子陶瓷托架'},
+  {src:'viewer-lid-full/06',col:'in',n:'06',en:'Lid Inner Tube 0.8 mm',zh:'盖子内管 0.8mm'},
+  {src:'viewer-lid-full/07',col:'out',n:'07',en:'Lid Outer Perforated Tube',zh:'盖子外层带孔管'},
+  {src:'viewer-lid-full/08',col:'top',n:'08',en:'Lid Top Disk (6 bolt holes)',zh:'盖子顶盘（6个螺栓孔）'},
+  {src:'viewer-lid-full/10',col:'bolt',n:'10',en:'Lid Handle',zh:'提手'},
+  {src:'viewer-lid-full/11',col:'out',n:'11',en:'Hinge Strap',zh:'铰链片'},
+  {src:'viewer-lid-full/13',col:'bolt',n:'13',en:'Hinge Pin Ø5',zh:'铰链销 Ø5'},
+ ]},
+ {name:'CERAMIC + HARDWARE (we supply) · 陶瓷件和五金（我方提供）', color:'#8a7a55', parts:[
+  {src:'viewer-full/core',col:'cer',en:'Ceramic Heater Core',zh:'陶瓷加热芯'},
+  {src:'viewer-full/basedisk',col:'disk',en:'Ceramic Base Disk',zh:'陶瓷底盘'},
+  {src:'viewer-lid-full/liddisk',col:'disk',en:'Ceramic Lid Disk',zh:'陶瓷盖盘'},
+  {src:'viewer-full/spacer_bot',col:'cer',en:'Ceramic Spacer ×3 (14 mm)',zh:'陶瓷垫环 ×3（14mm）'},
+  {src:'viewer-lid-full/spacer_low',col:'cer',en:'Lid Ceramic Spacer ×2 (10 mm)',zh:'盖子陶瓷垫环 ×2（10mm）'},
+  {src:'viewer-full/feet',col:'cer',en:'Ceramic Feet ×3',zh:'陶瓷脚 ×3'},
+  {src:'viewer-full/bolts_top',col:'bolt',one:true,en:'M6 Bolt + Nut ×30',zh:'M6 螺栓 + 螺母 ×30'},
+ ]},
+];
+const W=1650,H=1275, TOP=86, ROWH=(H-TOP-20)/3, LEFT=40, RIGHT=40;
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setSize(W,H,false); renderer.setClearColor(0xffffff); renderer.setScissorTest(true);
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.1;
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const loader=new GLTFLoader(); const load=p=>new Promise((res,rej)=>loader.load(p,g=>res(g.scene),undefined,rej));
+function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  const cer=(color===COL.cer||color===COL.disk); ch.material=new THREE.MeshStandardMaterial({color,side:THREE.DoubleSide,metalness:cer?0.05:0.45,roughness:cer?0.8:0.45}); } }); }
+const cells=[];
+for(const [ri,row] of ROWS.entries()){
+  const y0=TOP+ri*ROWH, n=row.parts.length, cw=(W-LEFT-RIGHT)/n;
+  const tag=document.createElement('div'); tag.className='row'; tag.style.top=(y0+2)+'px'; tag.style.background=row.color; tag.textContent=row.name; document.body.appendChild(tag);
+  for(const [ci,p] of row.parts.entries()){
+    const x0=LEFT+ci*cw, box={x:x0+6,y:y0+38,w:cw-12,h:ROWH-44};
+    const b=document.createElement('div'); b.className='box'; Object.assign(b.style,{left:box.x+'px',top:box.y+'px',width:box.w+'px',height:box.h+'px'}); document.body.appendChild(b);
+    const lab=document.createElement('div'); lab.className='cell'; Object.assign(lab.style,{left:box.x+'px',width:box.w+'px',top:(box.y+box.h-68)+'px'});
+    lab.innerHTML=`<b>${p.n?p.n+'  ':''}${p.en}</b>${p.zh}`; document.body.appendChild(lab);
+    cells.push({p,view:{x:box.x+4,y:box.y+4,w:box.w-8,h:box.h-70}});
+  }
+}
+const loaded=await Promise.all(cells.map(c=>load(c.p.src+'.glb').catch(()=>null)));
+cells.forEach((c,i)=>{ let m=loaded[i]; if(!m) return;
+  if(c.p.one){ let first=null; m.traverse(ch=>{ if(ch.isMesh&&!first) first=ch; }); m.updateMatrixWorld(true); const g=new THREE.Group(); const mm=first.clone(); mm.applyMatrix4(first.matrixWorld); g.add(mm); m=g; }
+  paint(m,COL[c.p.col]); const sc=new THREE.Scene(); sc.add(m);
+  sc.add(new THREE.AmbientLight(0xffffff,0.9)); const d1=new THREE.DirectionalLight(0xffffff,1.5); d1.position.set(150,-200,400); sc.add(d1);
+  const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); sc.add(d2); sc.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+  m.updateMatrixWorld(true); const bb=new THREE.Box3().setFromObject(m), ctr=bb.getCenter(new THREE.Vector3()), rad=bb.getBoundingSphere(new THREE.Sphere()).radius;
+  const cam=new THREE.PerspectiveCamera(28, c.view.w/c.view.h, 0.1, 20000); cam.up.set(0,0,1);
+  const dir=(c.p.one? new THREE.Vector3(0.75,-0.6,0.35) : new THREE.Vector3(-0.45,-0.85,0.55)).normalize(); /* the bolt is seen side-on */ const fov=THREE.MathUtils.degToRad(28/2);
+  const dist=rad/Math.sin(Math.min(fov, Math.atan(Math.tan(fov)*cam.aspect)))*1.02;
+  cam.position.copy(ctr).addScaledVector(dir,dist); cam.lookAt(ctr);
+  c.scene=sc; c.cam=cam; });
+for(const c of cells){ if(!c.scene) continue; const v=c.view, y=H-v.y-v.h;
+  renderer.setViewport(v.x,y,v.w,v.h); renderer.setScissor(v.x,y,v.w,v.h); renderer.render(c.scene,c.cam); }
+document.body.dataset.ready='1';
+</script></body></html>
