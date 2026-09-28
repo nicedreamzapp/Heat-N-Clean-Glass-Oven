@@ -15,4 +15,5 @@ Everything older was moved OFF GitHub to the local folder `Desktop/PROJECTS/Heat
 
 Meshes: `viewer-full/` (base) and `viewer-lid-full/` (lid). Those are the approved shapes. `viewer-full/tray.glb` is the steel tray, unchanged since June, copied in from the archive on 2026-09-28.
 Machining files: `FAB_PACKAGE_2026-09-28/` (STEP + STL + bilingual README), built by `Scripts/build_current_package.py` from `cad-source/` (Sept 9 solids for unchanged parts) plus every 2026-09-28 change in code.
-Still open: 05 top cap is STL only (mesh from the pre-June cap plus tabs), so it needs a clean STEP redraw; it also needs about 0.5 mm clearance on its sleeves.
+05 top cap is a clean solid (2026-09-28 redraw, sleeves 0.2 mm clear). The lid sits on it, so every lid part is +1.2 mm except the ceramic lid disk.
+Still open: the hinge. Alice's stock butt hinge was approved 2026-09-11, but the model still shows the old strap + pin, and the cap has no hinge mount.

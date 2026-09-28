@@ -30,6 +30,10 @@ def sector(a0, a1, z0, z1, ri=70.85, ro=71.65):
     return solid(ring(ri, ro, z0, z1) & (Rot(0, 0, (a0 + a1) / 2) * Pos((ri + ro) / 2, 0, (z0 + z1) / 2) * Box(ro - ri + 2, w, z1 - z0)))
 def src(name): return solid(import_step(os.path.join(SRC, name + ".step")))
 
+CAP_T = 1.2                  # top cap sheet; the lid now sits on it, so every lid part is raised by this much
+SLOTS = [6.5, 77.1, 147.7, 218.3]   # glass slots (hnc_params)
+LIFT = Pos(0, 0, CAP_T)
+
 parts = {}
 # 01 inner wall: wires no longer pass the wall -> close the wire slot, the TC hole, and their mirror copies
 parts["01_Inner_Wall_Tube"] = solid(src("01_Inner_Wall_Tube") + sector(179, 187, 11.5, 70.5) + sector(310, 319, 3.0, 13.5)
@@ -46,29 +50,61 @@ bc = src("04_Bottom_Cap")
 for a, r in WIRE: bc -= vhole(a, R_WIRE, r, -40, -10)
 for a, r in [(183.0, 4.0), (188.0, 4.0), (315.0, 3.0)]: bc += vhole(a, 74.05, r + 0.6, -32.9, -31.7)
 parts["04_Bottom_Cap"] = solid(bc)
-parts["06_Lid_Inner_Tube"] = src("06_Lid_Inner_Tube")
-parts["07_Lid_Outer_Perforated_Tube"] = src("07_Lid_Outer_Perforated_Tube")
+# 05 one-piece top cap, redrawn clean 2026-09-28 from the pre-June cap's layout:
+#   flat top (1.2) sitting ON the tube tops, open in the middle so the ceramic core top stays bare for the lid disk;
+#   sleeves hugging the ceramic, the inner tube and the outer tube (0.2 mm clearance each);
+#   6 tabs down the outside to the top bolt line (Ø6.6 at z 59); 4 glass slots straight through, lined up with the walls;
+#   vent holes over the gap between the tubes. The 5 old screw ears are gone (nothing screws into them anymore).
+# (OCC fails cutting the slots through the fused cap, so each ring gets its slots first, then everything fuses)
+def slot_box(a): return Rot(0, 0, a) * Pos(63.37, 0, 86.13) * Box(39.9, 11.0, 16.3)
+rings = []
+for ri, ro, z0, z1 in [(46.45, 78.65, 91.0, 91.0 + CAP_T),   # top plate
+                       (46.45, 47.65, 81.0, 91.2),            # sleeve around the ceramic core
+                       (69.85, 70.65, 86.0, 91.2),            # sleeve just inside the inner tube
+                       (77.45, 78.65, 81.0, 91.2)]:           # skirt outside the outer tube
+    r = ring(ri, ro, z0, z1)
+    for a in SLOTS: r = r - slot_box(a)
+    rings.append(r)
+cap = rings[0]
+for r in rings[1:]: cap = cap + r
+for a in BOLT:
+    cap = cap + Rot(0, 0, a) * Pos(78.05, 0, 66.1) * Box(CAP_T, 14.0, 30.2) - rhole(a, 78.05, 59.0, length=6)
+for k in range(60):
+    if min(abs((k * 6.0 - s + 180) % 360 - 180) for s in SLOTS) > 9:
+        cap = cap - vhole(k * 6.0, 73.85, 1.75, 90.0, 93.0)
+parts["05_One_Piece_Top_Cap"] = solid(cap)
+parts["06_Lid_Inner_Tube"] = solid(LIFT * src("06_Lid_Inner_Tube"))
+parts["07_Lid_Outer_Perforated_Tube"] = solid(LIFT * src("07_Lid_Outer_Perforated_Tube"))
 # 08 lid top disk: 6 holes in the skirt for the upper lid bolts
-td = src("08_Lid_Top_Disk")
+td = src("08_Lid_Top_Disk")   # holes cut at the original height, then the whole part is raised with the lid
 for a in BOLT: td -= rhole(a, 78.1, 119.0)
-parts["08_Lid_Top_Disk"] = solid(td)
-# 09 lid ceramic holder: wraps the ceramic lid disk edge, holds it from above (disk glued in); bolt-on upright wall
+parts["08_Lid_Top_Disk"] = solid(LIFT * td)
+# 09 lid ceramic holder: sits on the top cap (z 92.2). The ceramic lid disk still rests on the core top (z 91,
+# raised center down in the bore), so the pocket wraps its edge from the lid bottom up and the shelf stays at the
+# disk's top (z 96.05); the disk's lower 1.2 mm passes through the cap's center opening. Disk glued in.
+Z0 = 91.0 + CAP_T
 wall_ri = 46.25 + 0.2
-h = (ring(38.8, wall_ri + T, 96.05, 96.05 + T) + ring(wall_ri, wall_ri + T, 91.0, 96.05 + T)
-     + ring(wall_ri, 77.2, 91.0, 91.0 + T) + ring(70.7, 70.7 + T, 91.0 + T, 105.0) + ring(77.2 - T, 77.2, 91.0 + T, 94.0))
-for a in BOLT: h -= rhole(a, 70.7 + T / 2, 99.0, length=6)
+h = (ring(38.8, wall_ri + T, 96.05, 96.05 + T) + ring(wall_ri, wall_ri + T, Z0, 96.05 + T)
+     + ring(wall_ri, 77.2, Z0, Z0 + T) + ring(70.7, 70.7 + T, Z0 + T, 105.0 + CAP_T) + ring(77.2 - T, 77.2, Z0 + T, 94.0 + CAP_T))
+for a in BOLT: h -= rhole(a, 70.7 + T / 2, 99.0 + CAP_T, length=6)
 parts["09_Lid_Ceramic_Holder"] = solid(h)
-parts["10_Lid_Handle"] = src("10_Lid_Handle")
-parts["11_Lid_Hinge_Strap"] = src("11_Lid_Hinge_Strap")
-parts["13_Hinge_Pin"] = src("13_Hinge_Pin")
+parts["10_Lid_Handle"] = solid(LIFT * src("10_Lid_Handle"))
+parts["11_Lid_Hinge_Strap"] = solid(LIFT * src("11_Lid_Hinge_Strap"))
+parts["13_Hinge_Pin"] = solid(LIFT * src("13_Hinge_Pin"))
 parts["14_Steel_Tray"] = src("14_Steel_Tray")
 
 if os.path.isdir(OUT): shutil.rmtree(OUT)
 os.makedirs(os.path.join(OUT, "STEP")); os.makedirs(os.path.join(OUT, "STL"))
+shutil.copy(os.path.join(ROOT, "Scripts", "package_README.txt"), os.path.join(OUT, "README.txt"))
 for name, shape in parts.items():
     export_step(shape, os.path.join(OUT, "STEP", name + ".step"))
     export_stl(shape, os.path.join(OUT, "STL", name + ".stl"))
     print("wrote", name)
-# 05 top cap exists only as a mesh today (pre-June one-piece cap + the 6 bolt tabs): ship the STL and say so
-trimesh.load(os.path.join(ROOT, "viewer-full", "cap.glb"), force="mesh").export(os.path.join(OUT, "STL", "05_One_Piece_Top_Cap.stl"))
-print("wrote 05_One_Piece_Top_Cap (STL only)")
+# the viewers show exactly these parts
+VIEW = {"01_Inner_Wall_Tube": "viewer-full/01", "03_Support_Ring": "viewer-full/03", "04_Bottom_Cap": "viewer-full/04",
+        "05_One_Piece_Top_Cap": "viewer-full/cap", "06_Lid_Inner_Tube": "viewer-lid-full/06", "07_Lid_Outer_Perforated_Tube": "viewer-lid-full/07",
+        "08_Lid_Top_Disk": "viewer-lid-full/08", "09_Lid_Ceramic_Holder": "viewer-lid-full/09", "10_Lid_Handle": "viewer-lid-full/10",
+        "11_Lid_Hinge_Strap": "viewer-lid-full/11", "13_Hinge_Pin": "viewer-lid-full/13"}
+for name, dst in VIEW.items():
+    trimesh.load(os.path.join(OUT, "STL", name + ".stl")).export(os.path.join(ROOT, dst + ".glb"))
+print("viewer meshes refreshed from the package")

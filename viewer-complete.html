@@ -89,7 +89,7 @@ function makeLabel(text){ const c=document.createElement('canvas'); let x=c.getC
   const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false,transparent:true}));
   spr.center.set(0,0.5); spr.scale.set(w*0.25,h*0.25,1); spr.renderOrder=10; return spr; }
 // hinge: axis tangent at 292.4°, pivot r 81.5 / z 97 (same numbers as the Blender renderer); + angle opens the lid
-const HA=292.4*Math.PI/180, HC=new THREE.Vector3(81.5*Math.cos(HA),81.5*Math.sin(HA),97), HAX=new THREE.Vector3(-Math.sin(HA),Math.cos(HA),0);
+const HA=292.4*Math.PI/180, HC=new THREE.Vector3(81.5*Math.cos(HA),81.5*Math.sin(HA),98.2), HAX=new THREE.Vector3(-Math.sin(HA),Math.cos(HA),0);
 const lidOuter=new THREE.Group(); scene.add(lidOuter); const lidPivot=new THREE.Group(); lidPivot.position.copy(HC); lidOuter.add(lidPivot);
 const lidInner=new THREE.Group(); lidInner.position.copy(HC).negate(); lidPivot.add(lidInner);
 let lidAng=H.includes('closed')?0:110; function setLid(){ lidPivot.quaternion.setFromAxisAngle(HAX, lidAng*Math.PI/180); }
