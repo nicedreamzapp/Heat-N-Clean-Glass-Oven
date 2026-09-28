@@ -14,4 +14,5 @@ Everything older was moved OFF GitHub to the local folder `Desktop/PROJECTS/Heat
 | Oven_All_Parts_2026-09-28.png | Letter-size sheet, every part laid out, EN + 中文 (made by viewer-parts-sheet.html) |
 
 Meshes: `viewer-full/` (base) and `viewer-lid-full/` (lid). Those are the approved shapes. `viewer-full/tray.glb` is the steel tray, unchanged since June, copied in from the archive on 2026-09-28.
-Still to do: a new STEP package made from these for Tianrun.
+Machining files: `FAB_PACKAGE_2026-09-28/` (STEP + STL + bilingual README), built by `Scripts/build_current_package.py` from `cad-source/` (Sept 9 solids for unchanged parts) plus every 2026-09-28 change in code.
+Still open: 05 top cap is STL only (mesh from the pre-June cap plus tabs), so it needs a clean STEP redraw; it also needs about 0.5 mm clearance on its sleeves.
