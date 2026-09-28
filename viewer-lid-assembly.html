@@ -53,8 +53,8 @@ const STEPS=[
  {add:['08'],how:'down',t:'7. Put the Lid Top Disk on. Its skirt slides down the outside and lines up with the upper holes.'},
  {add:['bolts_high'],how:'in',t:'8. Push the 6 Upper Lid Bolts through the top disk skirt, outer tube, spacer and inner tube. Nuts on from inside.'},
  {add:['10'],how:'down',t:'9. Handle: its two threaded studs go down through the top disk, nuts underneath.'},
- {add:[],how:'',t:'10. Flip the lid over and pack it full of insulation through the pocket opening. (Insulation not drawn.)'},
- {add:['liddisk'],how:'up',t:'11. Glue the Ceramic Lid Disk into the pocket with high-heat adhesive. Raised center faces out so it plugs into the core; its whole face stays bare.'},
+ {add:[],how:'',view:'below',t:'10. Flip the lid over and pack it full of insulation through the pocket opening. (Insulation not drawn.)'},
+ {add:['liddisk'],how:'up',view:'below',t:'11. Glue the Ceramic Lid Disk into the pocket with high-heat adhesive. Raised center faces out so it plugs into the core; its whole face stays bare.'},
  {add:['11','13'],how:'in',t:'12. Hinge Strap bolts to the lid; the Hinge Pin goes through the strap and the two barrels on the base top cap.'},
 ];
 const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6};
@@ -109,6 +109,8 @@ function place(it,f,how){ // f: 0 = in place, 1 = fully away
 function go(n){ if(n<0||n>=STEPS.length) return; cur=n; const vis=shownThrough(n);
   items.forEach(it=>{ it.g.visible=vis.has(it.p.f); place(it,0,''); });
   const st=STEPS[n]; stepEl.textContent=st.t; const t0=performance.now();
+  { const d=cam.position.distanceTo(ctl.target); const v=st.view==='below'? new THREE.Vector3(-0.35,-0.75,-0.55) : new THREE.Vector3(-0.45,-0.8,0.45);
+    cam.position.copy(ctl.target).add(v.normalize().multiplyScalar(d)); ctl.update(); }
   const moving=items.filter(it=>st.add.includes(it.p.f));
   anim={moving,how:st.how,t0};
   items.forEach(it=>it.m.traverse(ch=>{ if(ch.isMesh){ ch.material.emissive=new THREE.Color(st.add.includes(it.p.f)?0x332200:0x000000); } })); }
