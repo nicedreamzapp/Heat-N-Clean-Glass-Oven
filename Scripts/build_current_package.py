@@ -56,7 +56,7 @@ parts["04_Bottom_Cap"] = solid(bc)
 #   6 tabs down the outside to the top bolt line (Ø6.6 at z 59); 4 glass slots straight through, lined up with the walls;
 #   vent holes over the gap between the tubes. The 5 old screw ears are gone (nothing screws into them anymore).
 # (OCC fails cutting the slots through the fused cap, so each ring gets its slots first, then everything fuses)
-def slot_box(a): return Rot(0, 0, a) * Pos(63.37, 0, 86.13) * Box(39.9, 11.0, 16.3)
+def slot_box(a): return Rot(0, 0, a) * Pos(63.37, 0, 86.13) * Box(39.9, 10.5, 16.3)   # top opening = the 10.5 slot, flush with the grooves
 rings = []
 for ri, ro, z0, z1 in [(46.45, 78.65, 91.0, 91.0 + CAP_T),   # top plate
                        (46.45, 47.65, 81.0, 91.2),            # sleeve around the ceramic core
@@ -72,19 +72,22 @@ for a in BOLT:
 for k in range(60):
     if min(abs((k * 6.0 - s + 180) % 360 - 180) for s in SLOTS) > 9:
         cap = cap - vhole(k * 6.0, 73.85, 1.75, 90.0, 93.0)
-# 2026-09-28 (Matt): metal slot grooves. Each glass slot gets a U-channel (two side walls + floor) down to the wall
-# slots' bottom (z 67.5), so the insulation is never open and the cap stays ONE piece (the channels bridge each slot).
+# 2026-09-28 (Matt): metal slot grooves, the SAME shape as the ceramic's glass slot. The slot in the core and both
+# tubes is 10.5 wide with a round bottom (R5.25, lowest point z 67.5). Each groove's inside is exactly that profile,
+# so it lines up flush with the ceramic slot and butts right up against the ceramic (0.2 mm). 1.2 sheet wraps it.
+# Insulation is never open, and the grooves bridge each slot so the cap stays ONE piece.
 # Two runs per slot: ceramic -> inner tube, and inner tube -> outer tube (the tube walls themselves carry the slot).
-SLOT_HW = 5.5                                   # channel inside half-width = the cap slot (11.0); wall slots are 10.5
-FLOOR = 67.5                                    # bottom of the wall slots (23.5 deep from z 91)
+SLOT_R = 5.25                                   # half of the 10.5 slot = radius of its round bottom
+SLOT_ZC = 67.5 + SLOT_R                         # centre of the round bottom (72.75)
+def u_solid(L, rad, z_top):
+    return (Pos(0, 0, (SLOT_ZC + z_top) / 2) * Box(L, 2 * rad, z_top - SLOT_ZC)
+            + Pos(0, 0, SLOT_ZC) * Rot(0, 90, 0) * Cylinder(rad, L))
 def groove(a, r0, r1):
     L, rm = r1 - r0, (r0 + r1) / 2
-    g = Pos(rm, 0, FLOOR - CAP_T / 2) * Box(L, 2 * (SLOT_HW + CAP_T), CAP_T)
-    for s in (-1, 1):
-        g = g + Pos(rm, s * (SLOT_HW + CAP_T / 2), (FLOOR - CAP_T + 91.0 + CAP_T) / 2) * Box(L, CAP_T, 91.0 + CAP_T - (FLOOR - CAP_T))
-    return Rot(0, 0, a) * g
-for a in SLOTS:
-    cap = cap + groove(a, 46.45, 70.3) + groove(a, 71.85, 75.5)   # ends pulled in so the square corners clear the tubes
+    g = u_solid(L, SLOT_R + CAP_T, 91.0 + CAP_T) - u_solid(L + 2, SLOT_R, 95.0)
+    return Rot(0, 0, a) * Pos(rm, 0, 0) * g
+for a in SLOTS:   # ends pulled in so the corners clear the tubes: sqrt(70.65^2 - 6.45^2), sqrt(75.85^2 - 6.45^2)
+    cap = cap + groove(a, 46.45, 70.35) + groove(a, 71.85, 75.55)
 parts["05_One_Piece_Top_Cap"] = solid(cap)
 parts["06_Lid_Inner_Tube"] = solid(LIFT * src("06_Lid_Inner_Tube"))
 parts["07_Lid_Outer_Perforated_Tube"] = solid(LIFT * src("07_Lid_Outer_Perforated_Tube"))
