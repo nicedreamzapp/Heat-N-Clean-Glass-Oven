@@ -17,3 +17,5 @@ Meshes: `viewer-full/` (base) and `viewer-lid-full/` (lid). Those are the approv
 Machining files: `FAB_PACKAGE_2026-09-28/` (STEP + STL + bilingual README), built by `Scripts/build_current_package.py` from `cad-source/` (Sept 9 solids for unchanged parts) plus every 2026-09-28 change in code.
 05 top cap is a clean solid (2026-09-28 redraw, sleeves 0.2 mm clear). The lid sits on it, so every lid part is +1.2 mm except the ceramic lid disk.
 Hinge: LEFT TO TIANRUN'S SHOP (Matt, 2026-09-28); the README tells them. Was: Alice's stock butt hinge was approved 2026-09-11, but the model still shows the old strap + pin, and the cap has no hinge mount.
+
+2026-09-28 evening: 05 top cap has 4 metal slot grooves (inside = the ceramic slot exactly: 10.5 wide, R5.25 round bottom, 23.5 deep), one per slot from the ceramic to the outer tube; they cover the insulation and keep the cap one piece. 01 inner tube glass slots widened to 13.3 (round bottom) so the grooves pass. 01 STEP is now a single solid (the wire-hole patches used to come out as loose pieces).

@@ -36,8 +36,13 @@ LIFT = Pos(0, 0, CAP_T)
 
 parts = {}
 # 01 inner wall: wires no longer pass the wall -> close the wire slot, the TC hole, and their mirror copies
-parts["01_Inner_Wall_Tube"] = solid(src("01_Inner_Wall_Tube") + sector(179, 187, 11.5, 70.5) + sector(310, 319, 3.0, 13.5)
-                                     + sector(-1, 7, 11.5, 66.0) + sector(130, 139, 3.0, 13.5))
+# (patches are made 0.2 oversize through the wall, then trimmed back to the wall: exact-coincident faces left 2 of
+#  them as loose solids, so the tube came out as 3 pieces)
+_p = [sector(a0, a1, z0, z1, ri=70.65, ro=71.85) for a0, a1, z0, z1 in
+      [(179, 187, 11.5, 70.5), (310, 319, 3.0, 13.5), (-1, 7, 11.5, 66.0), (130, 139, 3.0, 13.5)]]
+_t = src("01_Inner_Wall_Tube")
+for p_ in _p: _t = _t + p_
+parts["01_Inner_Wall_Tube"] = solid(_t & ring(70.85, 71.65, -40.0, 100.0))
 parts["02_Outer_Perforated_Tube"] = src("02_Outer_Perforated_Tube")
 # 03 support ring: plate + disk-centering wall + NEW bolt-on outer wall (6 seat-bolt holes) + leg holes + wire holes
 sr = ring(36.25, 70.85, -6.3, -5.5) + ring(46.25, 47.05, -5.5, 3.0) + ring(70.05, 70.85, -5.5, 8.5)
