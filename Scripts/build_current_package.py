@@ -86,8 +86,11 @@ def groove(a, r0, r1):
     L, rm = r1 - r0, (r0 + r1) / 2
     g = u_solid(L, SLOT_R + CAP_T, 91.0 + CAP_T) - u_solid(L + 2, SLOT_R, 95.0)
     return Rot(0, 0, a) * Pos(rm, 0, 0) * g
-for a in SLOTS:   # ends pulled in so the corners clear the tubes: sqrt(70.65^2 - 6.45^2), sqrt(75.85^2 - 6.45^2)
-    cap = cap + groove(a, 46.45, 70.35) + groove(a, 71.85, 75.55)
+for a in SLOTS:   # ONE groove per slot (Matt): ceramic -> just short of the outer tube, straight through the inner tube.
+    cap = cap + groove(a, 46.45, 75.55)          # end pulled in so the corners clear the outer tube: sqrt(75.85^2 - 6.45^2)
+# the inner tube's 4 glass slots are widened to let the groove pass: groove outside (R6.45) + 0.2 clearance
+for a in SLOTS:
+    parts["01_Inner_Wall_Tube"] = solid(parts["01_Inner_Wall_Tube"] - Rot(0, 0, a) * Pos(71.25, 0, 0) * u_solid(6.0, SLOT_R + CAP_T + 0.2, 95.0))
 parts["05_One_Piece_Top_Cap"] = solid(cap)
 parts["06_Lid_Inner_Tube"] = solid(LIFT * src("06_Lid_Inner_Tube"))
 parts["07_Lid_Outer_Perforated_Tube"] = solid(LIFT * src("07_Lid_Outer_Perforated_Tube"))
