@@ -34,7 +34,7 @@ const PARTS=[
   {f:'02',label:'Outer Perforated Tube',col:'out'},{f:'bolts_bot',label:'Bottom Bolts',col:'bolt',radial:true},
   {f:'03',label:'Support Ring',col:'sup'},{f:'spacer_seat',label:'Seat Spacer',col:'cer'},{f:'bolts_seat',label:'Seat Bolts',col:'bolt',radial:true},
   {f:'spacer_top',label:'Top Spacer',col:'cer'},{f:'bolts_top',label:'Top Bolts',col:'bolt',radial:true},
-  {f:'basedisk',label:'Ceramic Base Disk',col:'disk'},{f:'core',label:'Ceramic Heater Core',col:'cer'},{f:'cap',label:'One-Piece Top Cap (6 tabs down to the top bolts)',col:'top'},
+  {f:'basedisk',label:'Ceramic Base Disk',col:'disk'},{f:'core',label:'Ceramic Heater Core',col:'cer'},{f:'cap',label:'One-Piece Top Cap (6 bolt tabs + 4 metal slot grooves)',col:'top'},
   {f:'feet',label:'Ceramic Feet',col:'cer'},{f:'legscrews',label:'Leg Screws',col:'bolt'},
 ];
 // Each step brings in parts: 'down' = lowered in from above, 'in' = pushed in from outside (bolts), 'up' = from below.
@@ -51,7 +51,7 @@ const STEPS=[
  {add:['spacer_top'],how:'down',t:'10. Drop the Top Spacer into the gap and hold it at the top holes. Same fiddly step as 8.'},
  {add:['basedisk'],how:'down',t:'11. Set the Ceramic Base Disk onto the Support Ring, inside its small centering wall.'},
  {add:['core'],how:'down',t:'12. Lower the Ceramic Heater Core onto the base disk. Line its 4 glass slots up with the tube slots. Wire it, then pack the side insulation around it.'},
- {add:['cap'],how:'down',t:'13. Drop the One-Piece Top Cap on. Its 6 tabs slide down the outside of the tube and line up with the top holes; its slots line up with the glass slots.'},
+ {add:['cap'],how:'down',t:'13. Drop the One-Piece Top Cap on. Its 6 tabs slide down the outside of the tube and line up with the top holes; its 4 metal slot grooves drop into the glass slots and cover the insulation.'},
  {add:['bolts_top'],how:'in',t:'14. Push the 6 Top Bolts through the cap tabs, outer tube, top spacer and inner tube. Nuts on from inside. These hold the top cap on AND lock the top spacer.'},
  {add:['feet','legscrews'],how:'up',t:'15. Screw the 3 Ceramic Feet onto the bottom. Done.'},
 ];

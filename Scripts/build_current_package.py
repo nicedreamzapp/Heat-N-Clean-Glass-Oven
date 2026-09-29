@@ -72,6 +72,19 @@ for a in BOLT:
 for k in range(60):
     if min(abs((k * 6.0 - s + 180) % 360 - 180) for s in SLOTS) > 9:
         cap = cap - vhole(k * 6.0, 73.85, 1.75, 90.0, 93.0)
+# 2026-09-28 (Matt): metal slot grooves. Each glass slot gets a U-channel (two side walls + floor) down to the wall
+# slots' bottom (z 67.5), so the insulation is never open and the cap stays ONE piece (the channels bridge each slot).
+# Two runs per slot: ceramic -> inner tube, and inner tube -> outer tube (the tube walls themselves carry the slot).
+SLOT_HW = 5.5                                   # channel inside half-width = the cap slot (11.0); wall slots are 10.5
+FLOOR = 67.5                                    # bottom of the wall slots (23.5 deep from z 91)
+def groove(a, r0, r1):
+    L, rm = r1 - r0, (r0 + r1) / 2
+    g = Pos(rm, 0, FLOOR - CAP_T / 2) * Box(L, 2 * (SLOT_HW + CAP_T), CAP_T)
+    for s in (-1, 1):
+        g = g + Pos(rm, s * (SLOT_HW + CAP_T / 2), (FLOOR - CAP_T + 91.0 + CAP_T) / 2) * Box(L, CAP_T, 91.0 + CAP_T - (FLOOR - CAP_T))
+    return Rot(0, 0, a) * g
+for a in SLOTS:
+    cap = cap + groove(a, 46.45, 70.3) + groove(a, 71.85, 75.5)   # ends pulled in so the square corners clear the tubes
 parts["05_One_Piece_Top_Cap"] = solid(cap)
 parts["06_Lid_Inner_Tube"] = solid(LIFT * src("06_Lid_Inner_Tube"))
 parts["07_Lid_Outer_Perforated_Tube"] = solid(LIFT * src("07_Lid_Outer_Perforated_Tube"))
