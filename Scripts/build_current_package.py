@@ -122,6 +122,10 @@ parts["07_Lid_Outer_Perforated_Tube"] = solid(LIFT * src("07_Lid_Outer_Perforate
 # 08 lid top disk: 6 holes in the skirt for the upper lid bolts
 td = src("08_Lid_Top_Disk")   # holes cut at the original height, then the whole part is raised with the lid
 for a in BOLT: td -= rhole(a, 78.1, 119.0)
+# 2026-09-30 (Matt): the handle screws on. One Ø4.5 hole under each handle post; each post gets an M4 tapped hole
+# (Ø3.3 drill, 10 deep) and a screw comes up from inside the lid. Posts were drawn 0.2 into the disk; now they sit on it.
+HANDLE_POSTS = [(-38.36, 27.46), (7.87, 46.51)]
+for x, y in HANDLE_POSTS: td -= Pos(x, y, 126.6) * Cylinder(2.25, 10)   # plate is z 126.0-127.2 before the lift
 parts["08_Lid_Top_Disk"] = solid(LIFT * td)
 # 09 lid ceramic holder: sits on the top cap (z 92.2). The ceramic lid disk still rests on the core top (z 91,
 # raised center down in the bore), so the pocket wraps its edge from the lid bottom up and the shelf stays at the
@@ -136,7 +140,9 @@ h = (ring(38.8, wall_ri + T, 96.05, 96.05 + T) + ring(wall_ri, wall_ri + T, Z0, 
      + ring(wall_ri, 77.2, Z0, Z0 + T) + ring(UP_RO - T, UP_RO, Z0 + T, 105.0 + CAP_T) + ring(LIP_RO - T, LIP_RO, Z0 + T, 94.0 + CAP_T))
 for a in BOLT: h -= rhole(a, UP_RO - T / 2, 99.0 + CAP_T, length=6)
 parts["09_Lid_Ceramic_Holder"] = solid(h)
-parts["10_Lid_Handle"] = solid(LIFT * src("10_Lid_Handle"))
+hd = Pos(0, 0, CAP_T + 0.2) * src("10_Lid_Handle")   # bottom of the posts at 128.4 = top of 08
+for x, y in HANDLE_POSTS: hd -= Pos(x, y, 128.4) * Cylinder(1.65, 10.0, align=(Align.CENTER, Align.CENTER, Align.MIN))
+parts["10_Lid_Handle"] = solid(hd)
 parts["11_Lid_Hinge_Strap"] = solid(LIFT * src("11_Lid_Hinge_Strap"))
 parts["13_Hinge_Pin"] = solid(LIFT * src("13_Hinge_Pin"))
 tr = src("14_Steel_Tray")   # floor z -59.7 to -56.7

@@ -29,6 +29,7 @@ Fit fixes, 2026-09-30 (same files, updated):
   04: the old wire holes are fully closed, including the side wall.
   09: the upright wall and the small outer lip sit 0.2 mm inside the lid tubes (they overlapped the tube walls).
   06 / 07: 0.8 mm shorter at the bottom; they stand on 09's plate.
+  08 / 10: the handle screws on. 2 x Ø4.5 holes in the lid top disk, M4 tapped hole 10 mm deep in each handle post, M4 screws from inside the lid.
 
 加热清洁玻璃炉：加工文件，2026-09-28
 替换之前所有的文件包。只包括金属件，陶瓷件全部由我方提供。
@@ -59,3 +60,4 @@ Fit fixes, 2026-09-30 (same files, updated):
   04：旧线孔完全封住，包括侧壁。
   09：立墙和外侧小边都在盖子管子里面 0.2mm（原来和管壁重叠）。
   06 / 07：底部短 0.8mm，立在 09 的底板上。
+  08 / 10：提手用螺丝固定。盖子顶盘上开 2 个 Ø4.5 孔，提手每个脚上攻 M4 螺纹孔（深 10mm），M4 螺丝从盖子里面往上拧。
