@@ -13,7 +13,7 @@ html,body{width:1650px;height:1275px;background:#fff;font-family:-apple-system,"
 .box{position:absolute;border:1.5px solid #d8d8de;border-radius:10px}
 </style></head><body>
 <canvas id="c"></canvas>
-<div id="head"><h1>Heat &amp; Clean Glass Oven: every part · 所有零件</h1><span>2026-09-28 · parts not to scale · 零件未按比例</span></div>
+<div id="head"><h1>Heat &amp; Clean Glass Oven: every part · 所有零件</h1><span>2026-09-30 · parts not to scale · 零件未按比例</span></div>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -34,8 +34,8 @@ const ROWS=[
   {src:'viewer-lid-full/09',col:'sup',n:'09',en:'Lid Ceramic Holder',zh:'盖子陶瓷托架'},
   {src:'viewer-lid-full/06',col:'in',n:'06',en:'Lid Inner Tube 0.8 mm',zh:'盖子内管 0.8mm'},
   {src:'viewer-lid-full/07',col:'out',n:'07',en:'Lid Outer Perforated Tube',zh:'盖子外层带孔管'},
-  {src:'viewer-lid-full/08',col:'top',n:'08',en:'Lid Top Disk (6 bolt holes)',zh:'盖子顶盘（6个螺栓孔）'},
-  {src:'viewer-lid-full/10',col:'bolt',n:'10',en:'Lid Handle',zh:'提手'},
+  {src:'viewer-lid-full/08',col:'top',n:'08',en:'Lid Top Disk, underside',zh:'盖子顶盘底面（2个提手孔）',under:true},
+  {src:'viewer-lid-full/10',col:'bolt',n:'10',en:'Lid Handle (M4 tapped posts)',zh:'提手（M4螺纹孔）'},
   {src:'viewer-lid-full/11',col:'out',n:'11',en:'Hinge Strap',zh:'铰链片'},
   {src:'viewer-lid-full/13',col:'bolt',n:'13',en:'Hinge Pin Ø5',zh:'铰链销 Ø5'},
  ]},
@@ -78,7 +78,7 @@ cells.forEach((c,i)=>{ let m=loaded[i]; if(!m) return;
   const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); sc.add(d2); sc.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
   m.updateMatrixWorld(true); const bb=new THREE.Box3().setFromObject(m), ctr=bb.getCenter(new THREE.Vector3()), rad=bb.getBoundingSphere(new THREE.Sphere()).radius;
   const cam=new THREE.PerspectiveCamera(28, c.view.w/c.view.h, 0.1, 20000); cam.up.set(0,0,1);
-  const dir=(c.p.one? new THREE.Vector3(0.75,-0.6,0.35) : new THREE.Vector3(-0.45,-0.85,0.55)).normalize(); /* the bolt is seen side-on */ const fov=THREE.MathUtils.degToRad(28/2);
+  const dir=(c.p.one? new THREE.Vector3(0.75,-0.6,0.35) : c.p.under? new THREE.Vector3(-0.2,-0.45,-0.87) : new THREE.Vector3(-0.45,-0.85,0.55)).normalize(); /* the bolt is seen side-on */ const fov=THREE.MathUtils.degToRad(28/2);
   const dist=rad/Math.sin(Math.min(fov, Math.atan(Math.tan(fov)*cam.aspect)))*1.02;
   cam.position.copy(ctr).addScaledVector(dir,dist); cam.lookAt(ctr);
   c.scene=sc; c.cam=cam; });

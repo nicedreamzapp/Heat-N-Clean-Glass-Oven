@@ -11,7 +11,7 @@ Everything older was moved OFF GitHub to the local folder `Desktop/PROJECTS/Heat
 | viewer-lid-holder.html | Lid ceramic holder + ceramic lid disk on the core |
 | viewer-complete.html | Whole oven, lid open on its hinge, cut in half / separated (one of the 3 links for Tianrun) |
 
-| Oven_All_Parts_2026-09-28.png | Letter-size sheet, every part laid out, EN + 中文 (made by viewer-parts-sheet.html) |
+| Oven_All_Parts_2026-09-30.png | Letter-size sheet, every part laid out, EN + 中文 (made by viewer-parts-sheet.html) |
 
 Meshes: `viewer-full/` (base) and `viewer-lid-full/` (lid). Those are the approved shapes. `viewer-full/tray.glb` is the steel tray, unchanged since June, copied in from the archive on 2026-09-28.
 Machining files: `FAB_PACKAGE_2026-09-28/` (STEP + STL + bilingual README), built by `Scripts/build_current_package.py` from `cad-source/` (Sept 9 solids for unchanged parts) plus every 2026-09-28 change in code.
