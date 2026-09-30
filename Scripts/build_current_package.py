@@ -13,8 +13,12 @@ SRC = os.path.join(ROOT, "cad-source")
 OUT = os.path.join(ROOT, "FAB_PACKAGE_2026-09-28")
 T = 0.8                                   # inside parts
 BOLT = [52.4 + 60 * k for k in range(6)]  # one bolt clocking for every ring
-WIRE = [(183.0, 4.0), (188.0, 4.0), (315.0, 3.2)]   # heater leads Ø8, thermocouple Ø6.4, at r 58
+WIRE = [(180.0, 4.0), (190.0, 4.0), (315.0, 3.2)]   # heater leads Ø8, thermocouple Ø6.4, at r 58
+# (2026-09-30 audit: were 183/188, only 5.06 mm apart at r 58, so the two Ø8 holes merged into one slot; now 2.1 mm web)
 R_WIRE = 58.0
+# 2026-09-30 audit: leg screws at r 65.85 put the M6 head's flats right on 01's inside face (70.85) and its corners
+# 0.8 mm into the wall; moved in to r 64.0 (corners at 69.8, 1 mm clear) in 03, 04 and the tray
+LEG_R, LEG_OLD, LEGS = 64.0, 65.85, (40, 160, 280)
 
 def solid(x): return x if not isinstance(x, ShapeList) else Compound(children=list(x))
 def ring(ri, ro, z0, z1):
@@ -39,21 +43,33 @@ parts = {}
 # (patches are made 0.2 oversize through the wall, then trimmed back to the wall: exact-coincident faces left 2 of
 #  them as loose solids, so the tube came out as 3 pieces)
 _p = [sector(a0, a1, z0, z1, ri=70.65, ro=71.85) for a0, a1, z0, z1 in
-      [(179, 187, 11.5, 70.5), (310, 319, 3.0, 13.5), (-1, 7, 11.5, 66.0), (130, 139, 3.0, 13.5)]]
+      [(179, 187, 11.5, 70.5), (310, 319, 3.0, 13.5), (-1, 7, 11.5, 91.0), (130, 139, 3.0, 13.5)]]
 _t = src("01_Inner_Wall_Tube")
 for p_ in _p: _t = _t + p_
 parts["01_Inner_Wall_Tube"] = solid(_t & ring(70.85, 71.65, -40.0, 100.0))
+# 2026-09-30 audit: the 3° patch used to stop at z 66, leaving a flat step of the old wire slot inside the 6.5° glass
+# slot (14.9 wide there, not 13.3). It now runs to the tube top; the glass slot is re-cut to 13.3 further down.
 parts["02_Outer_Perforated_Tube"] = src("02_Outer_Perforated_Tube")
 # 03 support ring: plate + disk-centering wall + NEW bolt-on outer wall (6 seat-bolt holes) + leg holes + wire holes
-sr = ring(36.25, 70.85, -6.3, -5.5) + ring(46.25, 47.05, -5.5, 3.0) + ring(70.05, 70.85, -5.5, 8.5)
-for a in BOLT: sr -= rhole(a, 70.45, 2.15, length=6)
-for a in (40, 160, 280): sr -= vhole(a, 65.85, 3.3, -8, -4)
+# 2026-09-30 audit: plate + outer wall were line-to-line with 01's inside face (70.85) and the centering wall with the
+# ceramic base disk (r 46.25); both now 0.2 mm clear
+sr = ring(36.25, 70.65, -6.3, -5.5) + ring(46.45, 47.25, -5.5, 3.0) + ring(69.85, 70.65, -5.5, 8.5)
+for a in BOLT: sr -= rhole(a, 70.25, 2.15, length=6)
+for a in LEGS: sr -= vhole(a, LEG_R, 3.3, -8, -4)
 for a, r in WIRE: sr -= vhole(a, R_WIRE, r, -8, -4)
 parts["03_Support_Ring"] = solid(sr)
 # 04 bottom cap: wire/TC holes under the support ring; old tube-gap holes plugged
 bc = src("04_Bottom_Cap")
 for a, r in WIRE: bc -= vhole(a, R_WIRE, r, -40, -10)
-for a, r in [(183.0, 4.0), (188.0, 4.0), (315.0, 3.0)]: bc += vhole(a, 74.05, r + 0.6, -32.9, -31.7)
+# 2026-09-30 audit: the source cap's 3 leg holes were Ø13.2 (hnc_params used the 6.6 hole SIZE as a radius), so the
+# leg screw head fell through; fill them and re-cut Ø6.6
+for a in LEGS:
+    bc += vhole(a, LEG_OLD, 6.8, -32.9, -31.7)
+    bc -= vhole(a, LEG_R, 3.3, -40, -10)
+# 2026-09-30 audit: the old holes also bit 2 mm into the skirt (r 77.55-78.75, z -31.7 to -29.7), so each plug now
+# fills the floor AND that skirt pocket, trimmed to the cap's own floor + skirt so nothing new sticks inside.
+_env = Cylinder(78.75, 1.2, align=(Align.CENTER, Align.CENTER, Align.MIN)).moved(Location((0, 0, -32.9))) + ring(77.55, 78.75, -32.9, -29.5)
+for a, r in [(183.0, 4.0), (188.0, 4.0), (315.0, 3.0)]: bc += vhole(a, 74.05, r + 0.6, -32.9, -29.5) & _env
 parts["04_Bottom_Cap"] = solid(bc)
 # 05 one-piece top cap, redrawn clean 2026-09-28 from the pre-June cap's layout:
 #   flat top (1.2) sitting ON the tube tops, open in the middle so the ceramic core top stays bare for the lid disk;
@@ -97,8 +113,12 @@ for a in SLOTS:   # ONE groove per slot (Matt): ceramic -> just short of the out
 for a in SLOTS:
     parts["01_Inner_Wall_Tube"] = solid(parts["01_Inner_Wall_Tube"] - Rot(0, 0, a) * Pos(71.25, 0, 0) * u_solid(6.0, SLOT_R + CAP_T + 0.2, 95.0))
 parts["05_One_Piece_Top_Cap"] = solid(cap)
-parts["06_Lid_Inner_Tube"] = solid(LIFT * src("06_Lid_Inner_Tube"))
-parts["07_Lid_Outer_Perforated_Tube"] = solid(LIFT * src("07_Lid_Outer_Perforated_Tube"))
+# 2026-09-30 audit: 09's bottom plate (z 92.2-93.0) sat in the same band as both lid tube bottoms, so the tubes are
+# shortened 0.8 mm from the bottom and stand ON 09's plate.
+LID_FLOOR = 91.0 + CAP_T + T                    # 93.0 = top of 09's plate
+def above(z): return Pos(0, 0, z) * Cylinder(100, 100, align=(Align.CENTER, Align.CENTER, Align.MIN))
+parts["06_Lid_Inner_Tube"] = solid(LIFT * src("06_Lid_Inner_Tube") & above(LID_FLOOR))
+parts["07_Lid_Outer_Perforated_Tube"] = solid(LIFT * src("07_Lid_Outer_Perforated_Tube") & above(LID_FLOOR))
 # 08 lid top disk: 6 holes in the skirt for the upper lid bolts
 td = src("08_Lid_Top_Disk")   # holes cut at the original height, then the whole part is raised with the lid
 for a in BOLT: td -= rhole(a, 78.1, 119.0)
@@ -108,14 +128,22 @@ parts["08_Lid_Top_Disk"] = solid(LIFT * td)
 # disk's top (z 96.05); the disk's lower 1.2 mm passes through the cap's center opening. Disk glued in.
 Z0 = 91.0 + CAP_T
 wall_ri = 46.25 + 0.2
+# 2026-09-30 audit: the upright bolt wall was drawn at r 70.7-71.5, inside 06's wall (r 70.85-71.65), and the small
+# outer lip at r 76.4-77.2 was inside 07's wall (r 76.05-77.25). Both now sit 0.2 mm inside their tube.
+UP_RO = 70.85 - 0.2                             # 06 inner face - 0.2
+LIP_RO = 76.05 - 0.2                            # 07 inner face - 0.2
 h = (ring(38.8, wall_ri + T, 96.05, 96.05 + T) + ring(wall_ri, wall_ri + T, Z0, 96.05 + T)
-     + ring(wall_ri, 77.2, Z0, Z0 + T) + ring(70.7, 70.7 + T, Z0 + T, 105.0 + CAP_T) + ring(77.2 - T, 77.2, Z0 + T, 94.0 + CAP_T))
-for a in BOLT: h -= rhole(a, 70.7 + T / 2, 99.0 + CAP_T, length=6)
+     + ring(wall_ri, 77.2, Z0, Z0 + T) + ring(UP_RO - T, UP_RO, Z0 + T, 105.0 + CAP_T) + ring(LIP_RO - T, LIP_RO, Z0 + T, 94.0 + CAP_T))
+for a in BOLT: h -= rhole(a, UP_RO - T / 2, 99.0 + CAP_T, length=6)
 parts["09_Lid_Ceramic_Holder"] = solid(h)
 parts["10_Lid_Handle"] = solid(LIFT * src("10_Lid_Handle"))
 parts["11_Lid_Hinge_Strap"] = solid(LIFT * src("11_Lid_Hinge_Strap"))
 parts["13_Hinge_Pin"] = solid(LIFT * src("13_Hinge_Pin"))
-parts["14_Steel_Tray"] = src("14_Steel_Tray")
+tr = src("14_Steel_Tray")   # floor z -59.7 to -56.7
+for a in LEGS:
+    tr += vhole(a, LEG_OLD, 3.5, -59.7, -56.7)
+    tr -= vhole(a, LEG_R, 3.3, -62, -54)
+parts["14_Steel_Tray"] = solid(tr)
 
 if os.path.isdir(OUT): shutil.rmtree(OUT)
 os.makedirs(os.path.join(OUT, "STEP")); os.makedirs(os.path.join(OUT, "STL"))
@@ -131,4 +159,14 @@ VIEW = {"01_Inner_Wall_Tube": "viewer-full/01", "03_Support_Ring": "viewer-full/
         "11_Lid_Hinge_Strap": "viewer-lid-full/11", "13_Hinge_Pin": "viewer-lid-full/13"}
 for name, dst in VIEW.items():
     trimesh.load(os.path.join(OUT, "STL", name + ".stl")).export(os.path.join(ROOT, dst + ".glb"))
+import numpy as np
+for f in ("feet", "legscrews"):   # move each foot / screw in radially by LEG_OLD - LEG_R (idempotent: snaps to LEG_R)
+    fp = os.path.join(ROOT, "viewer-full", f + ".glb"); sc = trimesh.load(fp)
+    ms = sc.dump(concatenate=True) if isinstance(sc, trimesh.Scene) else sc
+    out = []
+    for c in ms.split(only_watertight=False):
+        cx, cy = c.bounds.mean(axis=0)[:2]; r = math.hypot(cx, cy)
+        if r > 1: c.apply_translation([cx / r * (LEG_R - r), cy / r * (LEG_R - r), 0])
+        out.append(c)
+    trimesh.util.concatenate(out).export(fp)
 print("viewer meshes refreshed from the package")

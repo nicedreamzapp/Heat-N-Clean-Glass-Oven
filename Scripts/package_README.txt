@@ -21,6 +21,15 @@ Changes from the files you have:
   Hinge: use your stock stainless butt hinge (approved Sept 11). Please add its screw holes to the top cap and lid; the strap + pin in these files is only a placeholder.
   Inside parts (01, 03, 06, 09) are 0.8 mm. Outside parts are 1.2 mm. Tray 3 mm.
 
+Fit fixes, 2026-09-30 (same files, updated):
+  03 / 04 / 14: the 3 leg screw holes moved in to r 64.0 (were r 65.85) so the screw heads clear the inner tube. 04's leg holes are now Ø6.6 (were Ø13.2).
+  03 / 04: the 2 heater wire holes are at 180° and 190° (were 183° and 188°, which ran together into one slot).
+  03: 0.2 mm clearance to the inner tube and to the ceramic base disk.
+  01: all 4 glass slots are the same 13.3 mm now (one still had a step from the old wire slot).
+  04: the old wire holes are fully closed, including the side wall.
+  09: the upright wall and the small outer lip sit 0.2 mm inside the lid tubes (they overlapped the tube walls).
+  06 / 07: 0.8 mm shorter at the bottom; they stand on 09's plate.
+
 加热清洁玻璃炉：加工文件，2026-09-28
 替换之前所有的文件包。只包括金属件，陶瓷件全部由我方提供。
 
@@ -41,3 +50,12 @@ Changes from the files you have:
   盖子所有零件比以前高1.2mm，放在顶盖上面。
   铰链：用你们的现成不锈钢合页（9月11日已确认）。请在顶盖和盖子上加它的螺丝孔；文件里的铰链片和销只是示意。
   内部件（01、03、06、09）厚度0.8mm，外部件1.2mm，托盘3mm。
+
+装配修正，2026-09-30（同一批文件，已更新）：
+  03 / 04 / 14：3个脚螺丝孔往里移到 r 64.0（原来 r 65.85），螺丝头不再碰内管。04 的脚孔改为 Ø6.6（原来 Ø13.2）。
+  03 / 04：2个加热线孔在 180° 和 190°（原来 183° 和 188°，两孔连成一条槽）。
+  03：和内管、陶瓷底盘之间留 0.2mm 间隙。
+  01：4个玻璃槽现在都是 13.3mm（其中一个还留着旧线槽的台阶）。
+  04：旧线孔完全封住，包括侧壁。
+  09：立墙和外侧小边都在盖子管子里面 0.2mm（原来和管壁重叠）。
+  06 / 07：底部短 0.8mm，立在 09 的底板上。
