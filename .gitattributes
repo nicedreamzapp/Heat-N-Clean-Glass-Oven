@@ -24,3 +24,6 @@ viewer-full/*.glb !filter !diff !merge -text
 
 # Lid viewer meshes: real blobs for GitHub Pages.
 viewer-lid-full/*.glb !filter !diff !merge -text
+
+# Raised-seat (2026-10-12) assembly viewer meshes: real blobs for GitHub Pages.
+viewer-seat5/*.glb !filter !diff !merge -text
