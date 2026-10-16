@@ -9,6 +9,10 @@ For each STEP file:
 
 Then print a comparison table vs hnc_params.PRINCIPAL_DIMS so Matt can triple-check.
 Run: .venv-cad/bin/python Scripts/verify_steps.py
+
+2026-10-16: package mode (the "CAD Exports" names above are from before 2026-09-28):
+  .venv-cad/bin/python Scripts/verify_steps.py FAB_PACKAGE_2026-10-16 [--render]
+  checks every STEP in <package>/STEP loads as exactly ONE solid with volume > 0; exits 1 if any fails.
 """
 import os, sys, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -104,5 +108,28 @@ def main():
         print(f"  {k:<28} {v}")
     print(f"\nRenders: {RENDER_DIR}")
 
+def verify_package(pkg, do_render=False):
+    d = os.path.join(PROJ, pkg, "STEP") if not os.path.isabs(pkg) else os.path.join(pkg, "STEP")
+    bad = 0
+    print(f"{'PART':<32}{'SOLIDS':>7}{'VOL cm3':>10}  BBOX X x Y x Z (z range)")
+    for f in sorted(os.listdir(d)):
+        if not f.endswith(".step"): continue
+        name = f[:-5]
+        try:
+            part = import_step(os.path.join(d, f))
+            n = len(part.solids()); vol = part.volume; bb = part.bounding_box()
+            ok = n == 1 and vol > 0
+        except Exception as e:
+            print(f"{name:<32} LOAD-FAIL {e}"); bad += 1; continue
+        bad += 0 if ok else 1
+        print(f"{name:<32}{n:>7}{vol/1000:>10.2f}  {bb.size.X:.1f} x {bb.size.Y:.1f} x {bb.size.Z:.1f} "
+              f"(z {bb.min.Z:.2f}..{bb.max.Z:.2f})  {'ok' if ok else 'FAIL'}")
+        if do_render:
+            v, fc = tess(part); render(name, v, fc)
+    print("ALL SINGLE SOLIDS" if not bad else f"{bad} FAILED")
+    return bad
+
 if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        sys.exit(1 if verify_package(sys.argv[1], "--render" in sys.argv) else 0)
     main()
