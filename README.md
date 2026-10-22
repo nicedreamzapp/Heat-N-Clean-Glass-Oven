@@ -8,6 +8,10 @@
 
 ![Nice Dreamz Heat & Clean Glass Oven - Lid Open](Renders/LidOpen_Product.png)
 
+<a id="oven"></a>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-banner.svg" width="100%" alt="01. The oven. An open-hardware oven for glass dab pieces"></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-r1.svg" width="100%" alt="25 numbered pieces per kit. 0 welded joints beyond the rolled tube seams. 14 STEP files in the fab package."></picture>
+
 Heat & Clean is a precision ceramic oven that heats your glass pieces to the perfect dabbing or vaping temperature -- no torch, no guessing, no hot spots. Set your temp, drop in your piece, and get a perfect session every time. And when your glass gets gunked up? Same oven, higher temp, walk away. Comes back looking brand new.
 
 **Spin every part in your browser — no CAD software needed:** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/viewer-thickness.html
@@ -16,38 +20,12 @@ Click **Explode** to pull the oven apart, and every part is labelled with its sh
 **See every part in 3D (older viewer):** https://nicedreamzwholesale.com/heat-n-clean-viewer/all-parts.html
 **Full parts list:** [PARTS_LIST.md](PARTS_LIST.md) · **Current fab package:** `CAD Exports/FAB_PACKAGE_2026-09-09/` — 14 STEP files + BOM
 
----
+<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-rule.svg" width="100%" alt="">
 
-## What I built (Matt Macosko)
 
-- **Parametric CAD generator**, all geometry in code: [Scripts/export_all_parts.py](Scripts/export_all_parts.py) (every part as STL/GLB), shared dimensions in [Scripts/hnc_params.py](Scripts/hnc_params.py), part builders [build_base_body.py](Scripts/build_base_body.py), [build_lid.py](Scripts/build_lid.py), [build_cap_shell_ring.py](Scripts/build_cap_shell_ring.py), [build_caps_tray.py](Scripts/build_caps_tray.py)
-- **Fab package builder** for the 0.8 mm inner parts: [Scripts/build_inner_parts_08.py](Scripts/build_inner_parts_08.py) -> [CAD Exports/FAB_PACKAGE_2026-09-09/](CAD%20Exports/FAB_PACKAGE_2026-09-09/) (14 STEP files + [BOM](CAD%20Exports/FAB_PACKAGE_2026-09-09/BOM_metal_parts.csv))
-- **Thickness verification** by ray-casting the STEP meshes: [Scripts/measure_thickness.py](Scripts/measure_thickness.py) -> [viewer-thickness/parts.json](viewer-thickness/parts.json), plus [Scripts/verify_steps.py](Scripts/verify_steps.py)
-- **Flat patterns and shop drawings**: [generate_flat_patterns.py](Scripts/generate_flat_patterns.py), [generate_cap_dxfs.py](Scripts/generate_cap_dxfs.py), [generate_fab_package.py](Scripts/generate_fab_package.py) (bilingual EN/中文 spec)
-- **Browser 3D viewers**: [viewer-thickness.html](viewer-thickness.html) and the other `viewer-*.html` pages
-- **Controller configuration** for the upstream REX-C100 PID and DH48S timer: [Controller_Setup_Guide.md](Controller_Setup_Guide.md)
-- **Parts list and assembly design** (25 pieces, zero welded joints): [PARTS_LIST.md](PARTS_LIST.md)
-
-Upstream tools used, not written here: [build123d](https://github.com/gumyr/build123d) (STEP I/O), [trimesh](https://github.com/mikedh/trimesh), NumPy, [three.js](https://threejs.org/) (viewers), Blender (product renders). The REX-C100, DH48S and ceramic heater are off-the-shelf parts.
-
----
-
-## Current metal spec (2026-09-09)
-
-| | Parts | Sheet | Material |
-|---|---|---|---|
-| **Outside** — seen, structural | 02 outer tube · 04 bottom cap · 05 top cap · 07 lid outer tube · 08 lid top disk · 11 hinge strap | **1.2 mm** | 304SS, #4 brushed |
-| **Inside** — hidden, no load | 01 inner wall · 03 support ring · 06 lid inner tube · 09 lid ceramic holder · 12 hold-down ring | **0.8 mm** | 304 **or** 430 SS / aluminized steel — anything rated 870 °F continuous |
-| Tray | 14 steel tray | 3 mm | 304 or mild steel |
-| Rod | 10 handle (Ø8) · 13 hinge pin (Ø5) | — | 304SS rod |
-
-Inner wall ID stays 141.7 and the outer tube stays 152.1 / 154.5, so nothing that mates
-with the ceramic or the glass moved. Every thickness above was measured back out of the
-STEP files themselves (`Scripts/measure_thickness.py`), not copied from a spec sheet.
-
----
-
-## The Problem
+<a id="problem"></a>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s02-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s02-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s02-banner.svg" width="100%" alt="02. The problem and the solution. Even heat all the way around the barrel"></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s02-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s02-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s02-r1.svg" width="100%" alt="Torches guess. You are guessing at temperature every time. Coils miss half. Even a 10-wrap coil only covers half the barrel. Whole piece, evenly. The 91mm ceramic chamber heats the entire barrel."></picture>
 
 Torches and coil heaters can't evenly heat modern glass pieces.
 
@@ -59,9 +37,8 @@ Torches and coil heaters can't evenly heat modern glass pieces.
 
 **With a coil heater**, even a 10-wrap coil only covers half the barrel. The top half never reaches temp. Uneven heat means uneven flavor.
 
----
 
-## The Solution
+### The Solution
 
 The Heat & Clean oven surrounds the **entire piece** in even, controlled heat.
 
@@ -71,9 +48,7 @@ The Heat & Clean oven surrounds the **entire piece** in even, controlled heat.
 
 The 91mm tall ceramic chamber heats the **whole barrel** -- top to bottom, all the way around. Tower-style terp slurpers with 80mm barrels fit completely inside. Set your exact target temperature and hit it every time. Lower temps, better flavor, zero waste.
 
----
-
-## Two Modes, One Device
+### Two Modes, One Device
 
 ### Heating Mode
 Drop in your terp slurper, banger, or ball vape heater. Set your preferred dabbing or vaping temperature -- most sessions run in the 500-600 F sweet spot. The PID controller brings it to temp and holds it perfectly. Pull it out, attach it, and enjoy a perfect session every time.
@@ -81,9 +56,64 @@ Drop in your terp slurper, banger, or ball vape heater. Set your preferred dabbi
 ### Cleaning Mode
 Crank the temperature up. Walk away. The oven burns off all char, resin, and buildup. Come back to glass that looks brand new. No chemicals, no scrubbing, no soaking. The 6-hour auto-shutoff timer means you can set it and forget it.
 
----
+<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s02-rule.svg" width="100%" alt="">
 
-## Built To Be Built — zero welds, all bolts
+
+<a id="specs"></a>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s03-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s03-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s03-banner.svg" width="100%" alt="03. Features and specs. Controller, safety, materials and fit"></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s03-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s03-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s03-r1.svg" width="100%" alt="870 F software limit. 6 hours auto-shutoff. 81.5 mm chamber ID."></picture>
+
+- **Precision PID temperature control** -- REX-C100 controller holds your target temp within a few degrees
+- **Locked-down interface** -- just set your temp and go, no confusing menus
+- **Triple safety system** -- software limit (870 F) + overheat alarm (900 F) + thermal fuse (930 F)
+- **6-hour auto-shutoff** -- DH48S timer relay cuts power automatically
+- **Insulated dual-wall construction** -- 31mm ceramic-to-outer-wall gap keeps exterior cool to the touch
+- **Perforated mesh exterior** -- full airflow ventilation with clean stainless steel look
+- **Ceramic feet** -- heat-insulating legs keep the steel tray cool
+- **Bolted strap hinge** -- lid swings open past vertical for easy loading; flush ceramic disk seals the chamber
+- **Clamp-fit hold-down ring** -- keeps the ceramic core centered and seated with no fasteners of its own
+
+![Nice Dreamz Heat & Clean Glass Oven - Lid Removed](Renders/LidOff_Product.png)
+
+| Component | Material |
+|-----------|----------|
+| Heating chamber | High-alumina ceramic cylinder (92.5mm OD) |
+| Heating element | Kanthal wire coil (30 wraps) |
+| Inner housing | 0.8mm 304 or 430 SS / aluminized steel (see metal spec above) |
+| Outer mesh | 1.2mm perforated 304 stainless steel |
+| Insulation gap | 24.6mm air gap between ceramic and housing |
+| Spacer rings | 5x ceramic (3x 14mm body + 2x 10mm lid) |
+| Controller | REX-C100 PID + SSR + DH48S timer |
+| Legs | 3x ceramic feet with M6 mounting |
+
+
+### Specifications
+
+| Spec | Value |
+|------|-------|
+| Chamber ID | 81.5 mm (3.2 in) |
+| Chamber height | 91 mm (3.6 in) |
+| Outer diameter | 154.5 mm (6.1 in) |
+| Temperature range | 100 - 870 F |
+| Power | 120V AC |
+| Auto-shutoff | 6 hours |
+| Wall thickness | 31 mm (ceramic to outer mesh) |
+| Body material | 304 stainless steel, brushed finish |
+
+
+### Works With
+
+- Tower-style terp slurpers (up to 80mm barrel)
+- Standard bangers
+- Ball vape heaters
+- Any glass piece that fits the 81.5mm chamber
+
+<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s03-rule.svg" width="100%" alt="">
+
+
+<a id="build"></a>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-banner.svg" width="100%" alt="04. Built to be built. Zero welds, all bolts, and the design journey"></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-r1.svg" width="100%" alt="M6 bolts and nuts. 3 fastener types total. Bolted strap hinge. No welded hinge, low profile. Measured, not copied. Thickness was measured from the STEP files."></picture>
 
 The entire oven assembles with **M6 bolts and nuts**. The only welds in the
 product are the seams of the rolled tubes. No welded brackets, no welded
@@ -103,7 +133,7 @@ bosses, no welded hinge. 25 numbered pieces per kit, 3 fastener types total.
 - **Handle with threaded studs** -- no screw heads on the lid top; two nuts
   grab the studs from underneath.
 
-## The design journey (June 2026)
+### The design journey (June 2026)
 
 This repo went through a full manufacturability redesign, live, with every
 decision reviewed against 3D renders before any shop quotes:
@@ -122,64 +152,37 @@ decision reviewed against 3D renders before any shop quotes:
    hanging open. Cheap fixes ready if needed: 1.5mm strap stock or a second
    bolt hole.
 
----
+### Current metal spec (2026-09-09)
 
-## Features
+| | Parts | Sheet | Material |
+|---|---|---|---|
+| **Outside** — seen, structural | 02 outer tube · 04 bottom cap · 05 top cap · 07 lid outer tube · 08 lid top disk · 11 hinge strap | **1.2 mm** | 304SS, #4 brushed |
+| **Inside** — hidden, no load | 01 inner wall · 03 support ring · 06 lid inner tube · 09 lid ceramic holder · 12 hold-down ring | **0.8 mm** | 304 **or** 430 SS / aluminized steel — anything rated 870 °F continuous |
+| Tray | 14 steel tray | 3 mm | 304 or mild steel |
+| Rod | 10 handle (Ø8) · 13 hinge pin (Ø5) | — | 304SS rod |
 
-- **Precision PID temperature control** -- REX-C100 controller holds your target temp within a few degrees
-- **Locked-down interface** -- just set your temp and go, no confusing menus
-- **Triple safety system** -- software limit (870 F) + overheat alarm (900 F) + thermal fuse (930 F)
-- **6-hour auto-shutoff** -- DH48S timer relay cuts power automatically
-- **Insulated dual-wall construction** -- 31mm ceramic-to-outer-wall gap keeps exterior cool to the touch
-- **Perforated mesh exterior** -- full airflow ventilation with clean stainless steel look
-- **Ceramic feet** -- heat-insulating legs keep the steel tray cool
-- **Bolted strap hinge** -- lid swings open past vertical for easy loading; flush ceramic disk seals the chamber
-- **Clamp-fit hold-down ring** -- keeps the ceramic core centered and seated with no fasteners of its own
+Inner wall ID stays 141.7 and the outer tube stays 152.1 / 154.5, so nothing that mates
+with the ceramic or the glass moved. Every thickness above was measured back out of the
+STEP files themselves (`Scripts/measure_thickness.py`), not copied from a spec sheet.
 
----
+### What I built (Matt Macosko)
 
-## What's Inside
+- **Parametric CAD generator**, all geometry in code: [Scripts/export_all_parts.py](Scripts/export_all_parts.py) (every part as STL/GLB), shared dimensions in [Scripts/hnc_params.py](Scripts/hnc_params.py), part builders [build_base_body.py](Scripts/build_base_body.py), [build_lid.py](Scripts/build_lid.py), [build_cap_shell_ring.py](Scripts/build_cap_shell_ring.py), [build_caps_tray.py](Scripts/build_caps_tray.py)
+- **Fab package builder** for the 0.8 mm inner parts: [Scripts/build_inner_parts_08.py](Scripts/build_inner_parts_08.py) -> [CAD Exports/FAB_PACKAGE_2026-09-09/](CAD%20Exports/FAB_PACKAGE_2026-09-09/) (14 STEP files + [BOM](CAD%20Exports/FAB_PACKAGE_2026-09-09/BOM_metal_parts.csv))
+- **Thickness verification** by ray-casting the STEP meshes: [Scripts/measure_thickness.py](Scripts/measure_thickness.py) -> [viewer-thickness/parts.json](viewer-thickness/parts.json), plus [Scripts/verify_steps.py](Scripts/verify_steps.py)
+- **Flat patterns and shop drawings**: [generate_flat_patterns.py](Scripts/generate_flat_patterns.py), [generate_cap_dxfs.py](Scripts/generate_cap_dxfs.py), [generate_fab_package.py](Scripts/generate_fab_package.py) (bilingual EN/中文 spec)
+- **Browser 3D viewers**: [viewer-thickness.html](viewer-thickness.html) and the other `viewer-*.html` pages
+- **Controller configuration** for the upstream REX-C100 PID and DH48S timer: [Controller_Setup_Guide.md](Controller_Setup_Guide.md)
+- **Parts list and assembly design** (25 pieces, zero welded joints): [PARTS_LIST.md](PARTS_LIST.md)
 
-![Nice Dreamz Heat & Clean Glass Oven - Lid Removed](Renders/LidOff_Product.png)
+Upstream tools used, not written here: [build123d](https://github.com/gumyr/build123d) (STEP I/O), [trimesh](https://github.com/mikedh/trimesh), NumPy, [three.js](https://threejs.org/) (viewers), Blender (product renders). The REX-C100, DH48S and ceramic heater are off-the-shelf parts.
 
-| Component | Material |
-|-----------|----------|
-| Heating chamber | High-alumina ceramic cylinder (92.5mm OD) |
-| Heating element | Kanthal wire coil (30 wraps) |
-| Inner housing | 0.8mm 304 or 430 SS / aluminized steel (see metal spec above) |
-| Outer mesh | 1.2mm perforated 304 stainless steel |
-| Insulation gap | 24.6mm air gap between ceramic and housing |
-| Spacer rings | 5x ceramic (3x 14mm body + 2x 10mm lid) |
-| Controller | REX-C100 PID + SSR + DH48S timer |
-| Legs | 3x ceramic feet with M6 mounting |
+<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-rule.svg" width="100%" alt="">
 
----
 
-## Specifications
-
-| Spec | Value |
-|------|-------|
-| Chamber ID | 81.5 mm (3.2 in) |
-| Chamber height | 91 mm (3.6 in) |
-| Outer diameter | 154.5 mm (6.1 in) |
-| Temperature range | 100 - 870 F |
-| Power | 120V AC |
-| Auto-shutoff | 6 hours |
-| Wall thickness | 31 mm (ceramic to outer mesh) |
-| Body material | 304 stainless steel, brushed finish |
-
----
-
-## Works With
-
-- Tower-style terp slurpers (up to 80mm barrel)
-- Standard bangers
-- Ball vape heaters
-- Any glass piece that fits the 81.5mm chamber
-
----
-
-## Known limits
+<a id="start"></a>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-banner.svg" width="100%" alt="05. Limits, quick start and license. What is not here yet and how to run it"></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-r1.svg" width="100%" alt="No prototype results. Design only so far; first articles pending. Open hardware. CERN-OHL-S-2.0, GPL-3.0-or-later, CC-BY-SA-4.0."></picture>
 
 - No physical prototype results are in this repo. Temperatures and safety limits are the controller settings in [Controller_Setup_Guide.md](Controller_Setup_Guide.md), not logged test data.
 - Hinge strap stiffness with the lid open is still an open question (see the design journey above).
@@ -187,9 +190,8 @@ decision reviewed against 3D renders before any shop quotes:
 - `export_all_parts.py` still models every sheet at 1.2 mm; the 0.8 mm inner parts exist only in the fab package STEP files.
 - There is no `requirements.txt`. The scripts expect a local venv (`.venv-cad`) with build123d, trimesh and numpy.
 
----
 
-## Quick start
+### Quick start
 
 ```bash
 # View the parts in a browser (the viewers load files by relative path)
@@ -200,15 +202,13 @@ python3 -m venv .venv-cad && .venv-cad/bin/pip install build123d trimesh numpy
 .venv-cad/bin/python Scripts/export_all_parts.py
 ```
 
----
 
-## License
+### License
 
 Open hardware, copyleft: CERN-OHL-S-2.0 for the hardware and CAD, GPL-3.0-or-later for code, CC-BY-SA-4.0 for docs and images. See [LICENSE](LICENSE) for which applies to what.
 
----
-
-## Project Structure
+<details>
+<summary><b>Project structure</b></summary>
 
 ```
 PARTS_LIST.md                   -- the 25-piece kit, numbered like the viewer labels
@@ -237,3 +237,8 @@ CAD Exports/
   Flat Patterns/DXF|SVG/        -- laser-cut patterns
   Fabrication Package/          -- older package: spec EN + 中文, BOM, DXF, 3D refs (zip alongside)
 ```
+
+</details>
+
+<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-rule.svg" width="100%" alt="">
+
