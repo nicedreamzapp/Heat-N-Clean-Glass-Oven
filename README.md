@@ -4,9 +4,18 @@
 
 **In one sentence:** an open-hardware design for a bolt-together stainless and ceramic oven that heats glass dab pieces to a set temperature with a PID controller, then runs hotter to burn them clean.
 
-**Status:** design complete, 14-part metal fab package generated from Python CAD scripts, sheet thickness verified by measuring the STEP files. First physical articles are not in this repo yet (see [Known limits](#known-limits)).
+**Status:** design complete, 14-part metal fab package generated from Python CAD scripts, sheet thickness verified by measuring the STEP files. **October 2026: the first full plastic test print came back from the factory and was test-fit on the real ceramic core** (photos below). Stainless samples are next.
 
 ![Nice Dreamz Heat & Clean Glass Oven - Lid Open](Renders/LidOpen_Product.png)
+
+## Latest: plastic test print on the real ceramic (October 2026)
+
+Before cutting steel, the factory printed every part in plastic from the fab package and assembled it around the real ceramic heater core. These are their photos.
+
+| | | |
+|---|---|---|
+| ![Ceramic core seated in the top cap](Prototype%20Photos/2026-10%20plastic%20test%20print/01_ceramic_core_seated.jpg) | ![Top cap over the core](Prototype%20Photos/2026-10%20plastic%20test%20print/02_top_cap_over_core.jpg) | ![Ceramic lid disk and lid](Prototype%20Photos/2026-10%20plastic%20test%20print/03_ceramic_lid_disk_and_lid.jpg) |
+| ![Full body with the lid off and the hinge](Prototype%20Photos/2026-10%20plastic%20test%20print/04_full_body_lid_off_with_hinge.jpg) | ![Assembled with the ceramic lid disk in place](Prototype%20Photos/2026-10%20plastic%20test%20print/05_assembled_with_lid_disk.jpg) | [Video: ceramic fit check (9 s)](Prototype%20Photos/2026-10%20plastic%20test%20print/06_ceramic_fit_check.mp4) |
 
 <a id="oven"></a>
 <picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s01-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s01-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s01-banner.svg" width="100%" alt="01. The oven. An open-hardware oven for glass dab pieces"></picture>
@@ -184,7 +193,7 @@ Upstream tools used, not written here: [build123d](https://github.com/gumyr/buil
 <picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s05-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s05-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s05-banner.svg" width="100%" alt="05. Limits, quick start and license. What is not here yet and how to run it"></picture>
 <picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s05-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s05-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s05-r1.svg" width="100%" alt="No prototype results. Design only so far; first articles pending. Open hardware. CERN-OHL-S-2.0, GPL-3.0-or-later, CC-BY-SA-4.0."></picture>
 
-- No physical prototype results are in this repo. Temperatures and safety limits are the controller settings in [Controller_Setup_Guide.md](Controller_Setup_Guide.md), not logged test data.
+- The only physical article so far is the October 2026 plastic test print (see [the photos](#latest-plastic-test-print-on-the-real-ceramic-october-2026)); no heated stainless prototype results are in this repo yet. Temperatures and safety limits are the controller settings in [Controller_Setup_Guide.md](Controller_Setup_Guide.md), not logged test data.
 - Hinge strap stiffness with the lid open is still an open question (see the design journey above).
 - `build_inner_parts_08.py` and `measure_thickness.py` read some files from `Factory Files/`, which is gitignored, so the 2026-09-09 fab package cannot be fully rebuilt from this repo alone. The committed STEP files are the source of truth.
 - `export_all_parts.py` still models every sheet at 1.2 mm; the 0.8 mm inner parts exist only in the fab package STEP files.
