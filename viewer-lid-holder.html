@@ -24,14 +24,15 @@ body{background:#e8e8ec;font-family:-apple-system,sans-serif;color:#16181d}
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { makeLabeler } from './viewer-labels.js';
 // Base assembly with the ceramics and the fasteners in place. Metal parts are the fab-package meshes,
 // the top cap is the one-piece 03_Top_Cap from before the 2026-06-10 split, ceramics come from Core Split,
 // and the 18 ring bolts (6 per ring height, 52.4° + n·60°) are drawn M6: head outside, nut inside the inner tube.
 // "Separated" lifts parts straight up in assembly order; bolts back straight out of their holes.
 const PARTS=[
   {f:'core',label:'Ceramic Heater Core (top of base)',col:'cer',src:'viewer-full/'},
-  {f:'liddisk',label:'Ceramic Lid Disk: raised center plugs into the core',col:'disk'},
-  {f:'09',label:'09 Lid Ceramic Holder: wraps the edge, holds from above',col:'sup'},
+  {f:'liddisk',label:'Ceramic Lid Disk (raised centre into the core)',col:'disk'},
+  {f:'09',label:'09 Lid Ceramic Holder (48 vent holes)',col:'sup'},
 ];const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6};
 const GAP=40, RADIAL=70;
 const V='?v='+Date.now();
@@ -74,9 +75,8 @@ PARTS.forEach((p,i)=>{ const m=models[i]; if(!m) return; paint(m,COL[p.col]); m.
 let rx=0; items.forEach(it=>rx=Math.max(rx,it.bb.max.x));
 let top=-Infinity; items.forEach(it=>{ if(it.p.side) return;
   const dz=Math.max(0,(top+GAP)-it.bb.min.z); it.dz=dz; top=it.bb.max.z+dz; });
-items.forEach(it=>{ if(it.p.side) it.dz=byF[it.p.side].dz;
-  it.lbl=makeLabel(it.p.label); const lx=it.p.radial? rx+RADIAL+30 : rx+40;
-  it.lbl.position.set(lx, it.c.y, it.p.side&&!it.p.radial? it.bb.min.z-10 : it.c.z); it.g.add(it.lbl); it.lw=it.lbl.scale.x; it.lh=it.lbl.scale.y; });
+items.forEach(it=>{ if(it.p.side) it.dz=byF[it.p.side].dz; });
+const LB=makeLabeler(scene, items, {rx, RADIAL, makeLabel});
 
 // Measurement lines, drawn on the cut face (y = 0) and shown only when cut in half and assembled.
 // Numbers come from Scripts/hnc_params.py and were checked against these meshes 2026-09-28.
@@ -95,21 +95,22 @@ function dimLine(a,b,text,lx,lz){ const A=new THREE.Vector3(...a), B=new THREE.V
   sp.scale.set(w*0.2,h*0.2,1); sp.position.set(lx,-2,lz); sp.renderOrder=21; sp.userData.w=w*0.2; sp.userData.h=h*0.2; dimG.add(sp); }
 document.getElementById('loading').remove();
 const sl=document.getElementById('sl'), btn=document.getElementById('btn'), mode=document.getElementById('mode'), lbtn=document.getElementById('lbtn'), cut=document.getElementById('cut');
-let showL=true; lbtn.onclick=()=>{ showL=!showL; items.forEach(it=>it.lbl.visible=showL); lbtn.textContent=showL?'Hide labels':'Show labels'; };
+let showL=true; lbtn.onclick=()=>{ showL=!showL; LB.setVisible(showL); lbtn.textContent=showL?'Hide labels':'Show labels'; };
 cut.onclick=()=>{ cutOn=!cutOn; cut.classList.toggle('on',cutOn); cut.textContent=cutOn?'Whole':'Cut in half';
   items.forEach(it=>it.m.traverse(ch=>{ if(ch.isMesh) ch.material.clippingPlanes=cutOn?[clip]:[]; }));
   dimG.visible=cutOn&&k<0.05;
-  showL=!cutOn||k>0.5; items.forEach(it=>it.lbl.visible=showL); frame(k); lbtn.textContent=showL?'Hide labels':'Show labels'; };   // labels pile up in the section view
-function frame(f){ const box=new THREE.Box3();
+  showL=!cutOn||k>0.5; LB.setVisible(showL); frame(k); lbtn.textContent=showL?'Hide labels':'Show labels'; };   // labels pile up in the section view
+function frame(f,_n=0){ const box=new THREE.Box3();
   items.forEach(it=>{ const b=it.bb.clone(); b.translate(new THREE.Vector3(0,0,it.dz*f)); if(it.p.radial){ b.expandByScalar(RADIAL*f); } box.union(b); });
-  if(showL) box.max.x=Math.max(box.max.x,rx+RADIAL+330);   // room for labels only when they show
+  if(showL&&f>0.5){ const lw=(LB.wMax||LB.maxW)*1.05; box.max.x=Math.max(box.max.x,LB.R0+lw); box.min.x=Math.min(box.min.x,-(LB.R0+lw)); if(LB.zTop!==null){ box.max.z=Math.max(box.max.z,LB.zTop); box.min.z=Math.min(box.min.z,LB.zBot); } const hz=box.max.z-box.min.z; box.max.z+=0.07*hz; box.min.z-=0.03*hz; }   // label columns both sides + room under the buttons   // room for labels only when they show
   const ctr=box.getCenter(new THREE.Vector3()); const dir=cam.position.clone().sub(ctl.target).normalize();
   const up=new THREE.Vector3(0,0,1), right=new THREE.Vector3().crossVectors(up,dir).normalize(), cup=new THREE.Vector3().crossVectors(dir,right).normalize();
   const tv=Math.tan(THREE.MathUtils.degToRad(cam.fov/2)), th=tv*cam.aspect; let d=0;
   for(const cx of [box.min.x,box.max.x]) for(const cy of [box.min.y,box.max.y]) for(const cz of [box.min.z,box.max.z]){
     const v=new THREE.Vector3(cx,cy,cz).sub(ctr); const depth=v.dot(dir);
     d=Math.max(d, Math.abs(v.dot(right))/th+depth, Math.abs(v.dot(cup))/tv+depth); }
-  ctl.target.copy(ctr); cam.position.copy(ctr).add(dir.multiplyScalar(d*1.05)); ctl.update(); }
+  ctl.target.copy(ctr); cam.position.copy(ctr).add(dir.multiplyScalar(d*1.05)); ctl.update();
+  if(showL&&f>0.5&&_n<1){ LB.update(cam.position.distanceTo(ctl.target)/900,f); frame(f,_n+1); } }   // labels grow with the distance: settle the fit
 function frameSection(){ // oven body only, seen straight on, small margin
   const hh=150, d=hh/Math.tan(THREE.MathUtils.degToRad(cam.fov/2));
   ctl.target.set(0,0,20); cam.position.set(0,-d,20); ctl.update(); }
@@ -124,7 +125,7 @@ btn.onclick=()=>{ goal=goal>0.5?0:1; btn.textContent=goal>0.5?'Assemble':'Separa
 document.getElementById('fbtn').onclick=()=>frame(k);
 (function anim(){ requestAnimationFrame(anim);
   if(Math.abs(goal-k)>0.001){ k+=(goal-k)*0.08; sl.value=k; apply(k); frame(k); }
-  const ls=cam.position.distanceTo(ctl.target)/900; items.forEach(it=>it.lbl.scale.set(it.lw*ls,it.lh*ls,1));
+  const ls=cam.position.distanceTo(ctl.target)/900; LB.update(ls,k);
   dimG.children.forEach(o=>{ if(o.isSprite) o.scale.set(o.userData.w*ls*1.6,o.userData.h*ls*1.6,1); });
   ctl.update(); renderer.render(scene,cam); })();
 </script>
