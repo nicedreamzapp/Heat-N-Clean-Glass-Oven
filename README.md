@@ -4,11 +4,11 @@
 
 **In one sentence:** an open-hardware design for a bolt-together stainless and ceramic oven that heats glass dab pieces to a set temperature with a PID controller, then runs hotter to burn them clean.
 
-**Status:** design complete, 13-part metal fab package ([FAB_PACKAGE_2026-11-08](FAB_PACKAGE_2026-11-08/)) generated from Python CAD, every STEP checked as one solid and re-measured from the file. **October 2026: the first full plastic test print came back from the factory and was test-fit on the real ceramic core** (photos below). Stainless samples are next.
+**Status:** design complete, 13-part metal fab package ([FAB_PACKAGE_2026-11-08-R2](FAB_PACKAGE_2026-11-08-R2/)) generated from Python CAD, every STEP checked as one solid and re-measured from the file. **October 2026: the first full plastic test print came back from the factory and was test-fit on the real ceramic core** (photos below). Stainless samples are next.
 
-![Heat & Clean Glass Oven, 2026-11-08 size, lid open](Renders/product_2026-11-08/oven_lid_open_2026-11-08.png)
+![Heat & Clean Glass Oven, 2026-11-08 R2, lid open](Renders/product_2026-11-08/oven_lid_open_2026-11-08-R2.png)
 
-**Watch it build itself (2026-11-08 size):** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/viewer-oven-build.html · [MP4](Renders/oven_builds_itself_2026-11-08.mp4)
+**Watch it build itself (2026-11-08 R2):** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/viewer-oven-build.html · [MP4](Renders/oven_builds_itself_2026-11-08-R2.mp4)
 
 ## Latest: plastic test print on the real ceramic (October 2026)
 
@@ -29,7 +29,7 @@ Heat & Clean is a precision ceramic oven that heats your glass pieces to the per
 Click **Separate** to pull the oven apart; every part is labelled.
 
 **Whole oven in 3D:** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/viewer-complete.html
-**Full parts list:** [PARTS_LIST.md](PARTS_LIST.md) · **Current fab package:** [FAB_PACKAGE_2026-11-08/](FAB_PACKAGE_2026-11-08/) — 13 STEP + STL files, bilingual README · **What changed 2026-11-08:** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/change-sheets-2026-11-08.html
+**Full parts list:** [PARTS_LIST.md](PARTS_LIST.md) · **Current fab package:** [FAB_PACKAGE_2026-11-08-R2/](FAB_PACKAGE_2026-11-08-R2/) — 13 STEP + STL files, bilingual README · **What changed (2026-11-08 R2):** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/change-sheets-2026-11-08-R2.html
 
 <img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-rule.svg" width="100%" alt="">
 
@@ -57,7 +57,7 @@ The Heat & Clean oven surrounds the **entire piece** in even, controlled heat.
 |---|---|
 | ![Full barrel heating](Reference%20Photos/ref_full_barrel_heating.png) | ![Terp slurper dimensions](Reference%20Photos/ref_slurper_dimensions.png) |
 
-The 91mm tall ceramic chamber heats the **whole barrel** -- top to bottom, all the way around. Tower-style terp slurpers with 80mm barrels fit completely inside. Set your exact target temperature and hit it every time. Lower temps, better flavor, zero waste.
+The 90mm tall ceramic chamber heats the **whole barrel** -- top to bottom, all the way around. Tower-style terp slurpers with 80mm barrels fit completely inside. Set your exact target temperature and hit it every time. Lower temps, better flavor, zero waste.
 
 ### Two Modes, One Device
 
@@ -84,7 +84,7 @@ Crank the temperature up. Walk away. The oven burns off all char, resin, and bui
 - **Bolted strap hinge** -- lid swings open past vertical for easy loading; flush ceramic disk seals the chamber
 - **Clamp-fit hold-down ring** -- keeps the ceramic core centered and seated with no fasteners of its own
 
-![Heat & Clean Glass Oven, 2026-11-08 size, closed](Renders/product_2026-11-08/oven_lid_closed_2026-11-08.png)
+![Heat & Clean Glass Oven, 2026-11-08 R2, closed](Renders/product_2026-11-08/oven_lid_closed_2026-11-08-R2.png)
 
 | Component | Material |
 |-----------|----------|
@@ -103,7 +103,7 @@ Crank the temperature up. Walk away. The oven burns off all char, resin, and bui
 | Spec | Value |
 |------|-------|
 | Chamber ID | 81.5 mm (3.2 in) |
-| Chamber height | 91 mm (3.6 in) |
+| Chamber height | 90.4 mm (3.6 in), the real ceramic core, measured |
 | Outer diameter | 146.5 mm outer tube, 149.5 mm (5.9 in) over the caps |
 | Temperature range | 100 - 870 F |
 | Power | 120V AC |
@@ -137,6 +137,7 @@ bosses. 13 metal parts plus the ceramics and M6 hardware (see [PARTS_LIST.md](PA
 - **Hinge** -- the factory fits its stock stainless butt hinge (the strap + pin in the files are placeholders).
 - **Handle** -- screws on with 2 M4 screws from inside the lid.
 - **2026-11-08 size** -- insulation 20.6 mm so a glass slurper (31 mm gap) sits across the 28.4 mm top cap ring.
+- **2026-11-08 R2** -- body 2.66 mm taller above the ceramic seat, so the real ceramic (core 90.4 + base plate 4.9 = 95.3 mm, measured with calipers) ends flush with the top cap and the lid closes.
 
 ### The design journey (June 2026, history: the current design is above and in [CURRENT.md](CURRENT.md))
 
@@ -157,7 +158,7 @@ decision reviewed against 3D renders before any shop quotes:
    hanging open. Cheap fixes ready if needed: 1.5mm strap stock or a second
    bolt hole.
 
-### Current metal spec (2026-11-08)
+### Current metal spec (2026-11-08 R2)
 
 | | Parts | Sheet | Material |
 |---|---|---|---|
@@ -168,15 +169,17 @@ decision reviewed against 3D renders before any shop quotes:
 
 2026-11-08: the insulation is 20.6 mm (was 24.6) so a glass slurper (31 mm bowl-to-joint gap) sits across the top cap
 ring; every body and lid diameter is 8 mm smaller: inner wall ID 133.7, outer tube 144.1 / 146.5, caps Ø149.5.
-The ceramic and the glass slots did not change. Every size is re-measured from the STEP files themselves
+2026-11-08 R2: the body is 2.66 mm taller above the ceramic seat (inner and outer tube 125.36 tall), so the real ceramic
+stack (95.3 mm with its base plate) ends flush with the top cap; the cap and the lid are the same parts, 2.66 mm higher.
+Every size is re-measured from the STEP files themselves
 (`Scripts/measure_package.py`), not copied from a spec sheet.
 
 ### What I built (Matt Macosko)
 
 - **Parametric CAD**, all geometry in code: shared dimensions in [Scripts/hnc_params.py](Scripts/hnc_params.py), every part built by [Scripts/build_current_package.py](Scripts/build_current_package.py)
-- **Fab package builder**: [Scripts/build_current_package.py](Scripts/build_current_package.py) -> [FAB_PACKAGE_2026-11-08/](FAB_PACKAGE_2026-11-08/) (13 STEP + STL, bilingual README), checked by [Scripts/verify_steps.py](Scripts/verify_steps.py) and [Scripts/measure_package.py](Scripts/measure_package.py)
+- **Fab package builder**: [Scripts/build_current_package.py](Scripts/build_current_package.py) -> [FAB_PACKAGE_2026-11-08-R2/](FAB_PACKAGE_2026-11-08-R2/) (13 STEP + STL, bilingual README), checked by [Scripts/verify_steps.py](Scripts/verify_steps.py) and [Scripts/measure_package.py](Scripts/measure_package.py)
 - **Verification**: [Scripts/verify_steps.py](Scripts/verify_steps.py) (one solid per STEP) and [Scripts/measure_package.py](Scripts/measure_package.py) (fresh-import sizes, overlaps, every bolt / leg / wire line clear)
-- **Change sheets** (EN/中文, old vs new, one per part): [Scripts/render_change_sheets.py](Scripts/render_change_sheets.py) -> [change-sheets-2026-11-08.html](change-sheets-2026-11-08.html)
+- **Change sheets** (EN/中文, old vs new, one per part): [Scripts/render_change_sheets.py](Scripts/render_change_sheets.py) -> [change-sheets-2026-11-08-R2.html](change-sheets-2026-11-08-R2.html)
 - **Browser 3D viewers**: [viewer-complete.html](viewer-complete.html), the self-building [viewer-oven-build.html](viewer-oven-build.html) and the other `viewer-*.html` pages
 - **Controller configuration** for the upstream REX-C100 PID and DH48S timer: [Controller_Setup_Guide.md](Controller_Setup_Guide.md)
 - **Parts list** (13 metal parts, current sizes): [PARTS_LIST.md](PARTS_LIST.md)
@@ -205,8 +208,8 @@ python3 -m http.server        # then open http://localhost:8000/viewer-complete.
 # Rebuild the machining package and the viewer meshes, then check them
 python3 -m venv .venv-cad && .venv-cad/bin/pip install build123d trimesh numpy matplotlib
 .venv-cad/bin/python Scripts/build_current_package.py
-.venv-cad/bin/python Scripts/verify_steps.py FAB_PACKAGE_2026-11-08
-.venv-cad/bin/python Scripts/measure_package.py FAB_PACKAGE_2026-11-08
+.venv-cad/bin/python Scripts/verify_steps.py FAB_PACKAGE_2026-11-08-R2
+.venv-cad/bin/python Scripts/measure_package.py FAB_PACKAGE_2026-11-08-R2
 ```
 
 
@@ -220,13 +223,15 @@ Open hardware, copyleft: CERN-OHL-S-2.0 for the hardware and CAD, GPL-3.0-or-lat
 ```
 CURRENT.md                      -- the only files to build from, and every dated change
 PARTS_LIST.md                   -- the 13 metal parts at the current size, plus ceramics and hardware
-FAB_PACKAGE_2026-11-08/         -- current machining files: 13 STEP + STL, bilingual README
+FAB_PACKAGE_2026-11-08-R2/      -- current machining files: 13 STEP + STL, bilingual README
 Scripts/
   hnc_params.py                 -- shared dimensions (insulation 20.6, outer 1.2 mm, inner 0.8 mm)
-  build_current_package.py      -- builds FAB_PACKAGE_2026-11-08 and refreshes the viewer meshes
+  build_current_package.py      -- builds FAB_PACKAGE_2026-11-08-R2 and refreshes the viewer meshes
   verify_steps.py               -- every STEP must be one solid
   measure_package.py            -- fresh-import sizes, part overlaps, bolt / leg / wire lines
   render_change_sheets.py       -- before/after section + change sheets (Renders/)
+  build_print_set.py            -- plastic print set (PRINT_SET_2026-11-08-R2/)
+  make_parts_list.py            -- PARTS_LIST.md from the package
 cad-source/                     -- Sept 9 solids still used for 10, 11, 13, 14
 
 viewer-*.html                   -- interactive 3D viewers (GitHub Pages)
@@ -237,8 +242,8 @@ viewer-*.html                   -- interactive 3D viewers (GitHub Pages)
   viewer-lid-full.html          -- lid, every part, cut in half
   viewer-lid-assembly.html      -- lid, step-by-step build
   viewer-lid-holder.html        -- lid ceramic holder + ceramic lid disk on the core
-  viewer-parts-sheet.html       -- the letter-size parts sheet (Oven_All_Parts_2026-11-08.png)
-change-sheets-2026-11-08.html   -- what changed on 2026-11-08, one sheet per part, EN + 中文
+  viewer-parts-sheet.html       -- the letter-size parts sheet (Oven_All_Parts_2026-11-08-R2.png)
+change-sheets-2026-11-08-R2.html -- what changed in R2, one sheet per changed part, EN + 中文
 viewer-full/ · viewer-lid-full/ -- the meshes the viewers load
 ```
 

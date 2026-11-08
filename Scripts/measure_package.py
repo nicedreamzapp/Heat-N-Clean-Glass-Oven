@@ -30,10 +30,13 @@ def vholes(s, rad):
     return sorted(set(out))
 def rmax(s):
     return round(max(math.hypot(v.X,v.Y) for v in s.vertices()),3) if s.vertices() else None
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); import hnc_params as HP
 def measure(pkg):
     M={}
     names=[n[:-5] for n in sorted(os.listdir(pkg+"/STEP"))]
     P={n:S(load(pkg,n)) for n in names}
+    # R2 (2026-11-08): everything above the seat is U higher; U is read from the package itself (05 cap top - 92.2)
+    U=round(P["05_One_Piece_Top_Cap"].bounding_box().max.Z-92.2,3); M["body_raise_U"]=U
     for n,s in P.items():
         bb=s.bounding_box()
         M[n]={"OD":round(max(bb.max.X-bb.min.X, bb.max.Y-bb.min.Y),2),"vcyl_r":vcyl(s),"vol":round(s.volume,1),
@@ -43,10 +46,10 @@ def measure(pkg):
         vh=sorted(set(vholes(s,3.3)+vholes(s,4.0)+vholes(s,3.2)))
         if vh: M[n]["vert_holes(ang,r)"]=vh
     cap=P["05_One_Piece_Top_Cap"]
-    plate=cap & (Pos(0,0,91.6)*Box(400,400,0.4))
+    plate=cap & (Pos(0,0,91.6+U)*Box(400,400,0.4))
     M["cap_plate_outer_r"]=rmax(plate)
     M["cap_ring_width_ceramicOD_to_cap_edge"]=round(rmax(plate)-46.25,2)
-    tab=cap & (Pos(0,0,70)*Box(400,400,1))
+    tab=cap & (Pos(0,0,70+U)*Box(400,400,1))
     M["cap_tab_outer_r"]=rmax(tab)
     # groove length: inside U face r range at slot 6.5
     for f in cap.faces():
@@ -71,13 +74,18 @@ def measure(pkg):
     M["part_overlaps(>0.01mm3)"]=col
     # ceramic core and spacer rings vs parts
     D=round(78.75-(o02+1.5),3)
-    core=Pos(0,0,5.06)*(Cylinder(46.25,87.14,align=(Align.CENTER,Align.CENTER,Align.MIN))-Cylinder(40.75,87.14,align=(Align.CENTER,Align.CENTER,Align.MIN)))
+    # ceramic core as drawn in the viewers: R2 = the real one (base plate 4.9 on the seat, core 90.4 on it); R1 = 5.06..92.2
+    cz0,ch=(HP.seat_z+HP.base_disk_t_real,HP.ceramic_core_h_real) if U>0.01 else (5.06,87.14)
+    core=Pos(0,0,cz0)*(Cylinder(46.25,ch,align=(Align.CENTER,Align.CENTER,Align.MIN))-Cylinder(40.75,ch,align=(Align.CENTER,Align.CENTER,Align.MIN)))
+    bd=Pos(0,0,HP.seat_z)*(Cylinder(46.25,cz0-HP.seat_z,align=(Align.CENTER,Align.CENTER,Align.MIN)))
     sp_i,sp_o=72.05-D,76.05-D
-    spacers={"sp_bot":(-31,-17),"sp_seat":(-5,9),"sp_top":(52,66),"sp_low":(95.2,105.2),"sp_high":(115.2,125.2)}
+    spacers={"sp_bot":(-31,-17),"sp_seat":(-5,9),"sp_top":(52+U,66+U),"sp_low":(95.2+U,105.2+U),"sp_high":(115.2+U,125.2+U)}
     extra=[]
     for n,s in P.items():
         v=(s&core).volume
         if v>0.01: extra.append(("ceramic_core",n,round(v,3)))
+        v=(s&bd).volume
+        if v>0.01: extra.append(("ceramic_base_plate",n,round(v,3)))
         for k,(z0,z1) in spacers.items():
             sp=Pos(0,0,z0)*(Cylinder(sp_o,z1-z0,align=(Align.CENTER,Align.CENTER,Align.MIN))-Cylinder(sp_i,z1-z0,align=(Align.CENTER,Align.CENTER,Align.MIN)))
             v=(s&sp).volume
@@ -86,7 +94,8 @@ def measure(pkg):
     # bolt lines: a Ø6.2 rod along each bolt axis must hit NO metal (holes line up in every wall it crosses)
     BOLT=[52.4+60*k for k in range(6)]
     bad=[]
-    for z in (59.0,-24.0,2.15,100.2,120.2):
+    ZS=(59.0+U,-24.0,2.15,100.2+U,120.2+U)
+    for z in ZS:
         for a in BOLT:
             rod=Rot(0,0,a)*Pos(72,0,z)*Rot(0,90,0)*Cylinder(3.1,30)
             for n,s in P.items():
@@ -94,7 +103,7 @@ def measure(pkg):
                 if v>0.01: bad.append((z,a,n,round(v,2)))
     M["bolt_line_blocked"]=bad
     walls={}
-    for z in (59.0,-24.0,2.15,100.2,120.2):
+    for z in ZS:
         rod=Rot(0,0,52.4)*Pos(70,0,z)*Rot(0,90,0)*Cylinder(4.5,40)
         walls[z]=[n[:2] for n,s in P.items() if (s&rod).volume>0.01]
     M["bolt_stack_parts"]=walls
@@ -114,6 +123,20 @@ def measure(pkg):
             if v>0.01: vb.append(("wire",a,n,round(v,2)))
     M["vertical_lines_blocked"]=vb
     M["leg_r"]=legr[0]
+    # R2 fit checks: ceramic top vs cap top, lid seat, vents 05 vs 09, groove bottoms vs ceramic slot bottoms, tube tops
+    cap_top=round(cap.bounding_box().max.Z,3); core_top=round(cz0+ch,3)
+    M["seat_z / core bottom / core top / cap top"]=(HP.seat_z if U>0.01 else -0.44, round(cz0,3), core_top, cap_top)
+    M["ceramic_top_minus_cap_top"]=round(core_top-cap_top,3)
+    M["lid_09_bottom_minus_cap_top"]=round(P["09_Lid_Ceramic_Holder"].bounding_box().min.Z-cap_top,3)
+    v05=vholes(cap,1.75); v09=vholes(P["09_Lid_Ceramic_Holder"],1.75)
+    off=max(min(math.hypot(r1*math.cos(math.radians(a1))-r2*math.cos(math.radians(a2)),r1*math.sin(math.radians(a1))-r2*math.sin(math.radians(a2))) for a2,r2 in v09) for a1,r1 in v05)
+    M["vents_05/09_count, max_offset_mm"]=(len(v05),len(v09),round(off,3))
+    zs=[]
+    for f in cap.faces():
+        if f.geom_type==GeomType.CYLINDER and abs(f.radius-5.25)<1e-3: zs.append(f.bounding_box().min.Z)
+    M["05_groove_inside_bottom_z"]=round(min(zs),3) if zs else None
+    M["tube_tops_01/02"]=(round(P["01_Inner_Wall_Tube"].bounding_box().max.Z,3),round(P["02_Outer_Perforated_Tube"].bounding_box().max.Z,3))
+    M["tube_heights_01/02"]=tuple(round(P[n].bounding_box().size.Z,3) for n in ("01_Inner_Wall_Tube","02_Outer_Perforated_Tube"))
     for n in ("11_Lid_Hinge_Strap","13_Hinge_Pin"):
         c=P[n].center(); M[n+"_center_r_ang"]=(round(math.hypot(c.X,c.Y),2),round(math.degrees(math.atan2(c.Y,c.X))%360,2))
     return M

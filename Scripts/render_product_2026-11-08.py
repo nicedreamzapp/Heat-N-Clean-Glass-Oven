@@ -1,9 +1,9 @@
-"""Photoreal product render of the CURRENT Heat-N-Clean oven (2026-11-08 package).
+"""Photoreal product render of the CURRENT Heat-N-Clean oven (FAB_PACKAGE_2026-11-08-R2).
 
 Geometry: viewer-full/ (base) and viewer-lid-full/ (lid) GLBs, which build_current_package.py
-writes from FAB_PACKAGE_2026-11-08. They are already in assembly position (z-up, mm), so nothing
+writes from FAB_PACKAGE_2026-11-08-R2. They are already in assembly position (z-up, mm), so nothing
 is moved except the lid, which swings on the hinge (axis tangent at 292.4 deg, pivot r 77.5,
-z 98.2, the same numbers as viewer-complete.html).
+z 100.86 (98.2 before R2), the same numbers as viewer-complete.html).
 
 Run (headless, M5):
   /Applications/Blender.app/Contents/MacOS/Blender -b -P Scripts/render_product_2026-11-08.py -- out.png
@@ -107,7 +107,7 @@ def empty(name, parent=None, loc=(0, 0, 0)):
 
 root = empty("oven_root"); root.scale = (0.001,) * 3          # mm -> m
 HA = math.radians(292.4)
-HC = mathutils.Vector((77.5 * math.cos(HA), 77.5 * math.sin(HA), 98.2))
+HC = mathutils.Vector((77.5 * math.cos(HA), 77.5 * math.sin(HA), 100.86))
 HAX = mathutils.Vector((-math.sin(HA), math.cos(HA), 0))
 lid_pivot = empty("lid_pivot", root, HC)
 lid_pivot.rotation_mode = "AXIS_ANGLE"

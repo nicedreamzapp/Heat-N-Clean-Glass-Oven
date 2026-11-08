@@ -1,15 +1,41 @@
-Heat & Clean Glass Oven: machining files, 2026-11-08
-Replaces every earlier package, including 2026-10-16. Metal parts only; we supply all ceramics.
+Heat & Clean Glass Oven: machining files, 2026-11-08 R2
+Replaces every earlier package, including the first 2026-11-08 package and 2026-10-16. Metal parts only; we supply all ceramics.
 Same 13 parts as before (01-11, 13, 14). No new parts.
 
-What changed since 2026-10-16, and why:
+What changed in R2 (since the first 2026-11-08 package), and why:
+  We measured the REAL ceramic with calipers: the heater core is 90.4 mm tall (the same as your 10/21 measurement) and
+  core + ceramic base plate together are 95.3 mm. In the last package the room from the ceramic seat (03, z -0.44) to the
+  top of the 05 top cap was only 92.64 mm, so the real ceramic stood 2.66 mm ABOVE the top cap and the lid could not close.
+  (The 10/16 seat raise was based on a gap measured on the plastic print, not on the real ceramic.)
+
+  Fix: the body is 2.66 mm taller ABOVE the seat. The ceramic top is now exactly flush with the top of the 05 top cap
+  (seat z -0.44 + 95.3 = cap top z 94.86).
+
+  ONLY 01 AND 02 CHANGE SHAPE:
+  01 Inner Wall Tube           height 122.7 -> 125.36 (+2.66, longer at the top). Top bolt ring (6 x M6) z 59 -> 61.66.
+                               4 glass slots (13.3 wide) 2.66 higher: bottom z 65.86 -> 68.52.
+  02 Outer Perforated Tube     height 122.7 -> 125.36 (+2.66, longer at the top). Top bolt ring z 59 -> 61.66.
+                               4 glass slots 2.66 higher: bottom z 67.5 -> 70.16 (slot depth 23.5 from the top: same).
+                               Perforation the same (Ø4, 6 mm pitch, same 12 rows, 76 per row); the 8 middle rows move up
+                               1.33 so they stay evenly spaced in the taller wall, the top 2 rows move up 2.66.
+  SAME PARTS, 2.66 mm HIGHER (no new drawing needed):
+  05 Top Cap, 06, 07, 08, 09, 10 Handle, 11 + 13 Hinge, the top spacer ring, both lid spacer rings, and the top bolts and
+  both lid bolt rows (z 100.2 / 120.2 -> 102.86 / 122.86). The 05 grooves keep their depth, so their bottoms (z 69.92) still
+  meet the ceramic slots, which are measured from the ceramic top. The lid still sits on the cap; the 09 vents still line up
+  with the 05 vents.
+  NOT CHANGED: 03 Support Ring (the seat stays at z -0.44), 04 Bottom Cap, 14 Tray, the feet, leg screws, wire holes, the
+  bottom and seat bolt rings, the insulation under the ceramic, all diameters, sheet thicknesses and hole sizes.
+  Bolts: same M6 bolts, same lengths.
+
+Earlier change, 2026-11-08 (first package, still true):
   A glass terp slurper has to sit across the top cap ring: its bowl goes in the chamber and its male joint hangs
   outside. The slurper's gap between bowl and joint is 31.0 mm, but the top cap ring on your plastic print measured
   33.8 mm. So the whole oven gets 8 mm smaller in diameter (4 mm smaller in radius). The ring becomes about 29.8 mm.
 
   How: the insulation between the ceramic heater and the inner tube is 4 mm thinner (20.6 mm, was 24.6 mm).
   The ceramic heater core and the ceramic lid disk do NOT change. Every metal part outside the ceramic moves in 4 mm.
-  Sheet thickness, hole sizes, slot widths, perforation (Ø4 at 6 mm pitch), and ALL HEIGHTS do NOT change.
+  Sheet thickness, hole sizes, slot widths, perforation (Ø4 at 6 mm pitch), and all heights did NOT change then (R2 above
+  changes the heights above the seat).
   The air gap between the two tubes does not change (4.4 mm). The bolts are the same length.
 
   Part                         Old (2026-10-16)              New (2026-11-08)               Change
@@ -88,20 +114,41 @@ Fit fixes, 2026-09-30 (same files, updated):
   09: the upright wall and the small outer lip sit 0.2 mm inside the lid tubes (they overlapped the tube walls).
   06 / 07: 0.8 mm shorter at the bottom; they stand on 09's plate.
   08 / 10: the handle screws on. 2 x Ø4.5 holes in the lid top disk, M4 tapped hole 10 mm deep in each handle post, M4 screws from inside the lid.
-  Change sheets (2026-11-08, every part, old vs new): https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/change-sheets-2026-11-08.html
+  Change sheets (2026-11-08 R2, old vs new): https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/change-sheets-2026-11-08-R2.html
 
 
-加热清洁玻璃炉：加工文件，2026-11-08
-替换之前所有的文件包，包括 2026-10-16。只包括金属件，陶瓷件全部由我方提供。
+加热清洁玻璃炉：加工文件，2026-11-08 R2
+替换之前所有的文件包，包括第一版 2026-11-08 和 2026-10-16。只包括金属件，陶瓷件全部由我方提供。
 还是同样的13个零件（01-11、13、14）。没有新增零件。
 
-和 2026-10-16 相比的改动和原因：
+R2 的改动（和第一版 2026-11-08 相比）和原因：
+  我们用卡尺量了真陶瓷：加热芯高 90.4 mm（和你们 10/21 量的一样），加热芯加陶瓷底盘一共 95.3 mm。
+  上一版文件里，从陶瓷座面（03，z -0.44）到 05 顶盖顶面只有 92.64 mm，所以真陶瓷比顶盖高出 2.66 mm，盖子合不上。
+  （10/16 的座面抬高是按塑料样品上量的间隙做的，不是按真陶瓷。）
+
+  做法：座面以上的机体加高 2.66 mm。陶瓷顶面现在和 05 顶盖顶面完全齐平（座面 z -0.44 + 95.3 = 顶盖顶面 z 94.86）。
+
+  只有 01 和 02 改形状：
+  01 内壁管                高 122.7 -> 125.36（+2.66，上端加长）。上排螺栓孔（6 个 M6）z 59 -> 61.66。
+                           4 个玻璃槽（宽 13.3）升高 2.66：槽底 z 65.86 -> 68.52。
+  02 外冲孔管              高 122.7 -> 125.36（+2.66，上端加长）。上排螺栓孔 z 59 -> 61.66。
+                           4 个玻璃槽升高 2.66：槽底 z 67.5 -> 70.16（从顶边量槽深 23.5：不变）。
+                           冲孔不变（Ø4，孔距 6 mm，还是 12 排，每排 76 孔）；中间 8 排上移 1.33，在加高的管壁上保持均匀，
+                           最上面 2 排上移 2.66。
+  零件不变，只是高 2.66 mm（不需要新图纸）：
+  05 顶盖、06、07、08、09、10 提手、11 + 13 铰链、顶部陶瓷垫环、盖子的 2 个垫环、上排螺栓和盖子两排螺栓
+  （z 100.2 / 120.2 -> 102.86 / 122.86）。05 的金属槽深度不变，槽底（z 69.92）仍然对齐陶瓷槽（陶瓷槽从陶瓷顶面往下量）。
+  盖子仍然放在顶盖上；09 的通风孔仍然和 05 的通风孔对齐。
+  不改：03 支撑环（座面仍在 z -0.44）、04 底盖、14 托盘、脚、脚螺丝、线孔、下排和座圈螺栓、陶瓷下面的保温层、
+  所有直径、板厚和孔径。螺栓：同样的 M6，同样长度。
+
+之前的改动，2026-11-08（第一版，仍然有效）：
   玻璃 terp slurper 要跨放在顶盖圆环上：碗在炉膛里，公接头在外面。slurper 碗和接头之间的空隙是 31.0 mm，
   但你们塑料样品上的顶盖圆环量出来是 33.8 mm。所以整个炉子直径缩小 8 mm（半径缩小 4 mm），圆环变成约 29.8 mm。
 
   做法：陶瓷加热芯和内管之间的保温层薄 4 mm（20.6 mm，原来 24.6 mm）。
   陶瓷加热芯和陶瓷盖盘都不改。陶瓷外面的所有金属件都往里缩 4 mm。
-  板厚、孔径、槽宽、冲孔（Ø4，孔距 6 mm）和所有高度都不改。两根管子之间的空气层不改（4.4 mm）。螺栓长度不变。
+  板厚、孔径、槽宽、冲孔（Ø4，孔距 6 mm）和所有高度当时都不改（上面的 R2 改了座面以上的高度）。两根管子之间的空气层不改（4.4 mm）。螺栓长度不变。
 
   零件                     原来（2026-10-16）               现在（2026-11-08）               变化
   01 内壁管                内径 141.7 / 外径 143.3          内径 133.7 / 外径 135.3          直径 -8.0
@@ -172,4 +219,4 @@ Fit fixes, 2026-09-30 (same files, updated):
   09：立墙和外侧小边都在盖子管子里面 0.2mm（原来和管壁重叠）。
   06 / 07：底部短 0.8mm，立在 09 的底板上。
   08 / 10：提手用螺丝固定。盖子顶盘上开 2 个 Ø4.5 孔，提手每个脚上攻 M4 螺纹孔（深 10mm），M4 螺丝从盖子里面往上拧。
-  改动图（2026-11-08，每个零件，新旧对比）：https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/change-sheets-2026-11-08.html
+  改动图（2026-11-08 R2，新旧对比）：https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/change-sheets-2026-11-08-R2.html

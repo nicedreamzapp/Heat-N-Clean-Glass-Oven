@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Heat &amp; Clean Glass Oven: it builds itself (2026-11-08)</title>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Heat &amp; Clean Glass Oven: it builds itself (2026-11-08 R2)</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#e8e8ec;font-family:-apple-system,"PingFang SC",sans-serif;color:#16181d;overflow:hidden}
@@ -16,7 +16,7 @@ body.rec #ctl button, body.rec #bar{display:none}
 </style></head><body>
 <div id="wrap">
 <div id="loading">Loading…</div>
-<div id="ctl"><b>THE OVEN BUILDS ITSELF · 整机自动组装 (2026-11-08 size)</b><button id="play">❚❚ Pause</button><button id="prev">◀ Back</button><button id="next">Next ▶</button><button id="again">↻ Replay</button></div>
+<div id="ctl"><b>THE OVEN BUILDS ITSELF · 整机自动组装 (2026-11-08 R2)</b><button id="play">❚❚ Pause</button><button id="prev">◀ Back</button><button id="next">Next ▶</button><button id="again">↻ Replay</button></div>
 <div id="step"></div>
 <div id="key"><span><i style="background:#2f6fd6"></i>bottom cap</span><span><i style="background:#2fa84f"></i>support ring / lid holder</span><span><i style="background:#fff;border:1px solid #bbb"></i>ceramic disks</span><span><i style="background:#9b59b6"></i>top cap / lid top</span><span><i style="background:#a9b4c2"></i>outer tube</span><span><i style="background:#d9825a"></i>inner tube</span><span><i style="background:#efe9da;border:1px solid #bbb"></i>ceramic</span><span><i style="background:#4a4f56"></i>bolts + nuts</span></div>
 <div id="bar"><i></i></div>
@@ -29,9 +29,9 @@ body.rec #ctl button, body.rec #bar{display:none}
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-// The whole oven builds itself from the 2026-11-08 package meshes (viewer-full/, viewer-lid-full/): the base, then the
+// The whole oven builds itself from the 2026-11-08-R2 package meshes (viewer-full/, viewer-lid-full/): the base, then the
 // lid above it, then the lid drops onto its hinge and closes. Everything is a pure function of time t, so the page
-// plays live and the MP4 (Renders/oven_builds_itself_2026-11-08.mp4) is recorded frame by frame from the same code (?record).
+// plays live and the MP4 (Renders/oven_builds_itself_2026-11-08-R2.mp4) is recorded frame by frame from the same code (?record).
 const PARTS=[
   {f:'04',col:'cap'},{f:'01',col:'in'},{f:'spacer_bot',col:'cer'},{f:'02',col:'out'},{f:'bolts_bot',col:'bolt',radial:true},
   {f:'03',col:'sup'},{f:'spacer_seat',col:'cer'},{f:'bolts_seat',col:'bolt',radial:true},{f:'spacer_top',col:'cer'},
@@ -70,7 +70,7 @@ const STEPS=[
  {add:['liddisk'],how:'up',t:'24. Fill the lid with insulation, glue the ceramic lid disk into the 09 pocket.',z:'盖子里塞满保温棉，把陶瓷盖盘粘进 09 的槽位。'},
  {add:['11','13'],how:'in',t:'25. Hinge strap 11 and pin 13 on the lid bolt at 292.4° (placeholder: Tianrun fits their stock hinge).',z:'铰链片 11 和销 13 装在 292.4° 的盖子螺栓上（示意：天润用自己的合页）。'},
  {add:[],lid:'hang',t:'26. The lid goes onto the hinge.',z:'盖子装到铰链上。'},
- {add:[],lid:'close',t:'27. Close the lid. Done: the 2026-11-08 oven, Ø149.5 over the caps.',z:'合上盖子。完成：2026-11-08 版炉子，总外径 Ø149.5。'},
+ {add:[],lid:'close',t:'27. Close the lid. Done: the 2026-11-08 R2 oven, Ø149.5 over the caps; the ceramic top is flush with the top cap.',z:'合上盖子。完成：2026-11-08 R2 版炉子，总外径 Ø149.5；陶瓷顶面和顶盖齐平。'},
 ];
 const DUR=3.6, ANIM=1.5, LIFT=150, OPEN=110, TOTAL=STEPS.length*DUR+2.5;
 const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6};
@@ -89,8 +89,8 @@ scene.add(new THREE.AmbientLight(0xffffff,0.95));
 const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,-200,400); scene.add(d1);
 const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
 scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
-// lid hinge, same numbers as viewer-complete.html: axis tangent at 292.4°, pivot r 77.5, z 98.2
-const HA=292.4*Math.PI/180, HC=new THREE.Vector3(77.5*Math.cos(HA),77.5*Math.sin(HA),98.2), HAX=new THREE.Vector3(-Math.sin(HA),Math.cos(HA),0);
+// lid hinge, same numbers as viewer-complete.html: axis tangent at 292.4°, pivot r 77.5, z 100.86 (98.2 before R2)
+const HA=292.4*Math.PI/180, HC=new THREE.Vector3(77.5*Math.cos(HA),77.5*Math.sin(HA),100.86), HAX=new THREE.Vector3(-Math.sin(HA),Math.cos(HA),0);
 const lidOuter=new THREE.Group(); scene.add(lidOuter); const lidPivot=new THREE.Group(); lidPivot.position.copy(HC); lidOuter.add(lidPivot);
 const lidInner=new THREE.Group(); lidInner.position.copy(HC).negate(); lidPivot.add(lidInner);
 const loader=new GLTFLoader(); const load=p=>new Promise((res,rej)=>loader.load(p,g=>res(g.scene),undefined,rej));

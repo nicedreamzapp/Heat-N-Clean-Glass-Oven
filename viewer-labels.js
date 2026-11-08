@@ -1,4 +1,4 @@
-// Shared part labels for the separated views (2026-11-08).
+// Shared part labels for the separated views (2026-11-08, R2).
 // Labels sit in two straight columns, right of the parts and left of the parts (bolts, screws and other
 // side items go left), each with a thin leader line to its part. Every frame the labels on a side are sorted
 // by height and pushed apart so no two ever overlap, whatever the zoom.

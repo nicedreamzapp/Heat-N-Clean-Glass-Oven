@@ -1,11 +1,13 @@
-# Parts list (2026-11-08)
+# Parts list (2026-11-08-R2)
 
-Generated from `FAB_PACKAGE_2026-11-08` (the only current machining files, see [CURRENT.md](CURRENT.md)). Sizes in mm; overall size and volume measured from each STEP file.
+Generated from `FAB_PACKAGE_2026-11-08-R2` (the only current machining files, see [CURRENT.md](CURRENT.md)) by `Scripts/make_parts_list.py`. Sizes in mm; overall size and volume measured from each STEP file.
+
+R2: the body is 2.66 mm taller above the ceramic seat (01 and 02 are 125.36 tall), so the real ceramic stack (core 90.4 + base plate 4.9 = 95.3) ends flush with the 05 cap top. 05 and every lid part are the same parts, 2.66 higher.
 
 | # | Part | 零件 | Material | Key sizes | Overall (x × y × z) | Volume cm³ |
 |---|---|---|---|---|---|---|
-| 01 | Inner Wall Tube | 内壁管 | 0.8 mm 304/430 SS | ID 133.7 / OD 135.3, h 122.7, 4 glass slots 13.3, 18 M6 holes | 135.3 × 135.3 × 122.7 | 39.97 |
-| 02 | Outer Perforated Tube | 外冲孔管 | 1.2 mm 304 SS | ID 144.1 / OD 146.5, h 122.7, Ø4 @ 6 mm perforation, 4 slots 10.5, 18 M6 holes | 146.5 × 146.5 × 122.7 | 51.85 |
+| 01 | Inner Wall Tube | 内壁管 | 0.8 mm 304/430 SS | ID 133.7 / OD 135.3, h 125.36 (R2: +2.66), 4 glass slots 13.3, 18 M6 holes | 135.3 × 135.3 × 125.4 | 40.87 |
+| 02 | Outer Perforated Tube | 外冲孔管 | 1.2 mm 304 SS | ID 144.1 / OD 146.5, h 125.36 (R2: +2.66), Ø4 @ 6 mm perforation, 4 slots 10.5, 18 M6 holes | 146.5 × 146.5 × 125.4 | 53.30 |
 | 03 | Support Ring | 支撑环 | 0.8 mm 304/430 SS | OD 133.3, raised ceramic seat r 36.25-52, 6 M6, 3 leg holes Ø6.6 on Ø120, 3 wire holes r 58 | 133.3 × 133.3 × 14.8 | 15.49 |
 | 04 | Bottom Cap | 底盖 | 1.2 mm 304 SS | OD 149.5, skirt 17.2, 6 M6, 3 leg holes on Ø120, 3 wire holes r 58 | 149.5 × 149.5 × 17.2 | 29.48 |
 | 05 | One-Piece Top Cap | 一体顶盖 | 1.2 mm 304 SS | ring OD 149.3, width 28.4 from the ceramic, 6 bolt tabs, 4 grooves 25.1 long, 48 vents Ø3.5 on Ø139.7 | 149.8 × 149.3 × 41.2 | 29.85 |
@@ -22,9 +24,9 @@ We supply (not in the machining package):
 
 | Item | Qty | Size |
 |---|---|---|
-| Ceramic heater core | 1 | Ø92.5 / Ø81.5, 4 glass slots 10.5 (not changed) |
-| Ceramic base disk | 1 | Ø92.5 (not changed) |
-| Ceramic lid disk | 1 | Ø92.5 with raised centre (not changed) |
+| Ceramic heater core | 1 | Ø92.5 / Ø81.5, 90.4 tall (measured), 4 glass slots 10.5 |
+| Ceramic base disk | 1 | Ø92.5, 4.9 thick (core + base = 95.3, measured) |
+| Ceramic lid disk | 1 | Ø92.5 with raised centre |
 | Ceramic spacer rings | 5 | ID 136.1 / OD 144.1; 3 × 14 mm (body) + 2 × 10 mm (lid); 6 Ø6.6 holes each |
 | Ceramic feet | 3 | on Ø120 leg circle |
 | M6 bolts + nuts | 30 | 6 per ring × 5 rings, same lengths as before |

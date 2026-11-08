@@ -1,8 +1,11 @@
 """
 Heat-N-Clean Glass Oven — SHARED PARAMETERS (single source of truth for the current build)
 
-Read by Scripts/build_current_package.py (FAB_PACKAGE_2026-11-08) and Scripts/verify_steps.py.
+Read by Scripts/build_current_package.py (FAB_PACKAGE_2026-11-08-R2), Scripts/build_print_set.py,
+Scripts/measure_package.py and Scripts/verify_steps.py.
 2026-11-08: insulation_gap 24.6 -> 20.6 (glass slurper fit); see CURRENT.md.
+2026-11-08 R2: body_raise = 2.66, the body is taller ABOVE the seat so the real ceramic stack (95.3) ends flush
+with the 05 cap top; see CURRENT.md.
 
 Units: millimetres. Origin: chamber axis = Z. z=0 is the ceramic-disk seat
 reference used by the generator (housing_top_z = 91 is the chamber rim).
@@ -27,6 +30,16 @@ outer_diameter = 92.5
 inner_diameter = 81.5
 ceramic_outer_r = outer_diameter / 2          # 46.25
 ceramic_inner_r = inner_diameter / 2          # 40.75
+
+# 2026-11-08 R2 (Matt, calipers on the REAL ceramic): bare heater core 90.4 tall (= Tianrun's 10/21 number),
+# core + ceramic base plate = 95.3. The 10/16 seat raise came from a gap measured on the plastic print and left the real
+# ceramic 2.66 proud of the cap. Fix: everything ABOVE the seat goes up body_raise; the seat (03) and below do not move.
+ceramic_core_h_real = 90.4                   # bare core, measured
+ceramic_stack_real = 95.3                    # core + base plate, measured
+base_disk_t_real = round(ceramic_stack_real - ceramic_core_h_real, 3)   # 4.9 base plate overall thickness
+seat_z = -0.44                               # 03's raised seat face (2026-10-16, unchanged)
+cap_top_z_r1 = 92.2                          # 05 cap top before R2 (tube top 91 + 1.2 cap sheet)
+body_raise = round(seat_z + ceramic_stack_real - cap_top_z_r1, 3)       # 2.66 -> cap top 94.86 = ceramic top
 
 # ── Glass slots (4 of them, from the top edge) ─────────────────────
 slot_width = 10.5
@@ -65,8 +78,8 @@ lip_z = lip_top_z - inner_sheet_thickness                # -6.3  (was -6.7 at 1.
 # The DXFs state it themselves: "Flat: 452.7 x 122.7 mm" and "Flat: 485.4 x 122.7 mm".
 # 122.7 is correct and always was, and it is what the fab shop built.
 housing_bottom_z = -(disk_thickness + sheet_metal_thickness) - 25   # -31.7 (held, independent of the ring lip)
-housing_top_z = cylinder_height                         # 91
-mesh_height = housing_top_z - housing_bottom_z          # 122.7  (outer tube height)
+housing_top_z = cylinder_height + body_raise            # 93.66 tube tops (91 before 2026-11-08 R2)
+mesh_height = housing_top_z - housing_bottom_z          # 125.36 (outer tube height; 122.7 before 2026-11-08 R2)
 
 # ── Perforations on the outer mesh tube (Ø4 @ 6 mm) ────────────────
 perf_hole_r = 2                  # Ø4 holes
@@ -86,7 +99,7 @@ ring_screw_hole_r = 3.3                                  # M6 clearance, Ø6.6
 ring_screw_angles = [k * 60 + 52.4 for k in range(6)]    # 52.4, 112.4, 172.4, 232.4, 292.4, 352.4
 # (angle_list, z) for each ring:
 ring_screw_sets = [
-    (ring_screw_angles,  59.0),    # top spacer ring
+    (ring_screw_angles,  59.0 + body_raise),    # top spacer ring (61.66; 59.0 before R2, it moves up with the cap)
     (ring_screw_angles, -24.0),    # bottom ring (also clamps the bottom cap lip)
     (ring_screw_angles,   2.15),   # seat / support-ring flange
 ]
@@ -137,7 +150,7 @@ bottom_cap_holes = [
 cap_outer_r = mesh_outer_r + 1.5            # 74.75
 cap_inner_r = ceramic_inner_r               # 40.75
 ceramic_grab_lip = 3
-CAP_BOLT_Z = 59
+CAP_BOLT_Z = 59 + body_raise
 CAP_BOLT_ANGLES = [52.4 + k*60 for k in range(6)]
 CAP_TAB_HALF_DEG = np.degrees(6.0 / cap_outer_r)    # ~12 mm-wide fingers
 CAP_TAB_BOT = 55
@@ -146,7 +159,7 @@ CAP_BOLT_HOLE_R = 1.8                         # bolt-clearance bored in each fin
 # hinge (piano style) on the finger at 292.4 deg
 HINGE_ANGLE_DEG = 292.4
 HINGE_PIVOT_R = 81.5 - (24.6 - insulation_gap)   # 77.5 (81.5 before 2026-11-08)
-HINGE_PIVOT_Z = 97
+HINGE_PIVOT_Z = 97 + body_raise
 HINGE_T_OFF = 14
 HINGE_KN_LEN = 25/3                           # ≈ 8.333 each knuckle
 HINGE_BARREL_OUTER_R = 4                       # Ø8 barrels
@@ -171,6 +184,8 @@ PRINCIPAL_DIMS = {
     "Outer tube ID (mm)": round(2*mesh_inner_r, 2),
     "Outer tube OD (mm)": round(2*mesh_outer_r, 2),
     "Outer tube height (mm)": round(mesh_height, 2),
+    "Body raise above the seat, R2 (mm)": body_raise,
+    "Ceramic stack, seat to cap top (mm)": ceramic_stack_real,
     "Sheet thickness outer (mm)": sheet_metal_thickness,
     "Sheet thickness inner (mm)": inner_sheet_thickness,
     "Glass slot W x D (mm)": f"{slot_width} x {slot_depth}",

@@ -1,4 +1,13 @@
-"""Build FAB_PACKAGE_2026-11-08 from the approved design (see CURRENT.md).
+"""Build FAB_PACKAGE_2026-11-08-R2 from the approved design (see CURRENT.md).
+
+2026-11-08 R2 change (Matt, calipers on the REAL ceramic): bare core 90.4, core + base plate 95.3, but the drawn room from
+03's seat (z -0.44) to the 05 cap top (92.2) was 92.64, so the real ceramic stood 2.66 proud and the lid could not close.
+The body gets U = hnc_params.body_raise = 2.66 taller ABOVE the seat: 03, 04, the feet, leg holes, wire holes, the bottom
+and seat bolt rings do not move. 01 and 02 are 2.66 taller (at the top); their top bolt ring (59 -> 61.66), glass slots
+and 01's groove passes go up 2.66. 05 and the whole lid (06, 07, 08, 09, 10, 11, 13, lid bolts, lid spacers) move up
+2.66 unchanged in shape. The 02 perforation rows above the seat ring are re-spaced over the taller wall (same Ø4 @ 6 mm,
+same 12 rows): the middle block is centred in its band (+1.33), the 2 rows above the top ring go up with it (+2.66).
+HNC_RAISE=0 HNC_OUT=/tmp/x rebuilds the R1 (2026-11-08) package exactly, for regression checks.
 
 Sources: cad-source/*.step are the Sept 9 solids. Since 2026-11-08 the parts whose size depends on the body radius
 (01, 02, 04, 06, 07, 08) are REBUILT here from their source features (same holes, slots, perforation rows, heights);
@@ -36,7 +45,11 @@ import hnc_params as HP
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "cad-source")
 D = float(os.environ.get("HNC_SHRINK", 24.6 - HP.insulation_gap))   # 4.0: how far every body/lid radius moved in
-OUT = os.environ.get("HNC_OUT", os.path.join(ROOT, "FAB_PACKAGE_2026-11-08"))
+OUT = os.environ.get("HNC_OUT", os.path.join(ROOT, "FAB_PACKAGE_2026-11-08-R2"))
+U = float(os.environ.get("HNC_RAISE", HP.body_raise))   # 2.66: everything above the seat goes up this much (R2)
+UP = Pos(0, 0, U)
+TOP = 91.0 + U                            # tube tops (93.66)
+ZB_TOP = 59.0 + U                         # top bolt ring, moves with the cap tabs (61.66)
 REAL = "HNC_OUT" not in os.environ
 T = 0.8                                   # inside parts
 BOLT = [52.4 + 60 * k for k in range(6)]  # one bolt clocking for every ring
@@ -78,7 +91,7 @@ SLOT_DROP = 0.24            # Alice's 5.3 slot mismatch minus SEAT_UP: real slot
 SEAT_Z = -5.5 + SEAT_UP     # -0.44 = new ceramic seat face
 STEP_R = 52.0               # riser of the raised middle: outside the centering wall (47.25), inside the wire holes (54.0)
 SLOT_R = 5.25                                   # half of the 10.5 slot = radius of its round bottom
-SLOT_ZC = 67.5 - SLOT_DROP + SLOT_R             # centre of the round bottom (72.51; was 72.75 before 2026-10-16)
+SLOT_ZC = 67.5 - SLOT_DROP + SLOT_R             # centre of the round bottom (72.51; was 72.75 before 2026-10-16), R1 frame
 def u_solid(L, rad, z_top, zc=SLOT_ZC):
     return (Pos(0, 0, (zc + z_top) / 2) * Box(L, 2 * rad, z_top - zc)
             + Pos(0, 0, zc) * Rot(0, 90, 0) * Cylinder(rad, L))
@@ -86,7 +99,9 @@ def u_solid(L, rad, z_top, zc=SLOT_ZC):
 # perforation rows of the Sept 9 tubes (Ø4 @ 6 mm; heights do not change). Body rows skip the 3 spacer-ring bands and
 # the cap skirt; lid rows drop any hole whose centre is within 5.85 of a bolt hole centre (the source tube's rule). Holes per row = int(2*pi*r_mid / 6) (80 at
 # the old r 76.65, 76 at r 72.65), every other row offset 3 mm, exactly the generator's rule.
-BODY_ROWS = [-14.7, -8.7, 9.3, 15.3, 21.3, 27.3, 33.3, 39.3, 45.3, 51.3, 69.3, 75.3]   # parity from z = -26.7 + 6*i
+BODY_ROWS = ([-14.7, -8.7] + [z + U / 2 for z in (9.3, 15.3, 21.3, 27.3, 33.3, 39.3, 45.3, 51.3)]
+             + [z + U for z in (69.3, 75.3)])   # parity from z = -26.7 + 6*i; R2: middle block centred in the taller band
+                                                 # (seat ring top 9 .. top ring bottom 52+U), top 2 rows up with the top ring
 LID_ROWS = [96.0, 102.0, 108.0, 114.0]                                                 # pre-lift, parity from z = 96 + 6*i
 def perf_tools(rows, z_first, bolt_z):
     n = int(2 * math.pi * R02M / 6)
@@ -105,14 +120,14 @@ parts = {}
 # 01 inner wall (rebuilt 2026-11-08 at r R01I-R01O): plain tube, 18 M6 holes at the 3 bolt rings, 4 glass slots.
 # The Sept 9 tube's wire slot, TC hole and their mirror copies were patched shut on 2026-09-28, and its 10.5 glass slots
 # lie wholly inside the 13.3 widened slots cut below, so the rebuilt tube is the same part.
-t = ring(R01I, R01O, HP.housing_bottom_z, HP.housing_top_z)
-t = cut_all(t, [rhole(a, (R01I + R01O) / 2, z) for a in BOLT for z in (59.0, -24.0, 2.15)])
+t = ring(R01I, R01O, HP.housing_bottom_z, TOP)
+t = cut_all(t, [rhole(a, (R01I + R01O) / 2, z) for a in BOLT for z in (ZB_TOP, -24.0, 2.15)])
 parts["01_Inner_Wall_Tube"] = solid(t)
 # 02 outer perforated tube (rebuilt 2026-11-08): tube, 18 M6, 4 glass slots (10.5, R5.25 bottom at z 67.5, unchanged
 # depth), perforation rows. Holes first, slots last, as in the source (the slots cut through the top 2 rows).
-t = ring(R02I, R02O, HP.housing_bottom_z, HP.housing_top_z)
-t = cut_all(t, [rhole(a, R02M, z) for a in BOLT for z in (59.0, -24.0, 2.15)] + perf_tools(BODY_ROWS, -26.7, []))
-t = cut_all(t, [Rot(0, 0, a) * Pos(R02M, 0, 0) * u_solid(4.0, SLOT_R, 95.0, zc=67.5 + SLOT_R) for a in HP.slot_positions])
+t = ring(R02I, R02O, HP.housing_bottom_z, TOP)
+t = cut_all(t, [rhole(a, R02M, z) for a in BOLT for z in (ZB_TOP, -24.0, 2.15)] + perf_tools(BODY_ROWS, -26.7, []))
+t = cut_all(t, [Rot(0, 0, a) * Pos(R02M, 0, 0) * u_solid(4.0, SLOT_R, 95.0 + U, zc=67.5 + SLOT_R + U) for a in HP.slot_positions])
 parts["02_Outer_Perforated_Tube"] = solid(t)
 # 03 support ring: plate + disk-centering wall + bolt-on outer wall (6 seat-bolt holes) + leg holes + wire holes
 # 2026-09-30 audit: plate + outer wall were line-to-line with 01's inside face and the centering wall with the
@@ -177,8 +192,9 @@ for a in SLOTS:   # ONE groove per slot (Matt): ceramic -> just short of the out
     cap = cap + groove(a, 46.45, G_END)
 # the inner tube's 4 glass slots are widened to let the groove pass: groove outside (R6.45) + 0.2 clearance
 for a in SLOTS:
-    parts["01_Inner_Wall_Tube"] = solid(parts["01_Inner_Wall_Tube"] - Rot(0, 0, a) * Pos((R01I + R01O) / 2, 0, 0) * u_solid(6.0, SLOT_R + CAP_T + 0.2, 95.0))
-parts["05_One_Piece_Top_Cap"] = solid(cap)
+    parts["01_Inner_Wall_Tube"] = solid(parts["01_Inner_Wall_Tube"] - UP * (Rot(0, 0, a) * Pos((R01I + R01O) / 2, 0, 0) * u_solid(6.0, SLOT_R + CAP_T + 0.2, 95.0)))
+# 05 is drawn above in the R1 frame (tube top 91) and moved up U as one piece (R2): same part, sits on the taller tubes
+parts["05_One_Piece_Top_Cap"] = solid(UP * cap)
 # 2026-09-30 audit: 09's bottom plate (z 92.2-93.0) sat in the same band as both lid tube bottoms, so the tubes are
 # shortened 0.8 mm from the bottom and stand ON 09's plate.
 LID_FLOOR = 91.0 + CAP_T + T                    # 93.0 = top of 09's plate
@@ -186,9 +202,9 @@ def above(z): return Pos(0, 0, z) * Cylinder(100, 100, align=(Align.CENTER, Alig
 LID_BOLT_Z = (99.0, 119.0)                      # pre-lift (100.2 / 120.2 in place)
 # 06 / 07 lid tubes (rebuilt 2026-11-08 like 01 / 02; source z 91-126 before the lift)
 t = cut_all(ring(R01I, R01O, 91.0, 126.0), [rhole(a, (R01I + R01O) / 2, z) for a in BOLT for z in LID_BOLT_Z])
-parts["06_Lid_Inner_Tube"] = solid(LIFT * t & above(LID_FLOOR))
+parts["06_Lid_Inner_Tube"] = solid(UP * (LIFT * t & above(LID_FLOOR)))   # R2: the whole lid goes up U with the cap
 t = cut_all(ring(R02I, R02O, 91.0, 126.0), [rhole(a, R02M, z) for a in BOLT for z in LID_BOLT_Z] + perf_tools(LID_ROWS, 96.0, LID_BOLT_Z))
-parts["07_Lid_Outer_Perforated_Tube"] = solid(LIFT * t & above(LID_FLOOR))
+parts["07_Lid_Outer_Perforated_Tube"] = solid(UP * (LIFT * t & above(LID_FLOOR)))
 # 08 lid top disk (rebuilt 2026-11-08): plate z 126.0-127.2 + skirt down to 113.0 (before the lift), at RCAP
 # 6 holes in the skirt for the upper lid bolts
 td = Pos(0, 0, 126.0) * Cylinder(RCAP, 1.2, align=(Align.CENTER, Align.CENTER, Align.MIN)) + ring(RCAP - 1.2, RCAP, 113.0, 127.2)
@@ -197,7 +213,7 @@ for a in BOLT: td -= rhole(a, RCAP - 0.65, 119.0)
 # (Ø3.3 drill, 10 deep) and a screw comes up from inside the lid. Posts were drawn 0.2 into the disk; now they sit on it.
 HANDLE_POSTS = [(-38.36, 27.46), (7.87, 46.51)]
 for x, y in HANDLE_POSTS: td -= Pos(x, y, 126.6) * Cylinder(2.25, 10)   # plate is z 126.0-127.2 before the lift
-parts["08_Lid_Top_Disk"] = solid(LIFT * td)
+parts["08_Lid_Top_Disk"] = solid(UP * LIFT * td)
 # 09 lid ceramic holder: sits on the top cap (z 92.2). The ceramic lid disk still rests on the core top (z 91,
 # raised center down in the bore), so the pocket wraps its edge from the lid bottom up and the shelf stays at the
 # disk's top (z 96.05); the disk's lower 1.2 mm passes through the cap's center opening. Disk glued in.
@@ -219,16 +235,16 @@ for a in BOLT: h -= rhole(a, UP_RO - T / 2, 99.0 + CAP_T, length=6)
 # straight up. A Ø3.5 at r 69.85 reaches r 71.6, 0.55 into the outer lip (r 71.05-71.85), so the same cylinder runs up
 # through the lip: a local notch at each hole, the lip stays everywhere else and still locates 07 (07 ID 72.05).
 for a in VENT_ANGLES: h -= vhole(a, R_VENT, VENT_R, Z0 - 1.0, 94.0 + CAP_T + 1.0)
-parts["09_Lid_Ceramic_Holder"] = solid(h)
+parts["09_Lid_Ceramic_Holder"] = solid(UP * h)
 hd = Pos(0, 0, CAP_T + 0.2) * src("10_Lid_Handle")   # bottom of the posts at 128.4 = top of 08 (handle at r < 52: unchanged)
 for x, y in HANDLE_POSTS: hd -= Pos(x, y, 128.4) * Cylinder(1.65, 10.0, align=(Align.CENTER, Align.CENTER, Align.MIN))
-parts["10_Lid_Handle"] = solid(hd)
+parts["10_Lid_Handle"] = solid(UP * hd)
 # 11 strap + 13 pin (placeholder hinge, Tianrun fits their stock hinge): moved in D along the 292.4° bolt line, so the
 # strap's bolt hole stays on its lid bolt and the pin stays in the barrels (pivot r 81.5 -> 77.5)
 HA = math.radians(HP.HINGE_ANGLE_DEG)
 HMOVE = Pos(-D * math.cos(HA), -D * math.sin(HA), 0)
-parts["11_Lid_Hinge_Strap"] = solid(HMOVE * LIFT * src("11_Lid_Hinge_Strap"))
-parts["13_Hinge_Pin"] = solid(HMOVE * LIFT * src("13_Hinge_Pin"))
+parts["11_Lid_Hinge_Strap"] = solid(UP * HMOVE * LIFT * src("11_Lid_Hinge_Strap"))
+parts["13_Hinge_Pin"] = solid(UP * HMOVE * LIFT * src("13_Hinge_Pin"))
 tr = src("14_Steel_Tray")   # floor z -59.7 to -56.7 (outline 204.5 wide, well clear of the cap: not resized)
 for a in LEGS:
     tr += vhole(a, LEG_SRC, 3.5, -59.7, -56.7)
@@ -285,33 +301,46 @@ for key, r_old in NUT_R.items():   # move each bolt / nut node (instanced meshes
         nuts += [math.hypot(*c.bounds.mean(axis=0)[:2]) for c in w.split(only_watertight=False)
                  if abs((c.bounds[1, 2] - c.bounds[0, 2]) - 11.6) < 0.2]
     dr = (r_old - D) - min(nuts)
+    # R2: the top ring and both lid rings go up U with the cap (absolute: each set's bolt axis = its R1 height + U)
+    ZAX = {"viewer-full/bolts_top": 59.0 + U, "viewer-full/bolts_bot": -24.0, "viewer-full/bolts_seat": 2.15,
+           "viewer-lid-full/bolts_low": 100.2 + U, "viewer-lid-full/bolts_high": 120.2 + U}[key]
+    allb = np.vstack([bd for _, _, _, bd in nodes]); dz = ZAX - (allb[:, 2].min() + allb[:, 2].max()) / 2
     for nm, Tm, gname, bd in nodes:
         cx, cy = bd.mean(axis=0)[:2]; r = math.hypot(cx, cy)
-        M = np.eye(4); M[:2, 3] = [cx / r * dr, cy / r * dr]
+        M = np.eye(4); M[:2, 3] = [cx / r * dr, cy / r * dr]; M[2, 3] = dz
         sc.graph.update(frame_to=nm, matrix=M @ Tm, geometry=gname)
     sc.export(fp)
 # ceramic spacer rings between the tubes (we supply them; not in the machining package): rebuilt at the new size,
 # same heights, same 6 Ø6.6 bolt holes on their bolt ring
 SPACERS = {"viewer-full/spacer_bot": (-31.0, -17.0, -24.0), "viewer-full/spacer_seat": (-5.0, 9.0, 2.15),
-           "viewer-full/spacer_top": (52.0, 66.0, 59.0), "viewer-lid-full/spacer_low": (95.2, 105.2, 100.2),
-           "viewer-lid-full/spacer_high": (115.2, 125.2, 120.2)}
+           "viewer-full/spacer_top": (52.0 + U, 66.0 + U, 59.0 + U), "viewer-lid-full/spacer_low": (95.2 + U, 105.2 + U, 100.2 + U),
+           "viewer-lid-full/spacer_high": (115.2 + U, 125.2 + U, 120.2 + U)}   # R2: top + lid rings up U
 _tmp = os.path.join(OUT, "_spacer.stl")
 for key, (z0, z1, zb) in SPACERS.items():
     sp = cut_all(ring(R_SP_I, R_SP_O, z0, z1), [rhole(a, (R_SP_I + R_SP_O) / 2, zb, length=6) for a in BOLT])
     export_stl(solid(sp), _tmp); trimesh.load(_tmp).export(os.path.join(ROOT, key + ".glb"))
 os.remove(_tmp)
-# 2026-10-16: the ceramics in the viewers follow the raised seat. Base disk up SEAT_UP; lid disk up CAP_T; the core is
-# drawn as the REAL one measured on Tianrun's print: top flush with the cap top (92.2), slot bottoms at 67.26, foot on
-# the raised base disk. (idempotent: each is placed by absolute height). Ceramics do not change size on 2026-11-08.
-fp = os.path.join(ROOT, "viewer-full", "basedisk.glb"); m = _mesh(fp)
-m.apply_translation([0, 0, SEAT_Z - m.bounds[0, 2]]); m.export(fp)
+# Ceramics in the viewers. R2 (2026-11-08): drawn at the REAL measured size. Base plate = the C2 print profile at its real
+# 4.9 thickness (rebuilt here), on the seat; core 90.4 tall on it, top at seat + 95.3 = the cap top; its 4 slot bottoms
+# stay level with the 05 groove bottoms (both up U). Lid disk: same shape, up U. All placed by absolute height (idempotent).
+CORE_Z0 = SEAT_Z + HP.base_disk_t_real                  # 4.46
+CORE_TOP = SEAT_Z + HP.ceramic_stack_real               # 94.86 (= 91 + CAP_T + U)
+CORE_SLOT = 67.5 - SLOT_DROP + U                        # 69.92, groove inside bottom
+with BuildPart() as _bp:
+    with BuildSketch(Plane.XZ):
+        Polygon(*[(0, 0), (38.5, 0), (38.5, 1.0), (46.25, 1.5), (46.25, HP.base_disk_t_real), (0, HP.base_disk_t_real)], align=None)
+    revolve(axis=Axis.Z)
+_tmp = os.path.join(OUT, "_bd.stl"); export_stl(Pos(0, 0, SEAT_Z) * _bp.part, _tmp)
+trimesh.load(_tmp).export(os.path.join(ROOT, "viewer-full", "basedisk.glb")); os.remove(_tmp)
 fp = os.path.join(ROOT, "viewer-lid-full", "liddisk.glb"); m = _mesh(fp)
-m.apply_translation([0, 0, (90.0 + CAP_T) - m.bounds[0, 2]]); m.export(fp)   # drawn z 90-96 on a z 91 core top
+m.apply_translation([0, 0, (90.0 + CAP_T + U) - m.bounds[0, 2]]); m.export(fp)   # drawn z 90-96 on a z 91 core top (R1 frame)
 fp = os.path.join(ROOT, "viewer-full", "core.glb"); c = _mesh(fp); z0, z1 = c.bounds[:, 2]
-if abs(z1 - (91.0 + CAP_T)) > 1e-3:              # still the drawn 0-91 core
-    slot, new0, newslot, top = 67.5, SEAT_UP, 67.5 - SLOT_DROP, 91.0 + CAP_T
+KNOWN = {91.0: (0.0, 67.5), 92.2: (SEAT_UP, 67.5 - SLOT_DROP), round(CORE_TOP, 3): (CORE_Z0, CORE_SLOT)}   # top -> (bottom, slot)
+k = min(KNOWN, key=lambda t_: abs(t_ - z1)); assert abs(k - z1) < 1e-3 and abs(KNOWN[k][0] - z0) < 1e-3, ("unknown core mesh", z0, z1)
+if abs(z1 - CORE_TOP) > 1e-3:
+    slot = KNOWN[k][1]
     v = c.vertices.copy(); z = v[:, 2]; lo = z <= slot
-    v[lo, 2] = new0 + (z[lo] - z0) * (newslot - new0) / (slot - z0)
-    v[~lo, 2] = newslot + (z[~lo] - slot) * (top - newslot) / (z1 - slot)
+    v[lo, 2] = CORE_Z0 + (z[lo] - z0) * (CORE_SLOT - CORE_Z0) / (slot - z0)
+    v[~lo, 2] = CORE_SLOT + (z[~lo] - slot) * (CORE_TOP - CORE_SLOT) / (z1 - slot)
     c.vertices = v; c.export(fp)
-print("viewer meshes refreshed from the package")
+print("viewer meshes refreshed from the package; core", round(CORE_Z0, 2), "..", round(CORE_TOP, 2), "slot", round(CORE_SLOT, 2))
