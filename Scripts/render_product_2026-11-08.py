@@ -7,7 +7,7 @@ z 98.2, the same numbers as viewer-complete.html).
 
 Run (headless, M5):
   /Applications/Blender.app/Contents/MacOS/Blender -b -P Scripts/render_product_2026-11-08.py -- out.png
-Env: LID=100 (deg open, 0 = closed)  SAMPLES=512  SCALE=100 (% of 2400x1600)  TRAY=1  AZ=150  EL=22
+Env: LID=100 (deg open, 0 = closed)  SAMPLES=512  SCALE=100 (% of 2400x1600)  TRAY=0  AZ=78  EL=14
 """
 import bpy, math, os, sys, glob, time
 import mathutils
@@ -19,9 +19,9 @@ OUT = sys.argv[sys.argv.index("--") + 1] if "--" in sys.argv else "/tmp/oven_ren
 LID = float(os.environ.get("LID", "100"))
 SAMPLES = int(os.environ.get("SAMPLES", "512"))
 SCALE = int(os.environ.get("SCALE", "100"))
-TRAY = os.environ.get("TRAY", "1") == "1"
-AZ = math.radians(float(os.environ.get("AZ", "150")))
-EL = math.radians(float(os.environ.get("EL", "22")))
+TRAY = os.environ.get("TRAY", "0") == "1"
+AZ = math.radians(float(os.environ.get("AZ", "78")))
+EL = math.radians(float(os.environ.get("EL", "14")))
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 scene = bpy.context.scene
@@ -66,6 +66,12 @@ def ceramic(name):
     nt.links.new(nz.outputs["Fac"], bp.inputs["Height"]); nt.links.new(bp.outputs["Normal"], b.inputs["Normal"])
     return m
 
+def ceramic_lid(name):
+    # lid underside faces the key light head-on: a touch lower + warmer albedo keeps its shading
+    m = ceramic(name)
+    m.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.66, 0.63, 0.58, 1)
+    return m
+
 def dark_metal(name):
     m, nt, b = principled(name)
     b.inputs["Base Color"].default_value = (0.10, 0.10, 0.105, 1)
@@ -76,7 +82,8 @@ def dark_metal(name):
 STEEL   = steel("steel_304_brushed", (0.66, 0.66, 0.67), 0.26, 0.65)
 STEEL_I = steel("steel_304_inner",   (0.55, 0.55, 0.56), 0.34, 0.5)
 CERAMIC = ceramic("alumina_white")
-DARK    = dark_metal("fastener_dark")
+DARK    = steel("fastener_steel", (0.50, 0.50, 0.51), 0.22, 0.4)   # brushed/polished steel bolts + nuts
+CERAMIC_LID = ceramic_lid("alumina_lid_disk")
 
 # ---------------- import the current assembly ----------------
 B = lambda f: os.path.join(ROOT, "viewer-full", f + ".glb")
@@ -88,7 +95,7 @@ BASE_PARTS = [  # (file, material)
     ("02", STEEL), ("cap", STEEL),
 ] + ([("tray", STEEL_I)] if TRAY else [])
 LID_PARTS = [
-    ("09", STEEL), ("liddisk", CERAMIC), ("06", STEEL_I), ("spacer_low", CERAMIC), ("bolts_low", DARK),
+    ("09", STEEL), ("liddisk", CERAMIC_LID), ("06", STEEL_I), ("spacer_low", CERAMIC), ("bolts_low", DARK),
     ("07", STEEL), ("spacer_high", CERAMIC), ("08", STEEL), ("bolts_high", DARK), ("10", STEEL),
     ("11", STEEL), ("13", STEEL),
 ]
@@ -143,7 +150,10 @@ def bbox(objs):
             mn = mathutils.Vector(map(min, mn, w)); mx = mathutils.Vector(map(max, mx, w))
     return mn, mx
 
-meshes = [o for o in bpy.data.objects if o.type == "MESH"]
+HIDE = [] if TRAY else ["legscrews.glb"]
+for o in [o for o in bpy.data.objects if o.type == "MESH" and o.get("part") in HIDE]:
+    o.hide_render = True; o.hide_viewport = True
+meshes = [o for o in bpy.data.objects if o.type == "MESH" and o.get("part") not in HIDE]
 lidm = [o for o in meshes if o.get("part", "") and os.path.dirname(o.get("part")) == ""
         and any(o.get("part") == p + ".glb" for p, _ in LID_PARTS)]
 mn, mx = bbox(meshes)
@@ -197,8 +207,8 @@ def area(name, az_deg, el_deg, dist, size, power, shape="RECTANGLE", sy=None, co
     return o
 
 az = math.degrees(AZ)
-area("key",  az - 45, 35, 0.9, 0.7, 18, sy=1.0)                         # big softbox, camera-left-ish
-area("fill", az + 60, 18, 1.1, 1.4, 12, sy=1.0, color=(0.93, 0.96, 1.0))  # broad cool fill
+area("key",  az - 55, 35, 0.9, 0.7, 15, sy=1.0)                         # big softbox, camera-left-ish
+fill = area("fill", az + 60, 18, 1.1, 1.4, 12, sy=1.0, color=(0.93, 0.96, 1.0))  # broad cool fill
 rims = [area("rim",  az + 150, 40, 0.8, 0.25, 30, sy=1.2),               # strips behind, edge light
         area("rim2", az - 150, 40, 0.8, 0.25, 22, sy=1.2)]
 # rim lights only touch the oven, so the floor never mirrors them back at the camera
@@ -208,6 +218,12 @@ for o in meshes:
         oven_coll.objects.link(o)
 for r_ in rims:
     r_.light_linking.receiver_collection = oven_coll
+# with the lid open, 09's flat underside plate mirrors the fill straight at the camera (reads as a white sheet): fill skips 09
+fill_coll = bpy.data.collections.new("fill_receivers")
+for o in meshes + [backdrop]:
+    if o.get("part") != "09.glb":
+        fill_coll.objects.link(o)
+fill.light_linking.receiver_collection = fill_coll
 area("top",  az, 80, 0.8, 0.6, 6, sy=0.6)                               # soft top for the cap
 
 world = bpy.data.worlds.new("w"); scene.world = world; world.use_nodes = True
@@ -227,7 +243,7 @@ scene.render.resolution_x, scene.render.resolution_y = RX, RY
 ctr = (mn + mx) / 2
 corners = [o.matrix_world @ mathutils.Vector(c) for o in meshes for c in o.bound_box]  # per-part boxes: tighter fit
 dirv = mathutils.Vector((math.cos(EL) * math.cos(AZ), math.cos(EL) * math.sin(AZ), math.sin(EL)))
-MARGIN = float(os.environ.get("MARGIN", "0.06"))
+MARGIN = float(os.environ.get("MARGIN", "0.20"))
 def place(dist):
     cam.location = ctr + dist * dirv
     cam.rotation_euler = (ctr - cam.location).to_track_quat("-Z", "Y").to_euler()
@@ -236,7 +252,7 @@ def fit_dist():
     lo, hi = 0.2, 5.0
     for _ in range(40):
         mid = (lo + hi) / 2; place(mid)
-        ok = all(MARGIN <= p.x <= 1 - MARGIN and MARGIN <= p.y <= 1 - MARGIN
+        ok = all(0.05 <= p.x <= 0.95 and MARGIN <= p.y <= 1 - MARGIN
                  for p in (world_to_camera_view(scene, cam, c) for c in corners))
         if ok: hi = mid
         else: lo = mid
@@ -249,7 +265,7 @@ for _ in range(4):   # fit, then lens-shift so the product sits centred, refit
     cam_d.shift_x += cx
     cam_d.shift_y += cy * RY / RX
 hi = fit_dist()
-cam_d.dof.use_dof = True; cam_d.dof.focus_distance = hi; cam_d.dof.aperture_fstop = 11
+cam_d.dof.use_dof = True; cam_d.dof.focus_distance = hi; cam_d.dof.aperture_fstop = float(os.environ.get("FSTOP", "22"))   # deep focus: whole product sharp
 print("CAM dist", round(hi, 3), "loc", [round(v, 3) for v in cam.location])
 
 # ---------------- render ----------------

@@ -6,7 +6,7 @@
 
 **Status:** design complete, 13-part metal fab package ([FAB_PACKAGE_2026-11-08](FAB_PACKAGE_2026-11-08/)) generated from Python CAD, every STEP checked as one solid and re-measured from the file. **October 2026: the first full plastic test print came back from the factory and was test-fit on the real ceramic core** (photos below). Stainless samples are next.
 
-![Heat & Clean Glass Oven, 2026-11-08 size, lid open](Renders/oven_lid_open_2026-11-08.png)
+![Heat & Clean Glass Oven, 2026-11-08 size, lid open](Renders/product_2026-11-08/oven_lid_open_2026-11-08.png)
 
 **Watch it build itself (2026-11-08 size):** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/viewer-oven-build.html · [MP4](Renders/oven_builds_itself_2026-11-08.mp4)
 
@@ -20,8 +20,8 @@ Before cutting steel, the factory printed every part in plastic from the fab pac
 | ![Full body with the lid off and the hinge](Prototype%20Photos/2026-10%20plastic%20test%20print/04_full_body_lid_off_with_hinge.jpg) | ![Assembled with the ceramic lid disk in place](Prototype%20Photos/2026-10%20plastic%20test%20print/05_assembled_with_lid_disk.jpg) | [Video: ceramic fit check (9 s)](Prototype%20Photos/2026-10%20plastic%20test%20print/06_ceramic_fit_check.mp4) |
 
 <a id="oven"></a>
-<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s01-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s01-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s01-banner.svg" width="100%" alt="01. The oven. An open-hardware oven for glass dab pieces"></picture>
-<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s01-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s01-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s01-r1.svg" width="100%" alt="25 numbered pieces per kit. 0 welded joints beyond the rolled tube seams. 14 STEP files in the fab package."></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-banner.svg" width="100%" alt="01. The oven. An open-hardware oven for glass dab pieces"></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-r1.svg" width="100%" alt="13 metal parts per kit. 0 welded joints beyond the rolled tube seams. 13 STEP files in the fab package."></picture>
 
 Heat & Clean is a precision ceramic oven that heats your glass pieces to the perfect dabbing or vaping temperature -- no torch, no guessing, no hot spots. Set your temp, drop in your piece, and get a perfect session every time. And when your glass gets gunked up? Same oven, higher temp, walk away. Comes back looking brand new.
 
@@ -31,12 +31,12 @@ Click **Separate** to pull the oven apart; every part is labelled.
 **Whole oven in 3D:** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/viewer-complete.html
 **Full parts list:** [PARTS_LIST.md](PARTS_LIST.md) · **Current fab package:** [FAB_PACKAGE_2026-11-08/](FAB_PACKAGE_2026-11-08/) — 13 STEP + STL files, bilingual README · **What changed 2026-11-08:** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/change-sheets-2026-11-08.html
 
-<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s01-rule.svg" width="100%" alt="">
+<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s01-rule.svg" width="100%" alt="">
 
 
 <a id="problem"></a>
-<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s02-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s02-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s02-banner.svg" width="100%" alt="02. The problem and the solution. Even heat all the way around the barrel"></picture>
-<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s02-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s02-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s02-r1.svg" width="100%" alt="Torches guess. You are guessing at temperature every time. Coils miss half. Even a 10-wrap coil only covers half the barrel. Whole piece, evenly. The 91mm ceramic chamber heats the entire barrel."></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s02-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s02-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s02-banner.svg" width="100%" alt="02. The problem and the solution. Even heat all the way around the barrel"></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s02-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s02-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s02-r1.svg" width="100%" alt="Torches guess. You are guessing at temperature every time. Coils miss half. Even a 10-wrap coil only covers half the barrel. Whole piece, evenly. The 91mm ceramic chamber heats the entire barrel."></picture>
 
 Torches and coil heaters can't evenly heat modern glass pieces.
 
@@ -67,12 +67,12 @@ Drop in your terp slurper, banger, or ball vape heater. Set your preferred dabbi
 ### Cleaning Mode
 Crank the temperature up. Walk away. The oven burns off all char, resin, and buildup. Come back to glass that looks brand new. No chemicals, no scrubbing, no soaking. The 6-hour auto-shutoff timer means you can set it and forget it.
 
-<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s02-rule.svg" width="100%" alt="">
+<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s02-rule.svg" width="100%" alt="">
 
 
 <a id="specs"></a>
-<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s03-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s03-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s03-banner.svg" width="100%" alt="03. Features and specs. Controller, safety, materials and fit"></picture>
-<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s03-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s03-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s03-r1.svg" width="100%" alt="870 F software limit. 6 hours auto-shutoff. 81.5 mm chamber ID."></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s03-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s03-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s03-banner.svg" width="100%" alt="03. Features and specs. Controller, safety, materials and fit"></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s03-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s03-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s03-r1.svg" width="100%" alt="870 F software limit. 6 hours auto-shutoff. 81.5 mm chamber ID."></picture>
 
 - **Precision PID temperature control** -- REX-C100 controller holds your target temp within a few degrees
 - **Locked-down interface** -- just set your temp and go, no confusing menus
@@ -84,7 +84,7 @@ Crank the temperature up. Walk away. The oven burns off all char, resin, and bui
 - **Bolted strap hinge** -- lid swings open past vertical for easy loading; flush ceramic disk seals the chamber
 - **Clamp-fit hold-down ring** -- keeps the ceramic core centered and seated with no fasteners of its own
 
-![Heat & Clean Glass Oven, 2026-11-08 size, closed](Renders/oven_closed_2026-11-08.png)
+![Heat & Clean Glass Oven, 2026-11-08 size, closed](Renders/product_2026-11-08/oven_lid_closed_2026-11-08.png)
 
 | Component | Material |
 |-----------|----------|
@@ -119,12 +119,12 @@ Crank the temperature up. Walk away. The oven burns off all char, resin, and bui
 - Ball vape heaters
 - Any glass piece that fits the 81.5mm chamber
 
-<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s03-rule.svg" width="100%" alt="">
+<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s03-rule.svg" width="100%" alt="">
 
 
 <a id="build"></a>
-<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s04-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s04-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s04-banner.svg" width="100%" alt="04. Built to be built. Zero welds, all bolts, and the design journey"></picture>
-<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s04-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s04-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s04-r1.svg" width="100%" alt="M6 bolts and nuts. 3 fastener types total. Bolted strap hinge. No welded hinge, low profile. Measured, not copied. Thickness was measured from the STEP files."></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-banner.svg" width="100%" alt="04. Built to be built. Zero welds, all bolts, and the design journey"></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-r1.svg" width="100%" alt="M6 bolts and nuts. 3 fastener types total. Bolted strap hinge. No welded hinge, low profile. Measured, not copied. Thickness was measured from the STEP files."></picture>
 
 The entire oven assembles with **M6 bolts and nuts**. The only welds in the
 product are the seams of the rolled tubes. No welded brackets, no welded
@@ -183,12 +183,12 @@ The ceramic and the glass slots did not change. Every size is re-measured from t
 
 Upstream tools used, not written here: [build123d](https://github.com/gumyr/build123d) (STEP I/O), [trimesh](https://github.com/mikedh/trimesh), NumPy, [three.js](https://threejs.org/) (viewers), Blender (product renders). The REX-C100, DH48S and ceramic heater are off-the-shelf parts.
 
-<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s04-rule.svg" width="100%" alt="">
+<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-rule.svg" width="100%" alt="">
 
 
 <a id="start"></a>
-<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s05-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s05-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s05-banner.svg" width="100%" alt="05. Limits, quick start and license. What is not here yet and how to run it"></picture>
-<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s05-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s05-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s05-r1.svg" width="100%" alt="No prototype results. Design only so far; first articles pending. Open hardware. CERN-OHL-S-2.0, GPL-3.0-or-later, CC-BY-SA-4.0."></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-banner.svg" width="100%" alt="05. Limits, quick start and license. What is not here yet and how to run it"></picture>
+<picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-r1.svg" width="100%" alt="No prototype results. Design only so far; first articles pending. Open hardware. CERN-OHL-S-2.0, GPL-3.0-or-later, CC-BY-SA-4.0."></picture>
 
 - The only physical article so far is the October 2026 plastic test print (see [the photos](#latest-plastic-test-print-on-the-real-ceramic-october-2026)); no heated stainless prototype results are in this repo yet. Temperatures and safety limits are the controller settings in [Controller_Setup_Guide.md](Controller_Setup_Guide.md), not logged test data.
 - Hinge strap stiffness with the lid open is still an open question (see the design journey above).
@@ -244,5 +244,5 @@ viewer-full/ · viewer-lid-full/ -- the meshes the viewers load
 
 </details>
 
-<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s05-rule.svg" width="100%" alt="">
+<img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-rule.svg" width="100%" alt="">
 
