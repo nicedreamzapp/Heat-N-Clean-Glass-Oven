@@ -6,6 +6,11 @@
 
 **Status:** design complete, 13-part metal fab package ([FAB_PACKAGE_2026-11-08-R2](FAB_PACKAGE_2026-11-08-R2/)) generated from Python CAD, every STEP checked as one solid and re-measured from the file. **October 2026: the first full plastic test print came back from the factory and was test-fit on the real ceramic core** (photos below). Stainless samples are next.
 
+![Heat & Clean Glass Oven on its steel tray with the controller box, lid open](Renders/product_2026-11-08/hero_tray_lid_open_2026-11-08-R2.png)
+![Heat & Clean Glass Oven on its steel tray with the controller box, lid closed](Renders/product_2026-11-08/hero_tray_lid_closed_2026-11-08-R2.png)
+
+*With tray and controller (controller box is a concept)*
+
 ![Heat & Clean Glass Oven, 2026-11-08 R2, lid open](Renders/product_2026-11-08/oven_lid_open_2026-11-08-R2.png)
 
 **Watch it build itself (2026-11-08 R2):** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/viewer-oven-build.html · [MP4](Renders/oven_builds_itself_2026-11-08-R2.mp4)
