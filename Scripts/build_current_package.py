@@ -266,11 +266,24 @@ for f in ("feet", "legscrews"):   # each foot / screw snaps to LEG_R (idempotent
 # 11.6-tall body nearest the axis) is placed by absolute radius, its 2026-10-16 position minus D.
 NUT_R = {"viewer-full/bolts_top": 68.3, "viewer-full/bolts_bot": 68.3, "viewer-full/bolts_seat": 67.0,
          "viewer-lid-full/bolts_low": 68.3, "viewer-lid-full/bolts_high": 68.3}
-for key, r_old in NUT_R.items():
-    fp = os.path.join(ROOT, key + ".glb"); ms = _mesh(fp)
-    nuts = [math.hypot(*c.bounds.mean(axis=0)[:2]) for c in ms.split(only_watertight=False)
-            if abs((c.bounds[1, 2] - c.bounds[0, 2]) - 11.6) < 0.2]
-    snap_bodies(fp, dr=(r_old - D) - min(nuts))
+for key, r_old in NUT_R.items():   # move each bolt / nut node (instanced meshes) so the parts sheet and viewers keep them separate
+    fp = os.path.join(ROOT, key + ".glb"); sc = trimesh.load(fp, force="scene")
+    nodes = []
+    for nm in sc.graph.nodes_geometry:
+        Tm, gname = sc.graph[nm]
+        w = sc.geometry[gname].copy(); w.apply_transform(Tm)
+        nodes.append((nm, Tm, gname, w.bounds))
+    nuts = []
+    for nm, Tm, gname, bd in nodes:   # each node is one bolt set (bolt + nut + washer): find its inner 11.6-tall nut
+        w = sc.geometry[gname].copy(); w.apply_transform(Tm)
+        nuts += [math.hypot(*c.bounds.mean(axis=0)[:2]) for c in w.split(only_watertight=False)
+                 if abs((c.bounds[1, 2] - c.bounds[0, 2]) - 11.6) < 0.2]
+    dr = (r_old - D) - min(nuts)
+    for nm, Tm, gname, bd in nodes:
+        cx, cy = bd.mean(axis=0)[:2]; r = math.hypot(cx, cy)
+        M = np.eye(4); M[:2, 3] = [cx / r * dr, cy / r * dr]
+        sc.graph.update(frame_to=nm, matrix=M @ Tm, geometry=gname)
+    sc.export(fp)
 # ceramic spacer rings between the tubes (we supply them; not in the machining package): rebuilt at the new size,
 # same heights, same 6 Ø6.6 bolt holes on their bolt ring
 SPACERS = {"viewer-full/spacer_bot": (-31.0, -17.0, -24.0), "viewer-full/spacer_seat": (-5.0, 9.0, 2.15),
