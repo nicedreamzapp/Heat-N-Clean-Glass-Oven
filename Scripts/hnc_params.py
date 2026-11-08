@@ -48,13 +48,15 @@ for i in range(4):
 slot_arc_half_deg = (slot_width * scale_factor / 2 / circumference * 360)  # ≈ 6.53 deg
 
 # ── Tube walls (twin-wall chamber) ─────────────────────────────────
-insulation_gap = 24.6
-housing_inner_r = ceramic_outer_r + insulation_gap      # 70.85  -> inner tube ID 141.7
-housing_outer_r = housing_inner_r + inner_sheet_thickness  # 71.65 -> inner tube OD 143.3 (was 144.1 at 1.2)
+# 2026-11-08 (Matt): 24.6 -> 20.6 so a glass terp slurper (31.0 mm bowl-to-joint gap) straddles the top cap ring
+# (33.8 measured on the print -> ~29.8). Every radius at or outside the inner tube moves in 4.0; thicknesses do not.
+insulation_gap = 20.6
+housing_inner_r = ceramic_outer_r + insulation_gap      # 66.85  -> inner tube ID 133.7 (141.7 before 2026-11-08)
+housing_outer_r = housing_inner_r + inner_sheet_thickness  # 67.65 -> inner tube OD 135.3 (143.3 before 2026-11-08)
 air_gap = 4
-mesh_inner_r = housing_inner_r + sheet_metal_thickness + air_gap   # 76.05 -> outer tube ID 152.1 (held; real gap now 4.4)
-mesh_outer_r = mesh_inner_r + sheet_metal_thickness     # 77.25  -> outer tube OD 154.5
-perf_mid_r = (mesh_inner_r + mesh_outer_r) / 2          # 76.65
+mesh_inner_r = housing_inner_r + sheet_metal_thickness + air_gap   # 72.05 -> outer tube ID 144.1 (152.1 before 2026-11-08; real gap 4.4)
+mesh_outer_r = mesh_inner_r + sheet_metal_thickness     # 73.25  -> outer tube OD 146.5 (154.5 before 2026-11-08)
+perf_mid_r = (mesh_inner_r + mesh_outer_r) / 2          # 72.65
 
 # ── Z reference levels ─────────────────────────────────────────────
 lip_top_z = -disk_thickness                             # -5.5  ceramic seat face (held)
@@ -71,7 +73,7 @@ mesh_height = housing_top_z - housing_bottom_z          # 122.7  (outer tube hei
 # ── Perforations on the outer mesh tube (Ø4 @ 6 mm) ────────────────
 perf_hole_r = 2                  # Ø4 holes
 perf_spacing = 6                 # 6 mm pitch
-perf_n_ang = int((2 * np.pi * perf_mid_r) / perf_spacing)   # ≈ 80 per row
+perf_n_ang = int((2 * np.pi * perf_mid_r) / perf_spacing)   # 76 per row (80 before 2026-11-08)
 perf_n_z = int((mesh_height - 10) / perf_spacing)           # ≈ 18 rows
 perf_holes = []
 for zi in range(perf_n_z):
@@ -106,7 +108,7 @@ hole_position_angle = slot_3_end_angle + (108.68 * (2/3) / circumference * 360)
 hole_diameter = 6.4
 hole_bottom_height = 5
 hole_center_height = hole_bottom_height + hole_diameter / 2  # 8.2
-air_gap_mid_r = housing_outer_r + air_gap / 2               # 74.05
+air_gap_mid_r = housing_outer_r + air_gap / 2               # 70.05
 wire_hole_angle = groove_seam_angle
 wire_hole_diameter = 8
 wire_top_z = groove_start_height      # 66.5
@@ -115,13 +117,13 @@ tc_cable_hole_angle = hole_position_angle
 tc_cable_hole_z = hole_center_height  # 8.2
 
 # ── Leg / standoff bolt holes (3) in the bottom region ─────────────
-leg_hole_r = housing_inner_r - 5      # 65.85 (radius position)
+leg_hole_r = housing_inner_r - 5      # 61.85 (old generator value; the package uses r 60.0, see build_current_package.py)
 bolt_hole_size = 6.6                  # Ø6.6
 leg_angles = [40, 160, 280]
 
 # ── Bottom cap (02) ────────────────────────────────────────────────
 bottom_cap_lip_height = 16
-bottom_cap_outer_r = mesh_outer_r + 1.5     # 78.75 -> Ø157.5 blank
+bottom_cap_outer_r = mesh_outer_r + 1.5     # 74.75 -> Ø149.5 blank (157.5 before 2026-11-08)
 bottom_cap_z = housing_bottom_z - sheet_metal_thickness   # -32.9 (underside of disk top face at +1.2)
 # bottom-cap drilled holes (angle, radius position, hole radius):
 bottom_cap_holes = [
@@ -134,7 +136,7 @@ bottom_cap_holes = [
 ]
 
 # ── Cap shell (04a) ────────────────────────────────────────────────
-cap_outer_r = mesh_outer_r + 1.5            # 78.75
+cap_outer_r = mesh_outer_r + 1.5            # 74.75
 cap_inner_r = ceramic_inner_r               # 40.75
 ceramic_grab_lip = 3
 CAP_BOLT_Z = 59
@@ -145,7 +147,7 @@ CAP_BOLT_HOLE_R = 1.8                         # bolt-clearance bored in each fin
 
 # hinge (piano style) on the finger at 292.4 deg
 HINGE_ANGLE_DEG = 292.4
-HINGE_PIVOT_R = 81.5
+HINGE_PIVOT_R = 81.5 - (24.6 - insulation_gap)   # 77.5 (81.5 before 2026-11-08)
 HINGE_PIVOT_Z = 97
 HINGE_T_OFF = 14
 HINGE_KN_LEN = 25/3                           # ≈ 8.333 each knuckle

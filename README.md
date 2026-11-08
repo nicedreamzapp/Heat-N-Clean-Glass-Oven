@@ -26,8 +26,8 @@ Heat & Clean is a precision ceramic oven that heats your glass pieces to the per
 **Spin every part in your browser — no CAD software needed:** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/viewer-thickness.html
 Click **Explode** to pull the oven apart, and every part is labelled with its sheet thickness.
 
-**See every part in 3D (older viewer):** https://nicedreamzwholesale.com/heat-n-clean-viewer/all-parts.html
-**Full parts list:** [PARTS_LIST.md](PARTS_LIST.md) · **Current fab package:** `CAD Exports/FAB_PACKAGE_2026-09-09/` — 14 STEP files + BOM
+**Whole oven in 3D:** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/viewer-complete.html
+**Full parts list:** [PARTS_LIST.md](PARTS_LIST.md) · **Current fab package:** [FAB_PACKAGE_2026-11-08/](FAB_PACKAGE_2026-11-08/) — 13 STEP + STL files, bilingual README · **What changed 2026-11-08:** https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/change-sheets-2026-11-08.html
 
 <img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/dac531063baf7bcc6073f15a6f056951aea79823/assets/readme/s01-rule.svg" width="100%" alt="">
 
@@ -90,7 +90,7 @@ Crank the temperature up. Walk away. The oven burns off all char, resin, and bui
 | Heating element | Kanthal wire coil (30 wraps) |
 | Inner housing | 0.8mm 304 or 430 SS / aluminized steel (see metal spec above) |
 | Outer mesh | 1.2mm perforated 304 stainless steel |
-| Insulation gap | 24.6mm air gap between ceramic and housing |
+| Insulation gap | 20.6mm between ceramic and inner tube (24.6mm before 2026-11-08) |
 | Spacer rings | 5x ceramic (3x 14mm body + 2x 10mm lid) |
 | Controller | REX-C100 PID + SSR + DH48S timer |
 | Legs | 3x ceramic feet with M6 mounting |
@@ -102,11 +102,11 @@ Crank the temperature up. Walk away. The oven burns off all char, resin, and bui
 |------|-------|
 | Chamber ID | 81.5 mm (3.2 in) |
 | Chamber height | 91 mm (3.6 in) |
-| Outer diameter | 154.5 mm (6.1 in) |
+| Outer diameter | 146.5 mm outer tube, 149.5 mm (5.9 in) over the caps |
 | Temperature range | 100 - 870 F |
 | Power | 120V AC |
 | Auto-shutoff | 6 hours |
-| Wall thickness | 31 mm (ceramic to outer mesh) |
+| Wall thickness | 27 mm (ceramic to outer mesh) |
 | Body material | 304 stainless steel, brushed finish |
 
 
@@ -170,14 +170,15 @@ decision reviewed against 3D renders before any shop quotes:
 | Tray | 14 steel tray | 3 mm | 304 or mild steel |
 | Rod | 10 handle (Ø8) · 13 hinge pin (Ø5) | — | 304SS rod |
 
-Inner wall ID stays 141.7 and the outer tube stays 152.1 / 154.5, so nothing that mates
-with the ceramic or the glass moved. Every thickness above was measured back out of the
+2026-11-08: the insulation is 20.6 mm (was 24.6) so a glass slurper (31 mm bowl-to-joint gap) sits across the top cap
+ring; every body and lid diameter is 8 mm smaller: inner wall ID 133.7, outer tube 144.1 / 146.5, caps Ø149.5.
+The ceramic and the glass slots did not change. Every thickness above was measured back out of the
 STEP files themselves (`Scripts/measure_thickness.py`), not copied from a spec sheet.
 
 ### What I built (Matt Macosko)
 
 - **Parametric CAD generator**, all geometry in code: [Scripts/export_all_parts.py](Scripts/export_all_parts.py) (every part as STL/GLB), shared dimensions in [Scripts/hnc_params.py](Scripts/hnc_params.py), part builders [build_base_body.py](Scripts/build_base_body.py), [build_lid.py](Scripts/build_lid.py), [build_cap_shell_ring.py](Scripts/build_cap_shell_ring.py), [build_caps_tray.py](Scripts/build_caps_tray.py)
-- **Fab package builder** for the 0.8 mm inner parts: [Scripts/build_inner_parts_08.py](Scripts/build_inner_parts_08.py) -> [CAD Exports/FAB_PACKAGE_2026-09-09/](CAD%20Exports/FAB_PACKAGE_2026-09-09/) (14 STEP files + [BOM](CAD%20Exports/FAB_PACKAGE_2026-09-09/BOM_metal_parts.csv))
+- **Fab package builder**: [Scripts/build_current_package.py](Scripts/build_current_package.py) -> [FAB_PACKAGE_2026-11-08/](FAB_PACKAGE_2026-11-08/) (13 STEP + STL, bilingual README), checked by [Scripts/verify_steps.py](Scripts/verify_steps.py) and [Scripts/measure_package.py](Scripts/measure_package.py)
 - **Thickness verification** by ray-casting the STEP meshes: [Scripts/measure_thickness.py](Scripts/measure_thickness.py) -> [viewer-thickness/parts.json](viewer-thickness/parts.json), plus [Scripts/verify_steps.py](Scripts/verify_steps.py)
 - **Flat patterns and shop drawings**: [generate_flat_patterns.py](Scripts/generate_flat_patterns.py), [generate_cap_dxfs.py](Scripts/generate_cap_dxfs.py), [generate_fab_package.py](Scripts/generate_fab_package.py) (bilingual EN/中文 spec)
 - **Browser 3D viewers**: [viewer-thickness.html](viewer-thickness.html) and the other `viewer-*.html` pages
@@ -220,31 +221,27 @@ Open hardware, copyleft: CERN-OHL-S-2.0 for the hardware and CAD, GPL-3.0-or-lat
 <summary><b>Project structure</b></summary>
 
 ```
+CURRENT.md                      -- the only files to build from, and every dated change
 PARTS_LIST.md                   -- the 25-piece kit, numbered like the viewer labels
+FAB_PACKAGE_2026-11-08/         -- current machining files: 13 STEP + STL, bilingual README
 Scripts/
-  export_all_parts.py           -- generates every part as STL/GLB (all sheets at 1.2 mm)
-  hnc_params.py                 -- shared dimensions (outer 1.2 mm, inner 0.8 mm)
-  build_inner_parts_08.py       -- builds the 14-part STEP package in FAB_PACKAGE_2026-09-09/
-  measure_thickness.py          -- measures sheet thickness from the STEPs, feeds viewer-thickness
-  generate_fab_package.py       -- builds the bilingual shop quote package + zip
-  generate_cap_dxfs.py          -- cap shell flat blank + hold-down ring drawing (DXF)
-  generate_flat_patterns.py     -- laser-cut flat patterns for the other parts
+  hnc_params.py                 -- shared dimensions (insulation 20.6, outer 1.2 mm, inner 0.8 mm)
+  build_current_package.py      -- builds FAB_PACKAGE_2026-11-08 and refreshes the viewer meshes
+  verify_steps.py               -- every STEP must be one solid
+  measure_package.py            -- fresh-import sizes, part overlaps, bolt / leg / wire lines
+  render_change_sheets.py       -- before/after section + change sheets (Renders/)
+cad-source/                     -- Sept 9 solids still used for 10, 11, 13, 14
 
-viewer-*.html                   -- interactive 3D viewers (serve repo root, e.g. python3 -m http.server)
-  viewer-thickness.html         -- current 14 metal parts, measured thickness, explode (hosted on GitHub Pages)
-  viewer-sections.html          -- all 25 pieces, separated + named (hosted: /heat-n-clean-viewer/all-parts.html)
-  viewer-metal-parts.html       -- the 13 metal parts a shop quotes
-  viewer-topcap-fastening.html  -- full assembly; fasten/open-lid animations
-  viewer-hinge-closeup.html     -- strap hinge close-up, attach animation
-  viewer-full-assembly.html     -- every piece, apart/together
-  viewer-capshell.html          -- the cap shell alone
-
-CAD Exports/
-  FAB_PACKAGE_2026-09-09/       -- current: 14 STEP files + BOM + README
-  Individual Parts/STL|GLB/     -- every part as STL/GLB
-  Core Split/ · Lid Split/      -- the split parts the viewers load
-  Flat Patterns/DXF|SVG/        -- laser-cut patterns
-  Fabrication Package/          -- older package: spec EN + 中文, BOM, DXF, 3D refs (zip alongside)
+viewer-*.html                   -- interactive 3D viewers (GitHub Pages)
+  viewer-complete.html          -- whole oven, lid open on its hinge, cut in half / separated
+  viewer-base-full.html         -- base, every part, cut in half, measurements
+  viewer-base-assembly.html     -- base, step-by-step build
+  viewer-lid-full.html          -- lid, every part, cut in half
+  viewer-lid-assembly.html      -- lid, step-by-step build
+  viewer-lid-holder.html        -- lid ceramic holder + ceramic lid disk on the core
+  viewer-parts-sheet.html       -- the letter-size parts sheet (Oven_All_Parts_2026-11-08.png)
+change-sheets-2026-11-08.html   -- what changed on 2026-11-08, one sheet per part, EN + 中文
+viewer-full/ · viewer-lid-full/ -- the meshes the viewers load
 ```
 
 </details>
