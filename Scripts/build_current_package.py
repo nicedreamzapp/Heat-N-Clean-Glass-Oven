@@ -160,9 +160,10 @@ R_TAB = RCAP - 0.7                              # tab mid-sheet (78.05 before 20
 for a in BOLT:
     cap = cap + Rot(0, 0, a) * Pos(R_TAB, 0, 66.1) * Box(CAP_T, 14.0, 30.2) - rhole(a, R_TAB, 59.0, length=6)
 R_VENT = 73.85 - D                              # vents over the air gap
-for k in range(60):
-    if min(abs((k * 6.0 - s + 180) % 360 - 180) for s in SLOTS) > 9:
-        cap = cap - vhole(k * 6.0, R_VENT, 1.75, 90.0, 93.0)
+VENT_ANGLES = [k * 6.0 for k in range(60) if min(abs((k * 6.0 - s_ + 180) % 360 - 180) for s_ in SLOTS) > 9]   # 48
+VENT_R = 1.75                                   # Ø3.5
+for a in VENT_ANGLES:
+    cap = cap - vhole(a, R_VENT, VENT_R, 90.0, 93.0)
 # 2026-09-28 (Matt): metal slot grooves, the SAME shape as the ceramic's glass slot. The slot in the core and both
 # tubes is 10.5 wide with a round bottom (R5.25, lowest point z 67.5). Each groove's inside is exactly that profile,
 # so it lines up flush with the ceramic slot and butts right up against the ceramic (0.2 mm). 1.2 sheet wraps it.
@@ -213,6 +214,11 @@ SHELF = 96.05 + CAP_T                           # 97.25
 h = (ring(38.8, wall_ri + T, SHELF, SHELF + T) + ring(wall_ri, wall_ri + T, Z0, SHELF + T)
      + ring(wall_ri, PLATE_RO, Z0, Z0 + T) + ring(UP_RO - T, UP_RO, Z0 + T, 105.0 + CAP_T) + ring(LIP_RO - T, LIP_RO, Z0 + T, 94.0 + CAP_T))
 for a in BOLT: h -= rhole(a, UP_RO - T / 2, 99.0 + CAP_T, length=6)
+# 2026-11-08 (Matt, option C): 09's plate covered the 05 cap vents when the lid is closed. 48 Ø3.5 holes through the
+# plate at the SAME radius and angles as the 05 vents (the lid is drawn closed, in the body's frame), so air goes
+# straight up. A Ø3.5 at r 69.85 reaches r 71.6, 0.55 into the outer lip (r 71.05-71.85), so the same cylinder runs up
+# through the lip: a local notch at each hole, the lip stays everywhere else and still locates 07 (07 ID 72.05).
+for a in VENT_ANGLES: h -= vhole(a, R_VENT, VENT_R, Z0 - 1.0, 94.0 + CAP_T + 1.0)
 parts["09_Lid_Ceramic_Holder"] = solid(h)
 hd = Pos(0, 0, CAP_T + 0.2) * src("10_Lid_Handle")   # bottom of the posts at 128.4 = top of 08 (handle at r < 52: unchanged)
 for x, y in HANDLE_POSTS: hd -= Pos(x, y, 128.4) * Cylinder(1.65, 10.0, align=(Align.CENTER, Align.CENTER, Align.MIN))

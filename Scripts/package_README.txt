@@ -30,6 +30,10 @@ What changed since 2026-10-16, and why:
   08 Lid Top Disk              OD 157.5                      OD 149.5                        -8.0 dia (handle holes not changed)
   09 Lid Ceramic Holder        OD 154.4, wall 139.7/141.3    OD 146.4, wall 131.7/133.3      -8.0 dia
                                lip 150.1/151.7               lip 142.1/143.7  (ceramic lid disk pocket NOT changed)
+                               NEW: 48 vent holes Ø3.5 in the plate at r 69.85 (Ø139.7), at exactly the same
+                               angles as the 48 vent holes in 05, so air goes straight up through both when the lid
+                               is closed. The outer lip has a small notch at each hole (0.55 mm deep) so it clears the
+                               Ø3.5; the lip stays everywhere else and still locates 07.
   10 Lid Handle                not changed
   11 Hinge Strap, 13 Pin       moved in 4 mm with the lid bolt at 292.4 deg (hinge pivot r 77.5, was 81.5)
   14 Steel Tray                3 leg holes moved in to r 60 (were r 64). Outline not changed.
@@ -117,6 +121,9 @@ Fit fixes, 2026-09-30 (same files, updated):
   08 盖子顶盘              外径 157.5                       外径 149.5                       直径 -8.0（提手孔不改）
   09 盖子陶瓷托架          外径 154.4，立墙 139.7/141.3     外径 146.4，立墙 131.7/133.3     直径 -8.0
                            外侧小边 150.1/151.7             142.1/143.7（陶瓷盖盘的槽位不改）
+                           新增：底板上 48 个通风孔 Ø3.5，位于 r 69.85（Ø139.7），角度和 05 顶盖的 48 个通风孔完全一样，
+                           盖子合上时空气直接穿过两层。外侧小边在每个孔处开一个小缺口（深 0.55 mm）让开 Ø3.5 孔；
+                           其他地方小边保留，仍然给 07 定位。
   10 提手                  不改
   11 铰链片、13 销轴       跟着 292.4° 的盖子螺栓往里移 4 mm（铰链轴 r 77.5，原来 81.5）
   14 托盘                  3 个脚孔往里移到 r 60（原来 r 64）。外形不改。
