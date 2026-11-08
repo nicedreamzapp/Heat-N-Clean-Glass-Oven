@@ -1,82 +1,32 @@
-# Heat-N-Clean — Parts List (final design, 2026-06-10)
+# Parts list (2026-11-08)
 
-One kit = **25 numbered pieces**. Numbers match the labels in the
-[interactive viewer](https://nicedreamzwholesale.com/heat-n-clean-viewer/all-parts.html)
-(`viewer-sections.html` locally).
+Generated from `FAB_PACKAGE_2026-11-08` (the only current machining files, see [CURRENT.md](CURRENT.md)). Sizes in mm; overall size and volume measured from each STEP file.
 
-Zero welds anywhere. Every joint is a bolt, a nut, or a clamp fit.
+| # | Part | 零件 | Material | Key sizes | Overall (x × y × z) | Volume cm³ |
+|---|---|---|---|---|---|---|
+| 01 | Inner Wall Tube | 内壁管 | 0.8 mm 304/430 SS | ID 133.7 / OD 135.3, h 122.7, 4 glass slots 13.3, 18 M6 holes | 135.3 × 135.3 × 122.7 | 39.97 |
+| 02 | Outer Perforated Tube | 外冲孔管 | 1.2 mm 304 SS | ID 144.1 / OD 146.5, h 122.7, Ø4 @ 6 mm perforation, 4 slots 10.5, 18 M6 holes | 146.5 × 146.5 × 122.7 | 51.85 |
+| 03 | Support Ring | 支撑环 | 0.8 mm 304/430 SS | OD 133.3, raised ceramic seat r 36.25-52, 6 M6, 3 leg holes Ø6.6 on Ø120, 3 wire holes r 58 | 133.3 × 133.3 × 14.8 | 15.49 |
+| 04 | Bottom Cap | 底盖 | 1.2 mm 304 SS | OD 149.5, skirt 17.2, 6 M6, 3 leg holes on Ø120, 3 wire holes r 58 | 149.5 × 149.5 × 17.2 | 29.48 |
+| 05 | One-Piece Top Cap | 一体顶盖 | 1.2 mm 304 SS | ring OD 149.3, width 28.4 from the ceramic, 6 bolt tabs, 4 grooves 25.1 long, 48 vents Ø3.5 on Ø139.7 | 149.8 × 149.3 × 41.2 | 29.85 |
+| 06 | Lid Inner Tube | 盖子内管 | 0.8 mm 304/430 SS | ID 133.7 / OD 135.3, h 34.2, 12 M6 holes | 135.3 × 135.3 × 34.2 | 11.23 |
+| 07 | Lid Outer Perforated Tube | 盖子外冲孔管 | 1.2 mm 304 SS | ID 144.1 / OD 146.5, h 34.2, Ø4 @ 6 mm perforation, 12 M6 holes | 146.5 × 146.5 × 34.2 | 14.07 |
+| 08 | Lid Top Disk | 盖子顶盘 | 1.2 mm 304 SS | OD 149.5, skirt 14.2, 6 M6, 2 handle holes Ø4.5 | 149.5 × 149.5 × 14.2 | 28.05 |
+| 09 | Lid Ceramic Holder | 盖子陶瓷托架 | 0.8 mm 304/430 SS | plate OD 146.4, bolt wall Ø133.3 (6 M6), lip Ø143.7, 48 vents Ø3.5 on Ø139.7 (= 05), ceramic lid disk pocket | 146.4 × 146.4 × 14.0 | 15.42 |
+| 10 | Lid Handle | 提手 | Ø8 304 SS rod | 2 posts, M4 tapped 10 deep | 54.2 × 27.0 × 29.0 | 4.68 |
+| 11 | Lid Hinge Strap (placeholder) | 盖子铰链片（示意） | 1.2 mm 304 SS | factory fits its stock hinge | 28.1 × 11.8 × 14.0 | 0.63 |
+| 13 | Hinge Pin (placeholder) | 铰链销（示意） | Ø5 304 SS rod | 30 long | 5.0 × 30.0 × 5.0 | 0.59 |
+| 14 | Steel Tray | 钢托盘 | 3 mm steel | 3 leg holes Ø6.6 on Ø120 | 394.5 × 204.5 × 27.0 | 298.84 |
 
-## BODY (1–12)
+We supply (not in the machining package):
 
-| # | Part | Qty | Notes |
-|---|------|-----|-------|
-| 1 | Bottom Cap | 1 | fastened by the bottom long-bolt ring |
-| 2 | Ceramic Base Disk | 1 | |
-| 3 | Support Ring | 1 | |
-| 4 | Ceramic Heater Core | 1 | 4 glass slots |
-| 5 | Seat Spacer Ring | 1 | ceramic, 14mm tall |
-| 6 | Inner Wall Tube | 1 | |
-| 7 | Top Spacer Ring | 1 | ceramic, 14mm tall |
-| 8 | Outer Perforated Tube | 1 | |
-| 9 | Bottom Spacer Ring | 1 | ceramic, 14mm tall |
-| 10 | Seat Bolts + Nuts | 6 + 6 | M6 short |
-| 11 | Cap-Finger Bolts + Nuts | 6 + 6 | M6 long — also clamp the Cap Shell fingers |
-| 12 | Bottom Bolts + Nuts | 6 + 6 | M6 long — also clamp the Bottom Cap |
-
-## TOP CAP (13–14) — two pieces, no fasteners between them
-
-| # | Part | Qty | Notes |
-|---|------|-----|-------|
-| 13 | Ceramic Hold-Down Ring | 1 | flat ring + 3 hanging walls; CLAMP FIT — trapped between shell and chamber, no screws |
-| 14 | Cap Shell | 1 | one sheet: top, skirt, 6 drop fingers, hinge finger w/ 2 curl barrels |
-
-## LID (15–25)
-
-| # | Part | Qty | Notes |
-|---|------|-----|-------|
-| 15 | Ceramic Lid Disk | 1 | |
-| 16 | Lid Ceramic Holder | 1 | |
-| 17 | Lower Lid Spacer Ring | 1 | ceramic, 10mm tall |
-| 18 | Lid Inner Tube | 1 | |
-| 19 | Upper Lid Spacer Ring | 1 | ceramic, 10mm tall |
-| 20 | Lid Outer Perforated Tube | 1 | |
-| 21 | Lid Top Disk | 1 | |
-| 22 | Handle | 1 | threaded studs built into the feet — no screw heads on top |
-| 23 | Handle Nuts | 2 | grab the studs under the Lid Top Disk |
-| 24 | Lower Lid Bolts + Nuts | 6 + 6 | M6 short |
-| 25 | Upper Lid Bolts + Nuts | 6 + 6 | M6 short |
-
-## Hinge (bolted strap — zero welds)
-
-- Cap side: built into the Cap Shell (#14) — the finger at 292.4° runs up past the rim into 2 curled barrels
-- Lid side: `05b_Lid_Hinge_Strap` — bolts under the lid's existing bolt at 292.4°, 1 barrel
-- `05_Hinge_Pin` slides through all 3 barrels
-
-## Fastener + ceramic-ring totals per kit
-
-| Item | Count |
-|------|-------|
-| Ceramic spacer rings | **5** (3 body @ 14mm + 2 lid @ 10mm — same diameter, same bolt holes) |
-| M6 short bolts | 18 |
-| M6 long bolts | 12 |
-| M6 nuts | 30 |
-| Handle nuts | 2 |
-| Hinge pin | 1 |
-
-Only **3 fastener types** in the whole oven: short bolt, long bolt, nut.
-
-> Open question: make all 5 spacer rings the same height → one ceramic ring part ×5.
-
-## Regenerating everything
-
-```bash
-.venv/bin/python Scripts/export_all_parts.py
-```
-
-Exports every part (STL + GLB) to `CAD Exports/Individual Parts/`. The split
-GLBs the viewers use live in `CAD Exports/Core Split/` and `CAD Exports/Lid Split/`.
-
-Old fabrication package, STEP files, and the one-piece top cap were removed
-2026-06-10 — they described the old design (welded bosses, 5-ear cap, plate
-hinge, M4 cap screws) and need regenerating from the current model when a
-shop package is next needed.
+| Item | Qty | Size |
+|---|---|---|
+| Ceramic heater core | 1 | Ø92.5 / Ø81.5, 4 glass slots 10.5 (not changed) |
+| Ceramic base disk | 1 | Ø92.5 (not changed) |
+| Ceramic lid disk | 1 | Ø92.5 with raised centre (not changed) |
+| Ceramic spacer rings | 5 | ID 136.1 / OD 144.1; 3 × 14 mm (body) + 2 × 10 mm (lid); 6 Ø6.6 holes each |
+| Ceramic feet | 3 | on Ø120 leg circle |
+| M6 bolts + nuts | 30 | 6 per ring × 5 rings, same lengths as before |
+| M4 screws | 2 | handle |
+| Leg screws M6 | 3 | |

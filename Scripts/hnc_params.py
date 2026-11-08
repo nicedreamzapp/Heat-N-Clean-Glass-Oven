@@ -1,10 +1,8 @@
 """
-Heat-N-Clean Glass Oven — SHARED PARAMETERS (single source of truth for STEP build)
+Heat-N-Clean Glass Oven — SHARED PARAMETERS (single source of truth for the current build)
 
-Every constant and derived position here is copied VERBATIM from the trimesh
-generator (Scripts/export_all_parts.py) so the analytic STEP solids match the
-STLs the fab shops already have. Do NOT change a number without changing it in
-export_all_parts.py too.
+Read by Scripts/build_current_package.py (FAB_PACKAGE_2026-11-08) and Scripts/verify_steps.py.
+2026-11-08: insulation_gap 24.6 -> 20.6 (glass slurper fit); see CURRENT.md.
 
 Units: millimetres. Origin: chamber axis = Z. z=0 is the ceramic-disk seat
 reference used by the generator (housing_top_z = 91 is the chamber rim).
