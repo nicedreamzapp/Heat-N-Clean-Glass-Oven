@@ -60,7 +60,7 @@ def foot():      # Ø20 x 20 post on a Ø28 x 5 base, Ø6.6 leg-screw hole throu
     f = cyl(14, 5) + cyl(10, 20, 5)
     return solid(f - cyl(3.3, 30, -1))
 CER = {"C1_Ceramic_Heater_Core": core, "C2_Ceramic_Base_Disk": disk(P.base_disk_t_real), "C3_Ceramic_Lid_Disk": disk(),
-       "C4_Spacer_Ring_14mm": spacer(14), "C5_Spacer_Ring_10mm": spacer(10), "C6_Ceramic_Foot": foot()}
+       "C5_Spacer_Ring_10mm": spacer(10), "C6_Ceramic_Foot": foot()}
 info = {}
 for n, s in CER.items():
     export_step(s, os.path.join(OUT, "STEP", n + ".step")); export_stl(s, os.path.join(OUT, "STL", n + ".stl"))
@@ -74,7 +74,8 @@ metal = {n: solid(import_step(os.path.join(PKG, "STEP", n + ".step"))) for n in 
 CORE_Z = P.seat_z + P.base_disk_t_real                     # 4.46: core on the 4.9 base disk on the seat
 placed = {"core": Pos(0, 0, CORE_Z) * core, "basedisk": Pos(0, 0, P.seat_z) * CER["C2_Ceramic_Base_Disk"],
           "liddisk": Pos(0, 0, 91.2 + U) * CER["C3_Ceramic_Lid_Disk"]}
-for k, z0 in (("sp_bot", -31.0), ("sp_seat", -5.0), ("sp_top", 52.0 + U)): placed[k] = Pos(0, 0, z0) * CER["C4_Spacer_Ring_14mm"]
+# 2026-11-10 (Matt): one ring size, 10 mm x 5, each centred on its bolt line (body rings were 14 mm)
+for k, z0 in (("sp_bot", -29.0), ("sp_seat", -2.85), ("sp_top", 54.0 + U)): placed[k] = Pos(0, 0, z0) * CER["C5_Spacer_Ring_10mm"]
 for k, z0 in (("sp_low", 95.2 + U), ("sp_high", 115.2 + U)): placed[k] = Pos(0, 0, z0) * CER["C5_Spacer_Ring_10mm"]
 cap_top = metal["05_One_Piece_Top_Cap"].bounding_box().max.Z
 print("FLUSH core top", round(CORE_Z + H, 3), "cap top", round(cap_top, 3), "diff", round(CORE_Z + H - cap_top, 3))
@@ -113,8 +114,8 @@ NAMES = {"01_Inner_Wall_Tube": ("Inner Wall Tube", "内壁管", 1), "02_Outer_Pe
          "09_Lid_Ceramic_Holder": ("Lid Ceramic Holder", "盖子陶瓷托架", 1), "10_Lid_Handle": ("Lid Handle", "提手", 1),
          "11_Lid_Hinge_Strap": ("Lid Hinge Strap (placeholder)", "铰链片(示意)", 1), "13_Hinge_Pin": ("Hinge Pin (placeholder)", "铰链销(示意)", 1),
          "C1_Ceramic_Heater_Core": ("Ceramic Heater Core", "陶瓷加热芯", 1), "C2_Ceramic_Base_Disk": ("Ceramic Base Disk", "陶瓷底盘", 1),
-         "C3_Ceramic_Lid_Disk": ("Ceramic Lid Disk", "陶瓷盖盘", 1), "C4_Spacer_Ring_14mm": ("Ceramic Spacer Ring 14 mm", "陶瓷垫圈 14mm", 3),
-         "C5_Spacer_Ring_10mm": ("Ceramic Spacer Ring 10 mm", "陶瓷垫圈 10mm", 2), "C6_Ceramic_Foot": ("Ceramic Foot", "陶瓷脚", 3)}
+         "C3_Ceramic_Lid_Disk": ("Ceramic Lid Disk", "陶瓷盖盘", 1),
+         "C5_Spacer_Ring_10mm": ("Ceramic Spacer Ring 10 mm", "陶瓷垫圈 10mm", 5), "C6_Ceramic_Foot": ("Ceramic Foot", "陶瓷脚", 3)}
 rows, big = [], (0, None)
 for n, (en, zh, q) in NAMES.items():
     ext = trimesh.load(os.path.join(OUT, "STL", n + ".stl")).extents
@@ -155,7 +156,7 @@ C1: OD 92.5 / ID 81.5, h {H}; 4 glass slots 10.5 wide x {P.slot_depth} deep, R5.
     热电偶孔 6.4，314.6 度，高 8.2；加热丝螺旋槽：30 圈，高 15.5 至 66.5，宽 1.0，深 0.6。
 C2: OD 92.5, {bd} overall: {bd - 1.5:.1f} body + raised centre 77.0 x 1.0 with a 0.5 taper. 外径 92.5，总厚 {bd}（{bd - 1.5:.1f} 主体 + 中间凸台 77.0 x 1.0，0.5 斜边）。
 C3: OD 92.5, 6.0 overall: 4.5 body + raised centre 77.0 x 1.0 with a 0.5 taper. 外径 92.5，总厚 6.0（4.5 主体 + 中间凸台 77.0 x 1.0，0.5 斜边）。
-C4 / C5: ID 136.1 / OD 144.1, 6 radial holes 6.6 at mid height, at 52.4 + n x 60 deg. 内径 136.1 / 外径 144.1，6 个径向孔 6.6，位于中间高度，角度 52.4 + n x 60 度。
+C5 (all 5 rings, 3 body + 2 lid, 10 mm tall): ID 136.1 / OD 144.1, 6 radial holes 6.6 at mid height, at 52.4 + n x 60 deg. C5（全部 5 个垫圈，机体 3 个 + 盖子 2 个，高 10 mm）：内径 136.1 / 外径 144.1，6 个径向孔 6.6，位于中间高度，角度 52.4 + n x 60 度。
 C6: post 20 x 20 on a base 28 x 5, leg screw hole 6.6 through. 立柱 20 x 20，底座 28 x 5，通孔 6.6 用于脚螺丝。
 
 FASTENERS NOT INCLUDED, BUY THEM: 30 M6 bolts + nuts, 2 M4 screws (handle), 3 leg screws (M6).

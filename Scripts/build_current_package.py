@@ -311,9 +311,9 @@ for key, r_old in NUT_R.items():   # move each bolt / nut node (instanced meshes
         sc.graph.update(frame_to=nm, matrix=M @ Tm, geometry=gname)
     sc.export(fp)
 # ceramic spacer rings between the tubes (we supply them; not in the machining package): rebuilt at the new size,
-# same heights, same 6 Ø6.6 bolt holes on their bolt ring
-SPACERS = {"viewer-full/spacer_bot": (-31.0, -17.0, -24.0), "viewer-full/spacer_seat": (-5.0, 9.0, 2.15),
-           "viewer-full/spacer_top": (52.0 + U, 66.0 + U, 59.0 + U), "viewer-lid-full/spacer_low": (95.2 + U, 105.2 + U, 100.2 + U),
+# 6 Ø6.6 bolt holes on their bolt ring. 2026-11-10 (Matt): all five rings 10 mm, centred on their bolts (body rings were 14)
+SPACERS = {"viewer-full/spacer_bot": (-29.0, -19.0, -24.0), "viewer-full/spacer_seat": (-2.85, 7.15, 2.15),
+           "viewer-full/spacer_top": (54.0 + U, 64.0 + U, 59.0 + U), "viewer-lid-full/spacer_low": (95.2 + U, 105.2 + U, 100.2 + U),
            "viewer-lid-full/spacer_high": (115.2 + U, 125.2 + U, 120.2 + U)}   # R2: top + lid rings up U
 _tmp = os.path.join(OUT, "_spacer.stl")
 for key, (z0, z1, zb) in SPACERS.items():

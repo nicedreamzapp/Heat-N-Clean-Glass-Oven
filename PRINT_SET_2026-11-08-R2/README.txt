@@ -17,7 +17,7 @@ Metal parts copy the machining package FAB_PACKAGE_2026-11-08-R2. Sheet walls ar
 Ceramic parts (C1-C6) are drawn at the measured ceramic sizes; STEP files for them are in STEP/.
 陶瓷件（C1-C6）按实测陶瓷尺寸绘制，其 STEP 文件在 STEP/ 文件夹。
 
-TOTAL: 23 pieces, 18 files.   合计：23 件，18 个文件。
+TOTAL: 23 pieces, 17 files.   合计：23 件，17 个文件。
 Largest part 149.8 x 149.3 x 41.2 mm (05_One_Piece_Top_Cap): every part fits a 256 x 256 x 256 mm bed.
 最大零件 149.8 x 149.3 x 41.2 mm：全部零件可放入 256 x 256 x 256 mm 打印平台。
 
@@ -37,8 +37,7 @@ File                                Part / 零件                              Q
 C1_Ceramic_Heater_Core.stl          Ceramic Heater Core 陶瓷加热芯                     1     92.5 x 92.5 x 90.4
 C2_Ceramic_Base_Disk.stl            Ceramic Base Disk 陶瓷底盘                        1     92.5 x 92.5 x 4.9
 C3_Ceramic_Lid_Disk.stl             Ceramic Lid Disk 陶瓷盖盘                         1     92.5 x 92.5 x 6.0
-C4_Spacer_Ring_14mm.stl             Ceramic Spacer Ring 14 mm 陶瓷垫圈 14mm           3     144.1 x 144.1 x 14.0
-C5_Spacer_Ring_10mm.stl             Ceramic Spacer Ring 10 mm 陶瓷垫圈 10mm           2     144.1 x 144.1 x 10.0
+C5_Spacer_Ring_10mm.stl             Ceramic Spacer Ring 10 mm 陶瓷垫圈 10mm           5     144.1 x 144.1 x 10.0
 C6_Ceramic_Foot.stl                 Ceramic Foot 陶瓷脚                              3     28.0 x 28.0 x 25.0
 
 Ceramic details / 陶瓷细节:
@@ -48,7 +47,7 @@ C1: OD 92.5 / ID 81.5, h 90.4; 4 glass slots 10.5 wide x 23.5 deep, R5.25 round 
     热电偶孔 6.4，314.6 度，高 8.2；加热丝螺旋槽：30 圈，高 15.5 至 66.5，宽 1.0，深 0.6。
 C2: OD 92.5, 4.9 overall: 3.4 body + raised centre 77.0 x 1.0 with a 0.5 taper. 外径 92.5，总厚 4.9（3.4 主体 + 中间凸台 77.0 x 1.0，0.5 斜边）。
 C3: OD 92.5, 6.0 overall: 4.5 body + raised centre 77.0 x 1.0 with a 0.5 taper. 外径 92.5，总厚 6.0（4.5 主体 + 中间凸台 77.0 x 1.0，0.5 斜边）。
-C4 / C5: ID 136.1 / OD 144.1, 6 radial holes 6.6 at mid height, at 52.4 + n x 60 deg. 内径 136.1 / 外径 144.1，6 个径向孔 6.6，位于中间高度，角度 52.4 + n x 60 度。
+C5 (all 5 rings, 3 body + 2 lid, 10 mm tall): ID 136.1 / OD 144.1, 6 radial holes 6.6 at mid height, at 52.4 + n x 60 deg. C5（全部 5 个垫圈，机体 3 个 + 盖子 2 个，高 10 mm）：内径 136.1 / 外径 144.1，6 个径向孔 6.6，位于中间高度，角度 52.4 + n x 60 度。
 C6: post 20 x 20 on a base 28 x 5, leg screw hole 6.6 through. 立柱 20 x 20，底座 28 x 5，通孔 6.6 用于脚螺丝。
 
 FASTENERS NOT INCLUDED, BUY THEM: 30 M6 bolts + nuts, 2 M4 screws (handle), 3 leg screws (M6).
