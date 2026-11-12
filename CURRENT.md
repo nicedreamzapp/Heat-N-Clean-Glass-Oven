@@ -4,6 +4,7 @@ Everything older was moved OFF GitHub to the local folder `Desktop/PROJECTS/Heat
 
 | Page | What it is |
 |---|---|
+| viewer-oven.html | ONE page for everything (2026-11-12): tabs Build animation / Whole oven / Base / Lid in one scene, "Cut in half" works on every tab, also while the build plays (play / pause / restart); hash `#build,cut` `#whole,separated` `#base,assembled,cut` `#lid` |
 | viewer-base-full.html | Base, every part, cut in half, measurements |
 | viewer-base-assembly.html | Base, step-by-step build |
 | viewer-lid-full.html | Lid, every part, cut in half |

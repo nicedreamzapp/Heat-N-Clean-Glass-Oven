@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Heat &amp; Clean Glass Oven: one viewer (2026-11-12)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e8e8ec;font-family:-apple-system,"PingFang SC",sans-serif;color:#16181d;overflow:hidden}
+#wrap{position:fixed;inset:0;display:flex;flex-direction:column}
+#hdr{padding:10px 12px 0;display:flex;flex-direction:column;gap:8px;z-index:10}
+#tabs{display:flex;gap:4px;background:rgba(255,255,255,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:4px;border-radius:12px;align-self:flex-start;max-width:100%}
+#tabs button{font-size:15px;padding:7px 14px;border-radius:9px;border:0;background:transparent;cursor:pointer;color:#16181d;white-space:nowrap}
+#tabs button.on{background:#1f5fb3;color:#fff}
+#ctl{background:rgba(255,255,255,.9);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:8px 12px;border-radius:10px;display:flex;gap:8px;align-items:center;font-size:14px;flex-wrap:wrap;align-self:flex-start;max-width:100%}
+#ctl b{font-size:16px} #ctl button{font-size:15px;padding:6px 14px;border-radius:8px;border:1px solid #999;background:#fff;cursor:pointer;color:#16181d}
+#ctl button.on{background:#1f5fb3;color:#fff;border-color:#1f5fb3} #ctl input{width:180px}
+#ctl [data-tabs]{display:none} #ctl .show{display:inline-block}
+#stage{position:relative;flex:1;min-height:0}
+canvas{display:block;width:100%;height:100%}
+#loading{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#666;z-index:20}
+#bar{position:absolute;left:0;right:0;bottom:0;height:5px;background:rgba(0,0,0,.08);z-index:10} #bar i{display:block;height:100%;width:0;background:#1f5fb3}
+#step{position:absolute;top:8px;left:12px;max-width:min(760px,calc(100% - 24px));background:#fff;border-left:5px solid #d08a00;padding:10px 14px;border-radius:8px;font-size:17px;line-height:1.4;z-index:10;box-shadow:0 4px 18px rgba(0,0,0,.12)}
+#step small{display:block;color:#666;font-size:13px;margin-bottom:3px}
+#key{position:absolute;bottom:14px;left:12px;background:rgba(255,255,255,.9);padding:8px 12px;border-radius:10px;font-size:13px;z-index:10;display:flex;gap:6px 14px;flex-wrap:wrap;max-width:calc(100% - 24px)}
+#key i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.hide{display:none!important}
+@media (max-width:700px){
+  #hdr{padding:8px 8px 0;gap:6px}
+  #tabs{align-self:stretch} #tabs button{flex:1;font-size:14px;padding:7px 4px}
+  #ctl{padding:6px 8px;gap:6px;align-self:stretch} #ctl b{display:none} #ctl button{font-size:14px;padding:6px 10px} #ctl input{width:110px}
+  #step{top:6px;left:8px;right:8px;max-width:none;font-size:14px;padding:8px 10px}
+  #step small{font-size:12px}
+  #key{font-size:11px;padding:6px 8px;left:8px;max-width:calc(100% - 16px);bottom:10px;gap:3px 10px}
+  #key i{width:10px;height:10px}
+}
+</style></head><body>
+<div id="wrap">
+<div id="hdr">
+  <div id="tabs"><button data-t="build">Build animation</button><button data-t="whole">Whole oven</button><button data-t="base">Base</button><button data-t="lid">Lid</button></div>
+  <div id="ctl">
+    <b id="title"></b>
+    <button id="play" data-tabs="build">❚❚ Pause</button><button id="prev" data-tabs="build">◀ Back</button><button id="next" data-tabs="build">Next ▶</button><button id="again" data-tabs="build">↻ Restart</button>
+    <button id="lidb" data-tabs="whole">Close lid</button>
+    <button id="btn" data-tabs="whole base lid">Separate</button><input id="sl" data-tabs="whole base lid" type="range" min="0" max="1" step="0.01" value="0"><span id="mode" data-tabs="whole base lid">assembled</span>
+    <button id="cut" data-tabs="build whole base lid">Cut in half</button>
+    <button id="lbtn" data-tabs="whole base lid">Hide labels</button>
+    <button id="fbtn" data-tabs="build whole base lid">Fit</button>
+  </div>
+</div>
+<div id="stage">
+<div id="loading">Loading…</div>
+<div id="step" class="hide"></div>
+<div id="key"><span><i style="background:#2f6fd6"></i>bottom cap</span><span><i style="background:#2fa84f"></i>support ring / lid holder</span><span><i style="background:#fff;border:1px solid #bbb"></i>ceramic disks</span><span><i style="background:#9b59b6"></i>top cap / lid top</span><span><i style="background:#a9b4c2"></i>outer tube</span><span><i style="background:#d9825a"></i>inner tube</span><span><i style="background:#efe9da;border:1px solid #bbb"></i>ceramic</span><span><i style="background:#4a4f56"></i>bolts + nuts</span></div>
+<div id="bar" class="hide"><i></i></div>
+<canvas id="c"></canvas>
+</div>
+</div>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { makeLabeler } from './viewer-labels.js';
+// One page, one three.js scene, four tabs, built from the same code as the single pages:
+//   Build animation = viewer-oven-build.html (the oven builds itself, lid closes at the end)
+//   Whole oven      = viewer-complete.html  (lid open on its hinge, separate / assemble)
+//   Base            = viewer-base-full.html (every base part + measurements when cut and assembled)
+//   Lid             = viewer-lid-full.html  (every lid part)
+// The 2026-11-12 meshes (viewer-full/, viewer-lid-full/) are loaded once and shared by every tab.
+// "Cut in half" is one switch for all tabs and works live, also while the build animation plays.
+// Hash: #build | #whole | #base | #lid, plus ,cut ,separated ,assembled ,closed (e.g. #build,cut).
+const PARTS=[
+  {f:'feet',col:'cer'},{f:'legscrews',col:'bolt'},{f:'04',col:'cap'},{f:'spacer_bot',col:'cer'},{f:'bolts_bot',col:'bolt',radial:true},
+  {f:'03',col:'sup'},{f:'basedisk',col:'disk'},{f:'spacer_seat',col:'cer'},{f:'bolts_seat',col:'bolt',radial:true},{f:'01',col:'in'},
+  {f:'core',col:'cer'},{f:'spacer_top',col:'cer'},{f:'bolts_top',col:'bolt',radial:true},{f:'02',col:'out'},{f:'cap',col:'top'},
+  {f:'liddisk',col:'disk',lid:true},{f:'09',col:'sup',lid:true},{f:'06',col:'in',lid:true},{f:'spacer_low',col:'cer',lid:true},
+  {f:'bolts_low',col:'bolt',lid:true,radial:true},{f:'07',col:'out',lid:true},{f:'spacer_high',col:'cer',lid:true},{f:'08',col:'top',lid:true},
+  {f:'bolts_high',col:'bolt',lid:true,radial:true},{f:'10',col:'bolt',lid:true},{f:'11',col:'out',lid:true},{f:'13',col:'bolt',lid:true},
+];
+// labels and stacking order per tab, word for word from the single pages: [file, label, side-of]
+const VIEWS={
+ base:{title:'BASE — every part, one-piece top cap',size:1.7,k:1,list:[
+  ['feet','Ceramic Feet (3)'],['legscrews','Leg Screws','feet'],['04','04 Bottom Cap'],['spacer_bot','Bottom Spacer Ring (ceramic)'],
+  ['bolts_bot','Bottom Bolts ×6 (clamp the bottom cap)','spacer_bot'],['03','03 Support Ring'],['basedisk','Ceramic Base Disk'],
+  ['spacer_seat','Seat Spacer Ring (ceramic)'],['bolts_seat','Seat Bolts ×6 (through the 03 wall)','spacer_seat'],['01','01 Inner Wall Tube'],
+  ['core','Ceramic Heater Core'],['spacer_top','Top Spacer Ring (ceramic)'],['bolts_top','Top Bolts ×6 (hold the top cap)','spacer_top'],
+  ['02','02 Outer Perforated Tube'],['cap','05 One-Piece Top Cap']]},
+ lid:{title:'LID — every part',size:1.7,k:1,list:[
+  ['liddisk','Ceramic Lid Disk'],['09','09 Lid Ceramic Holder (48 vent holes)'],['06','06 Lid Inner Tube'],['spacer_low','Lower Lid Spacer (ceramic)'],
+  ['bolts_low','Lower Lid Bolts ×6','spacer_low'],['07','07 Lid Outer Perforated Tube'],['spacer_high','Upper Lid Spacer (ceramic)'],['08','08 Lid Top Disk'],
+  ['bolts_high','Upper Lid Bolts ×6 (hold the top disk)','spacer_high'],['10','10 Lid Handle'],['11','11 Hinge Strap','07'],['13','13 Hinge Pin','07']]},
+ whole:{title:'COMPLETE OVEN — lid open',size:1.35,k:0,list:[
+  ['feet','Ceramic Feet (3)'],['legscrews','Leg Screws','feet'],['04','04 Bottom Cap'],['spacer_bot','Bottom Spacer (ceramic)'],
+  ['bolts_bot','Bottom Bolts ×6','spacer_bot'],['03','03 Support Ring'],['basedisk','Ceramic Base Disk'],['spacer_seat','Seat Spacer (ceramic)'],
+  ['bolts_seat','Seat Bolts ×6','spacer_seat'],['01','01 Inner Wall Tube'],['core','Ceramic Heater Core'],['spacer_top','Top Spacer (ceramic)'],
+  ['bolts_top','Top Bolts ×6 (hold the top cap)','spacer_top'],['02','02 Outer Perforated Tube'],['cap','05 One-Piece Top Cap'],
+  ['liddisk','Ceramic Lid Disk (glued in)'],['09','09 Lid Ceramic Holder (48 vent holes)'],['06','06 Lid Inner Tube'],['spacer_low','Lower Lid Spacer'],
+  ['bolts_low','Lower Lid Bolts ×6','spacer_low'],['07','07 Lid Outer Perforated Tube'],['spacer_high','Upper Lid Spacer'],['08','08 Lid Top Disk'],
+  ['bolts_high','Upper Lid Bolts ×6 (hold the top disk)','spacer_high'],['10','10 Lid Handle'],['11','11 Hinge Strap','07'],['13','13 Hinge Pin','07']]},
+};
+// build animation steps, same as viewer-oven-build.html
+const STEPS=[
+ {add:['04'],how:'down',t:'1. Bottom Cap 04 on the bench, rim up (Ø134.7).',z:'底盖 04 放在台面上，边朝上（Ø134.7）。'},
+ {add:['01'],how:'down',t:'2. Inner Wall Tube 01 stands inside the cap (ID 121.7).',z:'内壁管 01 立在底盖里（内径 121.7）。'},
+ {add:['spacer_bot'],how:'down',t:'3. Bottom ceramic spacer slides down over the inner tube; holes lined up.',z:'底部陶瓷垫环套在内管外，孔对齐。'},
+ {add:['02'],how:'down',t:'4. Outer Perforated Tube 02 slides down over everything (OD 131.7).',z:'外冲孔管 02 套在外面（外径 131.7）。'},
+ {add:['bolts_bot'],how:'in',t:'5. 6 bottom M6 bolts: cap rim, outer tube, spacer, inner tube. Nuts inside.',z:'底部 6 颗 M6 螺栓穿过底盖边、外管、垫环、内管，螺母在里面。'},
+ {add:['03'],how:'down',t:'6. Insulation pad in the bottom, then Support Ring 03 drops in to the seat holes.',z:'底部放保温棉，再放支撑环 03 到座圈孔位置。'},
+ {add:['spacer_seat'],how:'down',t:'7. Seat ceramic spacer into the 3.0 mm gap between the tubes.',z:'座圈陶瓷垫环放进两管之间 3.0 mm 的空隙。'},
+ {add:['bolts_seat'],how:'in',t:'8. 6 seat bolts through outer tube, spacer, inner tube and the 03 wall.',z:'6 颗座圈螺栓穿过外管、垫环、内管和 03 的墙。'},
+ {add:['spacer_top'],how:'down',t:'9. Top ceramic spacer into the gap at the top holes.',z:'顶部陶瓷垫环放进空隙，对准上排孔。'},
+ {add:['basedisk'],how:'down',t:'10. Ceramic base disk onto the raised seat of 03.',z:'陶瓷底盘放在 03 抬高的座面上。'},
+ {add:['core'],how:'down',t:'11. Ceramic heater core onto the base disk, glass slots lined up. Wire it, pack the 14.6 mm side insulation.',z:'陶瓷加热芯放在底盘上，玻璃槽对齐。接线，塞入 14.6 mm 侧面保温棉。'},
+ {add:['cap'],how:'down',t:'12. One-piece Top Cap 05: tabs down the outside, grooves into the glass slots. Ring is now 20.0 mm wide.',z:'一体顶盖 05：折边片沿外侧向下，金属槽落进玻璃槽。圆环宽 20.0 mm。'},
+ {add:['bolts_top'],how:'in',t:'13. 6 top bolts through the cap tabs, outer tube, spacer, inner tube.',z:'6 颗顶部螺栓穿过顶盖折边片、外管、垫环、内管。'},
+ {add:['feet','legscrews'],how:'up',t:'14. 3 ceramic feet screwed on underneath. The base is done.',z:'底部拧上 3 个陶瓷脚。底座完成。'},
+ {add:['09'],how:'down',t:'15. Lid: Ceramic Holder 09 first. Its 48 vent holes line up with the top cap vents.',z:'盖子：先放陶瓷托架 09，48 个通风孔对准顶盖通风孔。'},
+ {add:['06'],how:'down',t:'16. Lid Inner Tube 06 over the holder wall.',z:'盖子内管 06 套在托架立墙外。'},
+ {add:['spacer_low'],how:'down',t:'17. Lower lid ceramic spacer.',z:'盖子下排陶瓷垫环。'},
+ {add:['07'],how:'down',t:'18. Lid Outer Perforated Tube 07.',z:'盖子外冲孔管 07。'},
+ {add:['bolts_low'],how:'in',t:'19. 6 lower lid bolts through 07, spacer, 06 and the 09 wall.',z:'6 颗盖子下排螺栓穿过 07、垫环、06 和 09 的立墙。'},
+ {add:['spacer_high'],how:'down',t:'20. Upper lid ceramic spacer.',z:'盖子上排陶瓷垫环。'},
+ {add:['08'],how:'down',t:'21. Lid Top Disk 08, skirt down the outside.',z:'盖子顶盘 08，裙边沿外侧向下。'},
+ {add:['bolts_high'],how:'in',t:'22. 6 upper lid bolts through the 08 skirt, 07, spacer and 06.',z:'6 颗盖子上排螺栓穿过 08 裙边、07、垫环和 06。'},
+ {add:['10'],how:'down',t:'23. Handle 10: two M4 screws come up from inside the lid into its posts.',z:'提手 10：两颗 M4 螺丝从盖子里面往上拧进提手脚。'},
+ {add:['liddisk'],how:'up',t:'24. Fill the lid with insulation, glue the ceramic lid disk into the 09 pocket.',z:'盖子里塞满保温棉，把陶瓷盖盘粘进 09 的槽位。'},
+ {add:['11','13'],how:'in',t:'25. Hinge strap 11 and pin 13 on the lid bolt at 292.4° (placeholder: Tianrun fits their stock hinge).',z:'铰链片 11 和销 13 装在 292.4° 的盖子螺栓上（示意：天润用自己的合页）。'},
+ {add:[],lid:'hang',t:'26. The lid goes onto the hinge.',z:'盖子装到铰链上。'},
+ {add:[],lid:'close',t:'27. Close the lid. Done: the 2026-11-12 oven, Ø134.7 over the bottom cap and lid; the ceramic top is flush with the top cap.',z:'合上盖子。完成：2026-11-12 版炉子，底盖和盖子外径 Ø134.7；陶瓷顶面和顶盖齐平。'},
+];
+const DUR=3.6, ANIM=1.5, LIFT=150, OPEN=110, TOTAL=STEPS.length*DUR+2.5, GAP=40, RADIAL=70;
+const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6};
+const V='?v='+Date.now();
+THREE.Object3D.DEFAULT_UP.set(0,0,1);
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xe8e8ec); renderer.localClippingEnabled=true;
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.13;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(35,1,0.1,20000); cam.up.set(0,0,1); cam.position.set(-500,-900,420);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true;
+let userCam=false; renderer.domElement.addEventListener('pointerdown',()=>userCam=true); renderer.domElement.addEventListener('wheel',()=>userCam=true);
+scene.add(new THREE.AmbientLight(0xffffff,0.95));
+const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,-200,400); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
+// lid hinge, same numbers as viewer-complete.html: axis tangent at 292.4°, pivot r 70.1, z 100.86
+const HA=292.4*Math.PI/180, HC=new THREE.Vector3(70.1*Math.cos(HA),70.1*Math.sin(HA),100.86), HAX=new THREE.Vector3(-Math.sin(HA),Math.cos(HA),0);
+const lidOuter=new THREE.Group(); scene.add(lidOuter); const lidPivot=new THREE.Group(); lidPivot.position.copy(HC); lidOuter.add(lidPivot);
+const lidInner=new THREE.Group(); lidInner.position.copy(HC).negate(); lidPivot.add(lidInner);
+// cut planes: whole oven + build cut through the hinge (as viewer-complete), so the open lid stays cut on the same plane;
+// base + lid cut on y = 0 (as their pages, the base measurements are drawn on that face). The half facing the camera goes.
+const CLIP={build:new THREE.Plane(HAX.clone(),0), whole:new THREE.Plane(HAX.clone(),0), base:new THREE.Plane(new THREE.Vector3(0,1,0),0), lid:new THREE.Plane(new THREE.Vector3(0,1,0),0)};
+const loader=new GLTFLoader(); const load=p=>new Promise((res,rej)=>loader.load(p,g=>res(g.scene),undefined,rej));
+function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  const cer=(color===COL.cer||color===COL.disk);
+  ch.material=new THREE.MeshStandardMaterial({color,side:THREE.DoubleSide,metalness:cer?0.05:0.45,roughness:cer?0.8:0.45,clippingPlanes:[]}); } }); }
+function makeLabel(text){ const c=document.createElement('canvas'); let x=c.getContext('2d'); x.font='bold 28px -apple-system, sans-serif';
+  const w=Math.ceil(x.measureText(text).width)+30, h=48; c.width=w; c.height=h; x=c.getContext('2d');
+  x.fillStyle='rgba(255,255,255,0.94)'; x.beginPath(); x.roundRect(0,0,w,h,11); x.fill();
+  x.font='bold 28px -apple-system, sans-serif'; x.fillStyle='#000'; x.textBaseline='middle'; x.fillText(text,15,25);
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false,transparent:true}));
+  spr.center.set(0,0.5); spr.scale.set(w*0.25,h*0.25,1); spr.renderOrder=10; return spr; }
+const models=await Promise.all(PARTS.map(p=>load((p.lid?'viewer-lid-full/':'viewer-full/')+p.f+'.glb'+V).catch(()=>null)));
+const items=[], byF={};
+PARTS.forEach((p,i)=>{ const m=models[i]; if(!m) return; paint(m,COL[p.col]); m.updateMatrixWorld(true);
+  // sizes and bolt directions are taken in the closed-lid body frame, before anything hangs on the hinge
+  const bb=new THREE.Box3().setFromObject(m), c=bb.getCenter(new THREE.Vector3());
+  const it={p,m,bb,c}; items.push(it); byF[p.f]=it;
+  if(p.radial){ it.kids=[]; m.traverse(ch=>{ if(ch.isMesh){ const b=new THREE.Box3().setFromObject(ch), cc=b.getCenter(new THREE.Vector3());
+    it.kids.push({o:ch,dir:new THREE.Vector3(cc.x,cc.y,0).normalize(),base:ch.position.clone()}); } }); }
+  it.g=new THREE.Group(); it.g.add(m); (p.lid?lidInner:scene).add(it.g); });
+const missing=PARTS.filter(p=>!byF[p.f]).map(p=>p.f); if(missing.length) console.warn('missing meshes:',missing.join(', '));
+
+// per-tab views: wrappers around the shared parts, each with its own label text, stacking offset and labeler
+for(const [name,v] of Object.entries(VIEWS)){
+  v.name=name; v.w=v.list.filter(([f])=>byF[f]).map(([f,label,side])=>{ const it=byF[f];
+    return {it,f,g:it.g,m:it.m,bb:it.bb,c:it.c,kids:it.kids,p:{label,side,radial:!!it.p.radial}}; });
+  const wf={}; v.w.forEach(w=>wf[w.f]=w);
+  let rx=0; v.w.forEach(w=>rx=Math.max(rx,w.bb.max.x));
+  let top=-Infinity; v.w.forEach(w=>{ if(w.p.side) return; const dz=Math.max(0,(top+GAP)-w.bb.min.z); w.dz=dz; top=w.bb.max.z+dz; });
+  v.w.forEach(w=>{ if(w.p.side) w.dz=wf[w.p.side]?wf[w.p.side].dz:0; });
+  v.LB=makeLabeler(scene, v.w, {rx, RADIAL, makeLabel, size:v.size}); v.LB.setVisible(false);
+  v.goal=v.k; v.showL=true; }
+
+// base measurement lines (viewer-base-full.html), on the cut face y = 0, shown only when cut in half and assembled
+const dimG=new THREE.Group(); scene.add(dimG); dimG.visible=false;
+function dimLine(a,b,text,lx,lz){ const A=new THREE.Vector3(...a), B=new THREE.Vector3(...b);
+  const mat=new THREE.LineBasicMaterial({color:0xd01010,depthTest:false});
+  const ln=new THREE.Line(new THREE.BufferGeometry().setFromPoints([A,B]),mat); ln.renderOrder=20; dimG.add(ln);
+  const dir=B.clone().sub(A).normalize();
+  for(const [p,d] of [[A,dir.clone().negate()],[B,dir]]){ const c=new THREE.Mesh(new THREE.ConeGeometry(1.6,5,12),new THREE.MeshBasicMaterial({color:0xd01010,depthTest:false}));
+    c.position.copy(p).addScaledVector(d,-2.5); c.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d); c.renderOrder=20; dimG.add(c); }
+  const cv=document.createElement('canvas'); let x=cv.getContext('2d'); x.font='bold 30px -apple-system, sans-serif';
+  const w=Math.ceil(x.measureText(text).width)+24, h=46; cv.width=w; cv.height=h; x=cv.getContext('2d');
+  x.fillStyle='rgba(255,255,255,0.95)'; x.beginPath(); x.roundRect(0,0,w,h,10); x.fill(); x.strokeStyle='#d01010'; x.lineWidth=3; x.stroke();
+  x.font='bold 30px -apple-system, sans-serif'; x.fillStyle='#b00000'; x.textBaseline='middle'; x.fillText(text,12,24);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false})); sp.center.set(0,0.5);
+  sp.scale.set(w*0.2,h*0.2,1); sp.position.set(lx,-2,lz); sp.renderOrder=21; sp.userData.w=w*0.2; sp.userData.h=h*0.2; dimG.add(sp); }
+dimLine([-20,-2,-6.3],[-20,-2,-31.7],'25.4 mm open space under the base',-15,-19);
+dimLine([-46.25,-2,40],[-60.85,-2,40],'14.6 mm side insulation',-146,52);
+dimLine([61.65,-2,20],[64.65,-2,20],'3.0 mm tube gap (spacer rings)',78,8);
+dimLine([42,-2,-0.44],[42,-2,-31.7],'31.3 mm base disk to floor',60,-40);
+
+const $=id=>document.getElementById(id);
+const stepEl=$('step'), barEl=document.querySelector('#bar i'), sl=$('sl'), btn=$('btn'), mode=$('mode'), lbtn=$('lbtn'), cutb=$('cut'), playb=$('play'), lidb=$('lidb');
+const H=location.hash.slice(1).split(',');
+let tab='build', cutOn=false, lidAng=H.includes('closed')?0:110;
+function setClip(){ const pl=cutOn?[CLIP[tab]]:[]; items.forEach(it=>it.m.traverse(ch=>{ if(ch.isMesh) ch.material.clippingPlanes=pl; })); }
+function setHot(on){ items.forEach(it=>it.m.traverse(ch=>{ if(ch.isMesh) ch.material.emissive.setHex(0); })); }
+
+// ---------- build animation (viewer-oven-build.html) ----------
+const stepIn={}; STEPS.forEach((s,i)=>s.add.forEach(f=>stepIn[f]=i));
+const ease=e=>e<=0?0:e>=1?1:1-Math.pow(1-e,3);
+let t=0, playing=true, lastStep=-1;
+const iH=STEPS.findIndex(s=>s.lid==='hang'), iC=STEPS.findIndex(s=>s.lid==='close');
+const BBOX=new THREE.Box3(); items.forEach(it=>{ const b=it.bb.clone(); if(it.p.lid) b.translate(new THREE.Vector3(0,0,LIFT)); BBOX.union(b); });
+BBOX.max.z+=60; BBOX.min.z-=30; const BCT=BBOX.getCenter(new THREE.Vector3()); BCT.z-=10; let camDist=1;
+const NARROW=()=>innerWidth<=700;
+function fitBuild(){ const sz=BBOX.getSize(new THREE.Vector3()); const vf=Math.tan(THREE.MathUtils.degToRad(cam.fov/2));
+  const w=canvas.clientWidth, h=canvas.clientHeight; let top=0, bot=0;
+  if(tab==='build'&&NARROW()){ top=stepEl.offsetTop+stepEl.offsetHeight+6; bot=$('key').offsetHeight+16; }
+  const hEff=Math.max(120,h-top-bot);
+  camDist=Math.max(sz.z*0.5/(vf*hEff/h), Math.max(sz.x,sz.y)*0.5/(vf*cam.aspect))*1.05+Math.max(sz.x,sz.y)*0.15;
+  if(top||bot) cam.setViewOffset(w,h,0,-(top-bot)/2,w,h); else cam.clearViewOffset(); }
+function stepCardHeight(){ if(!NARROW()){ stepEl.style.minHeight=''; return; }   // phone: card keeps the height of its longest step, so the view never jumps
+  const keep=stepEl.innerHTML; stepEl.style.minHeight=''; let mx=0;
+  STEPS.forEach((s,n)=>{ stepEl.innerHTML=`<small>Step ${n+1} of ${STEPS.length} · 第 ${n+1} 步，共 ${STEPS.length} 步</small>${s.t}<br><span>${s.z}</span>`; mx=Math.max(mx,stepEl.offsetHeight); });
+  stepEl.innerHTML=keep; stepEl.style.minHeight=mx+'px'; }
+function buildState(t){
+  const n=Math.max(0,Math.min(STEPS.length-1,Math.floor(t/DUR))), e=ease((t-n*DUR)/ANIM);
+  items.forEach(it=>{ const k=stepIn[it.p.f]; const vis=k!==undefined&&k<=n; it.g.visible=vis; if(!vis) return;
+    const f=(k===n)?1-e:0, how=STEPS[k].how; it.g.position.set(0,0,how==='down'?160*f:how==='up'?-120*f:0);
+    if(it.kids) it.kids.forEach(kd=>kd.o.position.copy(kd.base).addScaledVector(kd.dir,how==='in'?60*f:0));
+    if(!it.kids && how==='in') it.g.position.set(60*f*Math.cos(HA),60*f*Math.sin(HA),0);
+    const hot=(k===n)&&t-n*DUR<DUR-0.3; it.m.traverse(ch=>{ if(ch.isMesh) ch.material.emissive.setHex(hot?0x332200:0x000000); }); });
+  let lz=LIFT, ang=0;
+  if(n>=iH){ const eh=n===iH?e:1; lz=LIFT*(1-eh); ang=OPEN*eh; }
+  if(n>=iC){ const ec=n===iC?e:1; lz=0; ang=OPEN*(1-ec); }
+  lidOuter.position.set(0,0,lz); lidPivot.quaternion.setFromAxisAngle(HAX,ang*Math.PI/180);
+  if(n!==lastStep){ lastStep=n; stepEl.innerHTML=`<small>Step ${n+1} of ${STEPS.length} · 第 ${n+1} 步，共 ${STEPS.length} 步</small>${STEPS[n].t}<br><span style="color:#444">${STEPS[n].z}</span>`; }
+  barEl.style.width=(100*Math.min(1,t/TOTAL))+'%';
+  if(!userCam){ const a=-2.08+0.45*Math.min(1,t/TOTAL), el=0.36, r=camDist;   // slow quarter turn while it builds
+    cam.position.set(BCT.x+r*Math.cos(a)*Math.cos(el),BCT.y+r*Math.sin(a)*Math.cos(el),BCT.z+r*Math.sin(el)); ctl.target.copy(BCT); } }
+function setPlaying(p){ playing=p; playb.textContent=playing?'❚❚ Pause':'▶ Play'; }
+playb.onclick=()=>{ if(!playing&&t>=TOTAL) t=0; setPlaying(!playing); };
+$('next').onclick=()=>{ t=Math.min(STEPS.length-1,Math.floor(t/DUR)+1)*DUR; };
+$('prev').onclick=()=>{ t=Math.max(0,Math.floor(t/DUR)-1)*DUR; };
+$('again').onclick=()=>{ t=0; userCam=false; setPlaying(true); };
+
+// ---------- whole / base / lid (viewer-complete.html, viewer-base-full.html, viewer-lid-full.html) ----------
+function cur(){ return VIEWS[tab]; }
+function labelsOn(v,f){ return v.showL&&(v.name==='whole'?(!cutOn&&f>0.5):true); }
+function apply(v,f){
+  if(v.name==='whole'){ lidOuter.position.set(0,0,0); lidPivot.quaternion.setFromAxisAngle(HAX, lidAng*(1-f)*Math.PI/180); }   // separated: lid swings upright
+  else { lidOuter.position.set(0,0,0); lidPivot.quaternion.identity(); }
+  v.w.forEach(w=>{ w.g.position.set(0,0,w.dz*f); if(w.kids) w.kids.forEach(kd=>kd.o.position.copy(kd.base).addScaledVector(kd.dir,RADIAL*f)); });
+  mode.textContent=f<0.02?'assembled':(f>0.98?'separated':'…'); v.LB.setVisible(labelsOn(v,f));
+  dimG.visible=v.name==='base'&&cutOn&&f<0.05; }
+function frame(v,f,_n=0){ const box=new THREE.Box3(); scene.updateMatrixWorld(true);
+  v.w.forEach(w=>box.expandByObject(w.m));
+  const LB=v.LB; if(labelsOn(v,f)&&f>0.5){ const lw=(LB.wMax||LB.maxW)*1.05; box.max.x=Math.max(box.max.x,LB.R0+lw); box.min.x=Math.min(box.min.x,-(LB.R0+lw)); if(LB.zTop!==null){ box.max.z=Math.max(box.max.z,LB.zTop); box.min.z=Math.min(box.min.z,LB.zBot); } const hz=box.max.z-box.min.z; box.max.z+=0.07*hz; box.min.z-=0.03*hz; }
+  const ctr=box.getCenter(new THREE.Vector3()); const dir=cam.position.clone().sub(ctl.target).normalize();
+  const up=new THREE.Vector3(0,0,1), right=new THREE.Vector3().crossVectors(up,dir).normalize(), cup=new THREE.Vector3().crossVectors(dir,right).normalize();
+  const tv=Math.tan(THREE.MathUtils.degToRad(cam.fov/2)), th=tv*cam.aspect; let d=0;
+  for(const cx of [box.min.x,box.max.x]) for(const cy of [box.min.y,box.max.y]) for(const cz of [box.min.z,box.max.z]){
+    const p=new THREE.Vector3(cx,cy,cz).sub(ctr); const depth=p.dot(dir);
+    d=Math.max(d, Math.abs(p.dot(right))/th+depth, Math.abs(p.dot(cup))/tv+depth); }
+  ctl.target.copy(ctr); cam.position.copy(ctr).add(dir.multiplyScalar(d*1.05)); ctl.update();
+  if(labelsOn(v,f)&&f>0.5&&_n<1){ LB.update(cam.position.distanceTo(ctl.target)/900,f); frame(v,f,_n+1); } }
+function syncBtns(v){ sl.value=v.k; btn.textContent=v.goal>0.5?'Assemble':'Separate';
+  lbtn.textContent=v.showL?'Hide labels':'Show labels'; lidb.textContent=lidAng?'Close lid':'Open lid';
+  cutb.textContent=(cutOn?'✓ ':'')+(tab==='base'?'Cut in half + measurements':'Cut in half'); cutb.classList.toggle('on',cutOn); }
+sl.oninput=()=>{ const v=cur(); v.goal=v.k=parseFloat(sl.value); apply(v,v.k); syncBtns(v); };
+sl.onchange=()=>frame(cur(),cur().k);
+btn.onclick=()=>{ const v=cur(); v.goal=v.goal>0.5?0:1; syncBtns(v); };
+lbtn.onclick=()=>{ const v=cur(); v.showL=!v.showL; apply(v,v.k); frame(v,v.k); syncBtns(v); };
+lidb.onclick=()=>{ lidAng=lidAng?0:110; const v=cur(); apply(v,v.k); frame(v,v.k); syncBtns(v); };
+$('fbtn').onclick=()=>{ if(tab==='build'){ userCam=false; return; } const v=cur(); frame(v,v.k); };
+
+// ---------- cut in half: one switch, every tab, live ----------
+cutb.onclick=()=>{ cutOn=!cutOn; setClip();
+  if(tab!=='build'){ const v=cur(); v.showL=!cutOn||v.k>0.5; apply(v,v.k); frame(v,v.k); syncBtns(v); }   // labels pile up in the section view
+  else syncBtns(VIEWS.whole); };
+
+// ---------- tabs ----------
+const TITLES={build:'THE OVEN BUILDS ITSELF · 整机自动组装',whole:VIEWS.whole.title,base:VIEWS.base.title,lid:VIEWS.lid.title};
+function setTab(name){ tab=name;
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===name));
+  document.querySelectorAll('#ctl [data-tabs]').forEach(el=>el.classList.toggle('show',el.dataset.tabs.split(' ').includes(name)));
+  $('title').textContent=TITLES[name];
+  stepEl.classList.toggle('hide',name!=='build'); $('bar').classList.toggle('hide',name!=='build');
+  Object.values(VIEWS).forEach(v=>v.LB.setVisible(false)); dimG.visible=false; setHot(false); setClip();
+  if(name==='build'){ lastStep=-1; userCam=false; stepCardHeight(); fitBuild(); buildState(t); syncBtns(VIEWS.whole); return; }
+  cam.clearViewOffset();
+  const v=VIEWS[name], inV=new Set(v.w.map(w=>w.f)); items.forEach(it=>{ it.g.visible=inV.has(it.p.f); it.g.position.set(0,0,0);
+    if(it.kids) it.kids.forEach(kd=>kd.o.position.copy(kd.base)); });
+  if(cutOn) v.showL=v.k>0.5;
+  cam.position.set(-500,-900,420); ctl.target.set(0,0,0); apply(v,v.k); frame(v,v.k); syncBtns(v); }
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{ if(b.dataset.t!==tab) setTab(b.dataset.t); });
+
+function fit(){ const w=canvas.clientWidth,h=canvas.clientHeight; if(!w||!h) return; renderer.setSize(w,h,false); cam.aspect=w/h;
+  if(tab==='build'){ stepCardHeight(); fitBuild(); } cam.updateProjectionMatrix();
+  if(tab!=='build'){ const v=cur(); frame(v,v.k); } }
+new ResizeObserver(fit).observe($('stage'));
+$('loading').remove();
+// hash: #whole,separated,cut etc.
+if(H.includes('separated')) Object.values(VIEWS).forEach(v=>v.k=v.goal=1);
+if(H.includes('assembled')) Object.values(VIEWS).forEach(v=>v.k=v.goal=0);
+fit(); setTab(['build','whole','base','lid'].find(n=>H.includes(n))||'build');
+if(H.includes('cut')) cutb.onclick();
+if(H.includes('paused')) setPlaying(false);
+window.__oven={setTab,get t(){return t;},set t(v){t=v;},setPlaying,get cut(){return cutOn;},TOTAL};
+let tPrev=performance.now();
+(function loop(){ requestAnimationFrame(loop); const now=performance.now(), dt=Math.min(0.1,(now-tPrev)/1000); tPrev=now;
+  if(tab==='build'){ if(playing){ t=Math.min(TOTAL,t+dt); if(t>=TOTAL) setPlaying(false); } buildState(t); }
+  else { const v=cur(); if(Math.abs(v.goal-v.k)>0.001){ v.k+=(v.goal-v.k)*0.08; if(Math.abs(v.goal-v.k)<=0.001) v.k=v.goal; sl.value=v.k; apply(v,v.k); frame(v,v.k); }
+    const ls=cam.position.distanceTo(ctl.target)/900; v.LB.update(ls,v.k);
+    dimG.children.forEach(o=>{ if(o.isSprite) o.scale.set(o.userData.w*ls*1.6,o.userData.h*ls*1.6,1); }); }
+  ctl.update(); renderer.render(scene,cam); })();
+</script>
+</body></html>
