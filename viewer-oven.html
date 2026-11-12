@@ -274,7 +274,9 @@ function syncBtns(v){ sl.value=v.k; btn.textContent=v.goal>0.5?'Assemble':'Separ
 sl.oninput=()=>{ const v=cur(); v.goal=v.k=parseFloat(sl.value); apply(v,v.k); syncBtns(v); };
 sl.onchange=()=>frame(cur(),cur().k);
 btn.onclick=()=>{ const v=cur(); v.goal=v.goal>0.5?0:1; syncBtns(v); };
-lbtn.onclick=()=>{ const v=cur(); v.showL=!v.showL; apply(v,v.k); frame(v,v.k); syncBtns(v); };
+lbtn.onclick=()=>{ const v=cur(); v.showL=!v.showL;
+  if(v.showL&&v.name==='whole'){ if(cutOn){ cutOn=false; setClip(); } if(v.goal<0.5) v.goal=1; }   // labels need the parts apart + no cut: do it for him
+  apply(v,v.k); frame(v,v.k); syncBtns(v); };
 lidb.onclick=()=>{ lidAng=lidAng?0:110; const v=cur(); apply(v,v.k); frame(v,v.k); syncBtns(v); };
 $('fbtn').onclick=()=>{ if(tab==='build'){ userCam=false; return; } const v=cur(); frame(v,v.k); };
 
