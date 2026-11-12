@@ -80,22 +80,22 @@ const PARTS=[
 const VIEWS={
  base:{title:'BASE — every part, one-piece top cap',size:1.7,k:1,list:[
   ['feet','Ceramic Feet (3)'],['legscrews','Leg Screws','feet'],['04','04 Bottom Cap'],['spacer_bot','Bottom Spacer Ring (ceramic)'],
-  ['bolts_bot','Bottom Bolts ×6 (clamp the bottom cap)','spacer_bot'],['03','03 Support Ring'],['basedisk','Ceramic Base Disk'],
-  ['spacer_seat','Seat Spacer Ring (ceramic)'],['bolts_seat','Seat Bolts ×6 (through the 03 wall)','spacer_seat'],['01','01 Inner Wall Tube'],
-  ['core','Ceramic Heater Core'],['spacer_top','Top Spacer Ring (ceramic)'],['bolts_top','Top Bolts ×6 (hold the top cap)','spacer_top'],
+  ['bolts_bot','Bottom Bolts ×5 (clamp the bottom cap)','spacer_bot'],['03','03 Support Ring'],['basedisk','Ceramic Base Disk'],
+  ['spacer_seat','Seat Spacer Ring (ceramic)'],['bolts_seat','Seat Bolts ×5 (through the 03 wall)','spacer_seat'],['01','01 Inner Wall Tube'],
+  ['core','Ceramic Heater Core'],['spacer_top','Top Spacer Ring (ceramic)'],['bolts_top','Top Bolts ×5 (hold the top cap)','spacer_top'],
   ['02','02 Outer Perforated Tube'],['cap','05 One-Piece Top Cap']]},
  lid:{title:'LID — every part',size:1.7,k:1,list:[
   ['liddisk','Ceramic Lid Disk'],['09','09 Lid Ceramic Holder (48 vent holes)'],['06','06 Lid Inner Tube'],['spacer_low','Lower Lid Spacer (ceramic)'],
-  ['bolts_low','Lower Lid Bolts ×6','spacer_low'],['07','07 Lid Outer Perforated Tube'],['spacer_high','Upper Lid Spacer (ceramic)'],['08','08 Lid Top Disk'],
-  ['bolts_high','Upper Lid Bolts ×6 (hold the top disk)','spacer_high'],['10','10 Lid Handle'],['11','11 Hinge Strap','07'],['13','13 Hinge Pin','07']]},
+  ['bolts_low','Lower Lid Bolts ×5','spacer_low'],['07','07 Lid Outer Perforated Tube'],['spacer_high','Upper Lid Spacer (ceramic)'],['08','08 Lid Top Disk'],
+  ['bolts_high','Upper Lid Bolts ×5 (hold the top disk)','spacer_high'],['10','10 Lid Handle'],['11','11 Hinge Strap','07'],['13','13 Hinge Pin','07']]},
  whole:{title:'COMPLETE OVEN — lid open',size:1.35,k:0,list:[
   ['feet','Ceramic Feet (3)'],['legscrews','Leg Screws','feet'],['04','04 Bottom Cap'],['spacer_bot','Bottom Spacer (ceramic)'],
-  ['bolts_bot','Bottom Bolts ×6','spacer_bot'],['03','03 Support Ring'],['basedisk','Ceramic Base Disk'],['spacer_seat','Seat Spacer (ceramic)'],
-  ['bolts_seat','Seat Bolts ×6','spacer_seat'],['01','01 Inner Wall Tube'],['core','Ceramic Heater Core'],['spacer_top','Top Spacer (ceramic)'],
-  ['bolts_top','Top Bolts ×6 (hold the top cap)','spacer_top'],['02','02 Outer Perforated Tube'],['cap','05 One-Piece Top Cap'],
+  ['bolts_bot','Bottom Bolts ×5','spacer_bot'],['03','03 Support Ring'],['basedisk','Ceramic Base Disk'],['spacer_seat','Seat Spacer (ceramic)'],
+  ['bolts_seat','Seat Bolts ×5','spacer_seat'],['01','01 Inner Wall Tube'],['core','Ceramic Heater Core'],['spacer_top','Top Spacer (ceramic)'],
+  ['bolts_top','Top Bolts ×5 (hold the top cap)','spacer_top'],['02','02 Outer Perforated Tube'],['cap','05 One-Piece Top Cap'],
   ['liddisk','Ceramic Lid Disk (glued in)'],['09','09 Lid Ceramic Holder (48 vent holes)'],['06','06 Lid Inner Tube'],['spacer_low','Lower Lid Spacer'],
-  ['bolts_low','Lower Lid Bolts ×6','spacer_low'],['07','07 Lid Outer Perforated Tube'],['spacer_high','Upper Lid Spacer'],['08','08 Lid Top Disk'],
-  ['bolts_high','Upper Lid Bolts ×6 (hold the top disk)','spacer_high'],['10','10 Lid Handle'],['11','11 Hinge Strap','07'],['13','13 Hinge Pin','07']]},
+  ['bolts_low','Lower Lid Bolts ×5','spacer_low'],['07','07 Lid Outer Perforated Tube'],['spacer_high','Upper Lid Spacer'],['08','08 Lid Top Disk'],
+  ['bolts_high','Upper Lid Bolts ×5 (hold the top disk)','spacer_high'],['10','10 Lid Handle'],['11','11 Hinge Strap','07'],['13','13 Hinge Pin','07']]},
 };
 // build animation steps, same as viewer-oven-build.html
 const STEPS=[
@@ -103,27 +103,27 @@ const STEPS=[
  {add:['01'],how:'down',t:'2. Inner Wall Tube 01 stands inside the cap (ID 121.7).',z:'内壁管 01 立在底盖里（内径 121.7）。'},
  {add:['spacer_bot'],how:'down',t:'3. Bottom ceramic spacer slides down over the inner tube; holes lined up.',z:'底部陶瓷垫环套在内管外，孔对齐。'},
  {add:['02'],how:'down',t:'4. Outer Perforated Tube 02 slides down over everything (OD 131.7).',z:'外冲孔管 02 套在外面（外径 131.7）。'},
- {add:['bolts_bot'],how:'in',t:'5. 6 bottom M6 bolts: cap rim, outer tube, spacer, inner tube. Nuts inside.',z:'底部 6 颗 M6 螺栓穿过底盖边、外管、垫环、内管，螺母在里面。'},
+ {add:['bolts_bot'],how:'in',t:'5. 5 bottom M6 bolts: cap rim, outer tube, spacer, inner tube. Nuts inside.',z:'底部 5 颗 M6 螺栓穿过底盖边、外管、垫环、内管，螺母在里面。'},
  {add:['03'],how:'down',t:'6. Insulation pad in the bottom, then Support Ring 03 drops in to the seat holes.',z:'底部放保温棉，再放支撑环 03 到座圈孔位置。'},
  {add:['spacer_seat'],how:'down',t:'7. Seat ceramic spacer into the 3.0 mm gap between the tubes.',z:'座圈陶瓷垫环放进两管之间 3.0 mm 的空隙。'},
- {add:['bolts_seat'],how:'in',t:'8. 6 seat bolts through outer tube, spacer, inner tube and the 03 wall.',z:'6 颗座圈螺栓穿过外管、垫环、内管和 03 的墙。'},
+ {add:['bolts_seat'],how:'in',t:'8. 5 seat bolts through outer tube, spacer, inner tube and the 03 wall.',z:'5 颗座圈螺栓穿过外管、垫环、内管和 03 的墙。'},
  {add:['spacer_top'],how:'down',t:'9. Top ceramic spacer into the gap at the top holes.',z:'顶部陶瓷垫环放进空隙，对准上排孔。'},
  {add:['basedisk'],how:'down',t:'10. Ceramic base disk onto the raised seat of 03.',z:'陶瓷底盘放在 03 抬高的座面上。'},
  {add:['core'],how:'down',t:'11. Ceramic heater core onto the base disk, glass slots lined up. Wire it, pack the 14.6 mm side insulation.',z:'陶瓷加热芯放在底盘上，玻璃槽对齐。接线，塞入 14.6 mm 侧面保温棉。'},
  {add:['cap'],how:'down',t:'12. One-piece Top Cap 05: tabs down the outside, grooves into the glass slots. Ring is now 20.0 mm wide.',z:'一体顶盖 05：折边片沿外侧向下，金属槽落进玻璃槽。圆环宽 20.0 mm。'},
- {add:['bolts_top'],how:'in',t:'13. 6 top bolts through the cap tabs, outer tube, spacer, inner tube.',z:'6 颗顶部螺栓穿过顶盖折边片、外管、垫环、内管。'},
+ {add:['bolts_top'],how:'in',t:'13. 5 top bolts through the cap tabs, outer tube, spacer, inner tube.',z:'5 颗顶部螺栓穿过顶盖折边片、外管、垫环、内管。'},
  {add:['feet','legscrews'],how:'up',t:'14. 3 ceramic feet screwed on underneath. The base is done.',z:'底部拧上 3 个陶瓷脚。底座完成。'},
  {add:['09'],how:'down',t:'15. Lid: Ceramic Holder 09 first. Its 48 vent holes line up with the top cap vents.',z:'盖子：先放陶瓷托架 09，48 个通风孔对准顶盖通风孔。'},
  {add:['06'],how:'down',t:'16. Lid Inner Tube 06 over the holder wall.',z:'盖子内管 06 套在托架立墙外。'},
  {add:['spacer_low'],how:'down',t:'17. Lower lid ceramic spacer.',z:'盖子下排陶瓷垫环。'},
  {add:['07'],how:'down',t:'18. Lid Outer Perforated Tube 07.',z:'盖子外冲孔管 07。'},
- {add:['bolts_low'],how:'in',t:'19. 6 lower lid bolts through 07, spacer, 06 and the 09 wall.',z:'6 颗盖子下排螺栓穿过 07、垫环、06 和 09 的立墙。'},
+ {add:['bolts_low'],how:'in',t:'19. 5 lower lid bolts through 07, spacer, 06 and the 09 wall.',z:'5 颗盖子下排螺栓穿过 07、垫环、06 和 09 的立墙。'},
  {add:['spacer_high'],how:'down',t:'20. Upper lid ceramic spacer.',z:'盖子上排陶瓷垫环。'},
  {add:['08'],how:'down',t:'21. Lid Top Disk 08, skirt down the outside.',z:'盖子顶盘 08，裙边沿外侧向下。'},
- {add:['bolts_high'],how:'in',t:'22. 6 upper lid bolts through the 08 skirt, 07, spacer and 06.',z:'6 颗盖子上排螺栓穿过 08 裙边、07、垫环和 06。'},
+ {add:['bolts_high'],how:'in',t:'22. 5 upper lid bolts through the 08 skirt, 07, spacer and 06.',z:'5 颗盖子上排螺栓穿过 08 裙边、07、垫环和 06。'},
  {add:['10'],how:'down',t:'23. Handle 10: two M4 screws come up from inside the lid into its posts.',z:'提手 10：两颗 M4 螺丝从盖子里面往上拧进提手脚。'},
  {add:['liddisk'],how:'up',t:'24. Fill the lid with insulation, glue the ceramic lid disk into the 09 pocket.',z:'盖子里塞满保温棉，把陶瓷盖盘粘进 09 的槽位。'},
- {add:['11','13'],how:'in',t:'25. Hinge strap 11 and pin 13 on the lid bolt at 292.4° (placeholder: Tianrun fits their stock hinge).',z:'铰链片 11 和销 13 装在 292.4° 的盖子螺栓上（示意：天润用自己的合页）。'},
+ {add:['11','13'],how:'in',t:'25. Hinge strap 11 and pin 13 on the lid bolt at 257.5° (placeholder: Tianrun fits their stock hinge).',z:'铰链片 11 和销 13 装在 257.5° 的盖子螺栓上（示意：天润用自己的合页）。'},
  {add:[],lid:'hang',t:'26. The lid goes onto the hinge.',z:'盖子装到铰链上。'},
  {add:[],lid:'close',t:'27. Close the lid. Done: the 2026-11-12 oven, Ø134.7 over the bottom cap and lid; the ceramic top is flush with the top cap.',z:'合上盖子。完成：2026-11-12 版炉子，底盖和盖子外径 Ø134.7；陶瓷顶面和顶盖齐平。'},
 ];
@@ -143,8 +143,8 @@ scene.add(new THREE.AmbientLight(0xffffff,0.95));
 const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,-200,400); scene.add(d1);
 const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
 scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
-// lid hinge, same numbers as viewer-complete.html: axis tangent at 292.4°, pivot r 70.1, z 100.86
-const HA=292.4*Math.PI/180, HC=new THREE.Vector3(70.1*Math.cos(HA),70.1*Math.sin(HA),100.86), HAX=new THREE.Vector3(-Math.sin(HA),Math.cos(HA),0);
+// lid hinge, same numbers as viewer-complete.html: axis tangent at 257.5° (292.4° before the 5-bolt rings, 2026-11-12), pivot r 70.1, z 100.86
+const HA=257.5*Math.PI/180, HC=new THREE.Vector3(70.1*Math.cos(HA),70.1*Math.sin(HA),100.86), HAX=new THREE.Vector3(-Math.sin(HA),Math.cos(HA),0);
 const lidOuter=new THREE.Group(); scene.add(lidOuter); const lidPivot=new THREE.Group(); lidPivot.position.copy(HC); lidOuter.add(lidPivot);
 const lidInner=new THREE.Group(); lidInner.position.copy(HC).negate(); lidPivot.add(lidInner);
 // cut planes: whole oven + build cut through the hinge (as viewer-complete), so the open lid stays cut on the same plane;

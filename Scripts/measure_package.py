@@ -96,7 +96,8 @@ def measure(pkg):
             if v>0.01: extra.append((k,n,round(v,3)))
     M["ceramic/spacer_overlaps"]=extra
     # bolt lines: a Ø6.2 rod along each bolt axis must hit NO metal (holes line up in every wall it crosses)
-    BOLT=[52.4+60*k for k in range(6)]
+    # bolt angles read from 01's own M6 holes (5 x 72 from 41.5 since 2026-11-12 later; 6 x 60 from 52.4 before)
+    BOLT=sorted({a for a,_,_ in radial_holes(P["01_Inner_Wall_Tube"],3.3)}); M["bolt_angles"]=BOLT
     bad=[]
     ZS=(59.0+U,-24.0,2.15,100.2+U,120.2+U)
     for z in ZS:
@@ -109,14 +110,14 @@ def measure(pkg):
     M["bolt_line_blocked"]=bad
     walls={}
     for z in ZS:
-        rod=Rot(0,0,52.4)*Pos(70,0,z)*Rot(0,90,0)*Cylinder(4.5,40)
+        rod=Rot(0,0,BOLT[0])*Pos(70,0,z)*Rot(0,90,0)*Cylinder(4.5,40)
         walls[z]=[n[:2] for n,s in P.items() if (s&rod).volume>0.01]
     M["bolt_stack_parts"]=walls
     # vertical: leg screws, wires through 03/04/14
     vb=[]
-    legr=[r for a,r in M["03_Support_Ring"]["vert_holes(ang,r)"] if a in (40.0,160.0,280.0)]
-    for a in (40,160,280):
-        r=legr[0]
+    legs=vholes(P["03_Support_Ring"],3.3); M["leg_holes_03(ang,r)"]=legs   # legs read from 03 (Ø6.6 vertical holes)
+    legr=[r for a,r in legs]
+    for a,r in legs:
         rod=Pos(r*math.cos(math.radians(a)),r*math.sin(math.radians(a)),-80)*Cylinder(3.1,80,align=(Align.CENTER,Align.CENTER,Align.MIN))
         for n,s in P.items():
             v=(s&rod).volume

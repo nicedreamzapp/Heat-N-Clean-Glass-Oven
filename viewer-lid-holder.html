@@ -27,7 +27,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { makeLabeler } from './viewer-labels.js';
 // Base assembly with the ceramics and the fasteners in place. Metal parts are the fab-package meshes,
 // the top cap is the one-piece 03_Top_Cap from before the 2026-06-10 split, ceramics come from Core Split,
-// and the 18 ring bolts (6 per ring height, 52.4° + n·60°) are drawn M6: head outside, nut inside the inner tube.
+// and the 15 ring bolts (5 per ring height, 41.5° + n·72°, between the glass slots; 6 at 52.4° + n·60° before 2026-11-12) are drawn M6: head outside, nut inside the inner tube.
 // "Separated" lifts parts straight up in assembly order; bolts back straight out of their holes.
 const PARTS=[
   {f:'core',label:'Ceramic Heater Core (top of base)',col:'cer',src:'viewer-full/'},

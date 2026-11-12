@@ -27,33 +27,33 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { makeLabeler } from './viewer-labels.js';
 // Base assembly with the ceramics and the fasteners in place. Metal parts are the fab-package meshes,
 // the top cap is the one-piece 03_Top_Cap from before the 2026-06-10 split, ceramics come from Core Split,
-// and the 18 ring bolts (6 per ring height, 52.4° + n·60°) are drawn M6: head outside, nut inside the inner tube.
+// and the 15 ring bolts (5 per ring height, 41.5° + n·72°, between the glass slots; 6 at 52.4° + n·60° before 2026-11-12) are drawn M6: head outside, nut inside the inner tube.
 // "Separated" lifts parts straight up in assembly order; bolts back straight out of their holes.
 const PARTS=[ // base bottom to top, then the lid (lid parts ride on the hinge)
   {f:'feet',label:'Ceramic Feet (3)',col:'cer'},
   {f:'legscrews',label:'Leg Screws',col:'bolt',side:'feet'},
   {f:'04',label:'04 Bottom Cap',col:'cap'},
   {f:'spacer_bot',label:'Bottom Spacer (ceramic)',col:'cer'},
-  {f:'bolts_bot',label:'Bottom Bolts ×6',col:'bolt',side:'spacer_bot',radial:true},
+  {f:'bolts_bot',label:'Bottom Bolts ×5',col:'bolt',side:'spacer_bot',radial:true},
   {f:'03',label:'03 Support Ring',col:'sup'},
   {f:'basedisk',label:'Ceramic Base Disk',col:'disk'},
   {f:'spacer_seat',label:'Seat Spacer (ceramic)',col:'cer'},
-  {f:'bolts_seat',label:'Seat Bolts ×6',col:'bolt',side:'spacer_seat',radial:true},
+  {f:'bolts_seat',label:'Seat Bolts ×5',col:'bolt',side:'spacer_seat',radial:true},
   {f:'01',label:'01 Inner Wall Tube',col:'in'},
   {f:'core',label:'Ceramic Heater Core',col:'cer'},
   {f:'spacer_top',label:'Top Spacer (ceramic)',col:'cer'},
-  {f:'bolts_top',label:'Top Bolts ×6 (hold the top cap)',col:'bolt',side:'spacer_top',radial:true},
+  {f:'bolts_top',label:'Top Bolts ×5 (hold the top cap)',col:'bolt',side:'spacer_top',radial:true},
   {f:'02',label:'02 Outer Perforated Tube',col:'out'},
   {f:'cap',label:'05 One-Piece Top Cap',col:'top'},
   {f:'liddisk',label:'Ceramic Lid Disk (glued in)',col:'disk',lid:true},
   {f:'09',label:'09 Lid Ceramic Holder (48 vent holes)',col:'sup',lid:true},
   {f:'06',label:'06 Lid Inner Tube',col:'in',lid:true},
   {f:'spacer_low',label:'Lower Lid Spacer',col:'cer',lid:true},
-  {f:'bolts_low',label:'Lower Lid Bolts ×6',col:'bolt',lid:true,side:'spacer_low',radial:true},
+  {f:'bolts_low',label:'Lower Lid Bolts ×5',col:'bolt',lid:true,side:'spacer_low',radial:true},
   {f:'07',label:'07 Lid Outer Perforated Tube',col:'out',lid:true},
   {f:'spacer_high',label:'Upper Lid Spacer',col:'cer',lid:true},
   {f:'08',label:'08 Lid Top Disk',col:'top',lid:true},
-  {f:'bolts_high',label:'Upper Lid Bolts ×6 (hold the top disk)',col:'bolt',lid:true,side:'spacer_high',radial:true},
+  {f:'bolts_high',label:'Upper Lid Bolts ×5 (hold the top disk)',col:'bolt',lid:true,side:'spacer_high',radial:true},
   {f:'10',label:'10 Lid Handle',col:'bolt',lid:true},
   {f:'11',label:'11 Hinge Strap',col:'out',lid:true,side:'07'},
   {f:'13',label:'13 Hinge Pin',col:'bolt',lid:true,side:'07'},
@@ -77,7 +77,7 @@ const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,-200,400)
 const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
 scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
 // "Cut in half" removes the half facing the camera so the spacers, bolts and nuts show in section
-const clip=new THREE.Plane(new THREE.Vector3(-Math.sin(292.4*Math.PI/180),Math.cos(292.4*Math.PI/180),0),0); let cutOn=false;
+const clip=new THREE.Plane(new THREE.Vector3(-Math.sin(257.5*Math.PI/180),Math.cos(257.5*Math.PI/180),0),0); let cutOn=false;
 const loader=new GLTFLoader();
 const load=p=>new Promise((res,rej)=>loader.load(p,g=>res(g.scene),undefined,rej));
 function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
@@ -89,8 +89,8 @@ function makeLabel(text){ const c=document.createElement('canvas'); let x=c.getC
   const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
   const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false,transparent:true}));
   spr.center.set(0,0.5); spr.scale.set(w*0.25,h*0.25,1); spr.renderOrder=10; return spr; }
-// hinge: axis tangent at 292.4°, pivot r 70.1 / z 100.86 (77.5 before 2026-11-12, 81.5 before the 2026-11-08 shrink; z 98.2 before R2, the lid went up 2.66) (same numbers as the Blender renderer); + angle opens the lid
-const HA=292.4*Math.PI/180, HC=new THREE.Vector3(70.1*Math.cos(HA),70.1*Math.sin(HA),100.86), HAX=new THREE.Vector3(-Math.sin(HA),Math.cos(HA),0);
+// hinge: axis tangent at 257.5° (292.4° before the 5-bolt rings, 2026-11-12), pivot r 70.1 / z 100.86 (77.5 before 2026-11-12, 81.5 before the 2026-11-08 shrink; z 98.2 before R2, the lid went up 2.66) (same numbers as the Blender renderer); + angle opens the lid
+const HA=257.5*Math.PI/180, HC=new THREE.Vector3(70.1*Math.cos(HA),70.1*Math.sin(HA),100.86), HAX=new THREE.Vector3(-Math.sin(HA),Math.cos(HA),0);
 const lidOuter=new THREE.Group(); scene.add(lidOuter); const lidPivot=new THREE.Group(); lidPivot.position.copy(HC); lidOuter.add(lidPivot);
 const lidInner=new THREE.Group(); lidInner.position.copy(HC).negate(); lidPivot.add(lidInner);
 let lidAng=H.includes('closed')?0:110; function setLid(){ lidPivot.quaternion.setFromAxisAngle(HAX, lidAng*Math.PI/180); }

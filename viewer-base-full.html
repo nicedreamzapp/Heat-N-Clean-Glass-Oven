@@ -27,22 +27,22 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { makeLabeler } from './viewer-labels.js';
 // Base assembly with the ceramics and the fasteners in place. Metal parts are the fab-package meshes,
 // the top cap is the one-piece 03_Top_Cap from before the 2026-06-10 split, ceramics come from Core Split,
-// and the 18 ring bolts (6 per ring height, 52.4° + n·60°) are drawn M6: head outside, nut inside the inner tube.
+// and the 15 ring bolts (5 per ring height, 41.5° + n·72°, between the glass slots; 6 at 52.4° + n·60° before 2026-11-12) are drawn M6: head outside, nut inside the inner tube.
 // "Separated" lifts parts straight up in assembly order; bolts back straight out of their holes.
 const PARTS=[ // bottom to top
   {f:'feet',label:'Ceramic Feet (3)',col:'cer'},
   {f:'legscrews',label:'Leg Screws',col:'bolt',side:'feet'},
   {f:'04',label:'04 Bottom Cap',col:'cap'},
   {f:'spacer_bot',label:'Bottom Spacer Ring (ceramic)',col:'cer'},
-  {f:'bolts_bot',label:'Bottom Bolts ×6 (clamp the bottom cap)',col:'bolt',side:'spacer_bot',radial:true},
+  {f:'bolts_bot',label:'Bottom Bolts ×5 (clamp the bottom cap)',col:'bolt',side:'spacer_bot',radial:true},
   {f:'03',label:'03 Support Ring',col:'sup'},
   {f:'basedisk',label:'Ceramic Base Disk',col:'disk'},
   {f:'spacer_seat',label:'Seat Spacer Ring (ceramic)',col:'cer'},
-  {f:'bolts_seat',label:'Seat Bolts ×6 (through the 03 wall)',col:'bolt',side:'spacer_seat',radial:true},
+  {f:'bolts_seat',label:'Seat Bolts ×5 (through the 03 wall)',col:'bolt',side:'spacer_seat',radial:true},
   {f:'01',label:'01 Inner Wall Tube',col:'in'},
   {f:'core',label:'Ceramic Heater Core',col:'cer'},
   {f:'spacer_top',label:'Top Spacer Ring (ceramic)',col:'cer'},
-  {f:'bolts_top',label:'Top Bolts ×6 (hold the top cap)',col:'bolt',side:'spacer_top',radial:true},
+  {f:'bolts_top',label:'Top Bolts ×5 (hold the top cap)',col:'bolt',side:'spacer_top',radial:true},
   {f:'02',label:'02 Outer Perforated Tube',col:'out'},
   {f:'cap',label:'05 One-Piece Top Cap',col:'top'},
 ];

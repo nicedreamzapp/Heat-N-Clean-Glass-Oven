@@ -27,18 +27,18 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // Base assembly with the ceramics and the fasteners in place. Metal parts are the fab-package meshes,
 // the top cap is the one-piece 03_Top_Cap from before the 2026-06-10 split, ceramics come from Core Split,
-// and the 18 ring bolts (6 per ring height, 52.4° + n·60°) are drawn M6: head outside, nut inside the inner tube.
+// and the 15 ring bolts (5 per ring height, 41.5° + n·72°, between the glass slots; 6 at 52.4° + n·60° before 2026-11-12) are drawn M6: head outside, nut inside the inner tube.
 // "Separated" lifts parts straight up in assembly order; bolts back straight out of their holes.
 const PARTS=[ // bottom to top
   {f:'liddisk',label:'Ceramic Lid Disk',col:'disk'},
-  {f:'09',label:'09 Lid Ceramic Holder (disk pocket restored + 6 bolt holes)',col:'sup'},
+  {f:'09',label:'09 Lid Ceramic Holder (disk pocket restored + 5 bolt holes)',col:'sup'},
   {f:'06',label:'06 Lid Inner Tube',col:'in'},
   {f:'spacer_low',label:'Lower Lid Spacer (ceramic)',col:'cer'},
-  {f:'bolts_low',label:'Lower Lid Bolts ×6',col:'bolt',radial:true},
+  {f:'bolts_low',label:'Lower Lid Bolts ×5',col:'bolt',radial:true},
   {f:'07',label:'07 Lid Outer Perforated Tube',col:'out'},
   {f:'spacer_high',label:'Upper Lid Spacer (ceramic)',col:'cer'},
-  {f:'08',label:'08 Lid Top Disk (now with 6 bolt holes)',col:'top'},
-  {f:'bolts_high',label:'Upper Lid Bolts ×6 (also hold the top disk)',col:'bolt',radial:true},
+  {f:'08',label:'08 Lid Top Disk (now with 5 bolt holes)',col:'top'},
+  {f:'bolts_high',label:'Upper Lid Bolts ×5 (also hold the top disk)',col:'bolt',radial:true},
   {f:'10',label:'10 Lid Handle',col:'bolt'},
   {f:'11',label:'11 Hinge Strap',col:'out'},
   {f:'13',label:'13 Hinge Pin',col:'bolt'},
@@ -48,10 +48,10 @@ const STEPS=[
  {add:['06'],how:'down',t:'2. Lower the Lid Inner Tube over the holder wall. Turn it so its holes line up with the holder wall holes.'},
  {add:['spacer_low'],how:'down',t:'3. Slide the Lower Lid Spacer (ceramic) down over the inner tube to the bottom holes.'},
  {add:['07'],how:'down',t:'4. Slide the Lid Outer Perforated Tube down over everything.'},
- {add:['bolts_low'],how:'in',t:'5. Push the 6 Lower Lid Bolts through outer tube, spacer, inner tube and holder wall. Nuts on from inside.'},
+ {add:['bolts_low'],how:'in',t:'5. Push the 5 Lower Lid Bolts through outer tube, spacer, inner tube and holder wall. Nuts on from inside.'},
  {add:['spacer_high'],how:'down',t:'6. Drop the Upper Lid Spacer into the gap and hold it at the upper holes (same fiddly step as the base).'},
  {add:['08'],how:'down',t:'7. Put the Lid Top Disk on. Its skirt slides down the outside and lines up with the upper holes.'},
- {add:['bolts_high'],how:'in',t:'8. Push the 6 Upper Lid Bolts through the top disk skirt, outer tube, spacer and inner tube. Nuts on from inside.'},
+ {add:['bolts_high'],how:'in',t:'8. Push the 5 Upper Lid Bolts through the top disk skirt, outer tube, spacer and inner tube. Nuts on from inside.'},
  {add:['10'],how:'down',t:'9. Handle: two M4 screws come up from inside the lid into its two posts.'},
  {add:[],how:'',view:'below',t:'10. Flip the lid over and pack it full of insulation through the pocket opening. (Insulation not drawn.)'},
  {add:['liddisk'],how:'up',view:'below',t:'11. Glue the Ceramic Lid Disk into the pocket with high-heat adhesive. Raised center faces out so it plugs into the core; its whole face stays bare.'},

@@ -11,6 +11,10 @@ bent down from ears in the plate); 04 / 08 keep their skirts 1.5 past the outer 
 Ø3.5 -> Ø3.0 (= the air gap); 03 riser at the centering wall (r 47.25, was 52), wire holes r 58 -> 53.5 and the 2 lead
 holes 180/190 -> 185/195 (clear of the 172.4 seat bolt and its nut); legs r 60 -> 54.
 HNC_GEN=R2 HNC_OUT=/tmp/x rebuilds FAB_PACKAGE_2026-11-08-R2 exactly (regression check).
+Later on 2026-11-12 (Matt, 4:50 AM): 5 bolts per ring (G["bolt"] = hnc_params.ring_screw_angles = 41.5 + n*72, centred
+between the 4 glass slots; was 6 at 52.4 + n*60) on all 5 rings; 05 has 5 tabs; hinge strap + pin turned onto the 257.5
+lid bolt; heater lead holes 160/170 (185/195 sat under the 185.5 bolt); legs 77.5/221.5/293.5 (the 40 leg sat under the
+41.5 bolt). Viewer bolt sets are copied from one template onto the new angles, feet and leg screws turned onto LEGS.
 
 2026-11-08 R2 change (Matt, calipers on the REAL ceramic): bare core 90.4, core + base plate 95.3, but the drawn room from
 03's seat (z -0.44) to the 05 cap top (92.2) was 92.64, so the real ceramic stood 2.66 proud and the lid could not close.
@@ -58,10 +62,12 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "cad-source")
 GEN = os.environ.get("HNC_GEN", "2026-11-12")
 if GEN == "R2":   # the 2026-11-08 R2 geometry (and with HNC_SHRINK / HNC_RAISE the older ones)
-    G = dict(gap=20.6, air=4.4, lip=1.5, vent_r=1.75, wire_r=58.0, leads=(180.0, 190.0), step_r=52.0, skirt05=True)
+    G = dict(gap=20.6, air=4.4, lip=1.5, vent_r=1.75, wire_r=58.0, leads=(180.0, 190.0), step_r=52.0, skirt05=True,
+             bolt=[52.4 + 60 * k for k in range(6)], legs=(40, 160, 280), hinge=292.4)
 else:
     G = dict(gap=HP.insulation_gap, air=HP.air_gap, lip=HP.top_cap_lip, vent_r=HP.vent_r, wire_r=HP.wire_hole_r,
-             leads=HP.lead_hole_angles, step_r=HP.seat_step_r, skirt05=False)
+             leads=HP.lead_hole_angles, step_r=HP.seat_step_r, skirt05=False,
+             bolt=list(HP.ring_screw_angles), legs=tuple(HP.leg_angles), hinge=HP.HINGE_ANGLE_DEG)
 D = float(os.environ.get("HNC_SHRINK", 24.6 - G["gap"]))   # inner tube in vs 2026-10-16 (4.0 R2, 10.0 2026-11-12)
 DO = D + (4.4 - G["air"])                                 # outer tube in (4.0 R2, 11.4 2026-11-12)
 DC = DO + (1.5 - G["lip"])                                # 05 top cap edge in (4.0 R2, 12.4 2026-11-12)
@@ -72,7 +78,7 @@ TOP = 91.0 + U                            # tube tops (93.66)
 ZB_TOP = 59.0 + U                         # top bolt ring, moves with the cap tabs (61.66)
 REAL = "HNC_OUT" not in os.environ
 T = 0.8                                   # inside parts
-BOLT = [52.4 + 60 * k for k in range(6)]  # one bolt clocking for every ring
+BOLT = G["bolt"]                          # one bolt clocking for every ring: 5 x 72 deg from 41.5 (2026-11-12 later; 6 x 60 from 52.4 before)
 WIRE = [(G["leads"][0], 4.0), (G["leads"][1], 4.0), (315.0, 3.2)]   # heater leads Ø8, thermocouple Ø6.4
 # (2026-09-30 audit: were 183/188, only 5.06 mm apart at r 58, so the two Ø8 holes merged into one slot; now 2.1 mm web)
 R_WIRE = G["wire_r"]                      # inside 03's bolt wall (r 58 until 2026-11-12, then 53.5: 03's bolt wall moved to 59.85)
@@ -80,7 +86,8 @@ R_WIRE = G["wire_r"]                      # inside 03's bolt wall (r 58 until 20
 # 0.8 mm into the wall; moved in to r 64.0 (corners at 69.8, 1 mm clear) in 03, 04 and the tray.
 # 2026-11-08: moved in with the tube, r 60.0 (corners 65.8, same clearance to 03's bolt wall).
 # 2026-11-12: r 54.0 (head corners 59.85 = 03's bolt wall line, inner corners 48.15 clear of the r 47.25 riser).
-LEG_R, LEG_SRC, LEGS = 64.0 - D, 65.85, (40, 160, 280)
+# 2026-11-12 (5-bolt rings): legs 77.5 / 221.5 / 293.5, midway between bolts (40 / 160 / 280 before; the source tray's holes are there)
+LEG_R, LEG_SRC, LEGS, LEGS_SRC = 64.0 - D, 65.85, G["legs"], (40, 160, 280)
 
 # ── body / lid radii (2026-10-16 values minus D) ────────────────────────────────────────────────────────────────
 R01I, R01O = 70.85 - D, 71.65 - D         # 01 / 06 inner tube (0.8)
@@ -267,14 +274,15 @@ for x, y in HANDLE_POSTS: hd -= Pos(x, y, 128.4) * Cylinder(1.65, 10.0, align=(A
 parts["10_Lid_Handle"] = solid(UP * hd)
 # 11 strap + 13 pin (placeholder hinge, Tianrun fits their stock hinge): moved in D along the 292.4° bolt line, so the
 # strap's bolt hole stays on its lid bolt and the pin stays in the barrels (pivot r 81.5 -> 77.5)
-HA = math.radians(HP.HINGE_ANGLE_DEG)
+# 2026-11-12 (5-bolt rings): then turned about the axis onto the 257.5° lid bolt (G["hinge"]); the source solids are at 292.4
+HA = math.radians(292.4)
 HMOVE = Pos(-DO * math.cos(HA), -DO * math.sin(HA), 0)   # the strap sits on the lid outer tube
-parts["11_Lid_Hinge_Strap"] = solid(UP * HMOVE * LIFT * src("11_Lid_Hinge_Strap"))
-parts["13_Hinge_Pin"] = solid(UP * HMOVE * LIFT * src("13_Hinge_Pin"))
+HROT = Rot(0, 0, G["hinge"] - 292.4)
+parts["11_Lid_Hinge_Strap"] = solid(HROT * UP * HMOVE * LIFT * src("11_Lid_Hinge_Strap"))
+parts["13_Hinge_Pin"] = solid(HROT * UP * HMOVE * LIFT * src("13_Hinge_Pin"))
 tr = src("14_Steel_Tray")   # floor z -59.7 to -56.7 (outline 204.5 wide, well clear of the cap: not resized)
-for a in LEGS:
-    tr += vhole(a, LEG_SRC, 3.5, -59.7, -56.7)
-    tr -= vhole(a, LEG_R, 3.3, -62, -54)
+for a in LEGS_SRC: tr += vhole(a, LEG_SRC, 3.5, -59.7, -56.7)   # plug the source tray's holes
+for a in LEGS: tr -= vhole(a, LEG_R, 3.3, -62, -54)
 parts["14_Steel_Tray"] = solid(tr)
 
 if os.path.isdir(OUT): shutil.rmtree(OUT)
@@ -308,7 +316,21 @@ def snap_bodies(fp, r_target=None, dr=None):
             c.apply_translation([cx / r * m, cy / r * m, 0])
         out.append(c)
     trimesh.util.concatenate(out).export(fp)
-for f in ("feet", "legscrews"):   # each foot / screw snaps to LEG_R (idempotent)
+def turn_legs(fp):
+    """2026-11-12 (5-bolt rings): turn each leg's bodies (foot, or screw head / shank / washer / nut) about Z onto LEGS (idempotent)"""
+    ms = _mesh(fp); groups = {}
+    for c in ms.split(only_watertight=False):
+        cx, cy = c.bounds.mean(axis=0)[:2]; groups.setdefault(round(math.degrees(math.atan2(cy, cx)) % 360, 0), []).append(c)
+    assert len(groups) == len(LEGS), ("leg groups", sorted(groups))
+    out = []
+    for g, new in zip(sorted(groups), sorted(LEGS)):
+        for c in groups[g]:
+            cx, cy = c.bounds.mean(axis=0)[:2]
+            c.apply_transform(trimesh.transformations.rotation_matrix(math.radians(new) - math.atan2(cy, cx), [0, 0, 1]))
+            out.append(c)
+    trimesh.util.concatenate(out).export(fp)
+for f in ("feet", "legscrews"):   # each foot / screw turns onto LEGS and snaps to LEG_R (idempotent)
+    turn_legs(os.path.join(ROOT, "viewer-full", f + ".glb"))
     snap_bodies(os.path.join(ROOT, "viewer-full", f + ".glb"), r_target=LEG_R)
 # bolts (2026-11-12): each bolt set = shank + head (outside, on the outer tube / its skirt or tab) + nut (inside the inner
 # tube, or inside 03's bolt wall for the seat ring). The tubes no longer move together, so each set is re-placed by
@@ -323,10 +345,13 @@ BOLT_FIT = {   # key: (nut outer face - R01I, head inner face - R02O, bolt axis 
 for key, (off_n, off_h, ZAX) in BOLT_FIT.items():
     fp = os.path.join(ROOT, key + ".glb"); sc = trimesh.load(fp, force="scene")
     new = trimesh.Scene()
-    for nm in sc.graph.nodes_geometry:
-        Tm, gname = sc.graph[nm]
-        w = sc.geometry[gname].copy(); w.apply_transform(Tm)
-        a = math.radians(float(nm.split("_")[-1])); d = np.array([math.cos(a), math.sin(a)])
+    # 2026-11-12 (5-bolt rings): one bolt set (shank + head + nut) is the template, copied onto every BOLT angle (b0_41.5 ...)
+    nm0 = sorted(sc.graph.nodes_geometry)[0]; Tm, gname = sc.graph[nm0]
+    w0 = sc.geometry[gname].copy(); w0.apply_transform(Tm); a0 = float(nm0.split("_")[-1])
+    for i, ang in enumerate(BOLT):
+        nm = "b%d_%s" % (i, ("%.1f" % ang).rstrip("0").rstrip("."))
+        w = w0.copy(); w.apply_transform(trimesh.transformations.rotation_matrix(math.radians(ang - a0), [0, 0, 1]))
+        a = math.radians(ang); d = np.array([math.cos(a), math.sin(a)])
         r = w.vertices[:, :2] @ d
         hexes = sorted((c for c in w.split(only_watertight=False) if abs((c.bounds[1, 2] - c.bounds[0, 2]) - 11.6) < 0.2),
                        key=lambda c: (c.vertices[:, :2] @ d).mean())

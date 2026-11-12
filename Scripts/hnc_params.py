@@ -83,7 +83,8 @@ skirt_cap_lip = 1.5
 vent_r = air_gap / 2                                    # 05 + 09 vents: Ø3.0 = the air gap (Ø3.5 before 2026-11-12, did not fit 3.0)
 vent_ring_r = housing_outer_r + air_gap / 2             # 63.15, centre of the air gap
 wire_hole_r = 53.5                                      # 03 / 04 lead + TC holes (r 58 before 2026-11-12: now inside 03's bolt wall)
-lead_hole_angles = (185.0, 195.0)                       # heater lead holes (180 / 190 before 2026-11-12, clear of the 172.4 seat bolt)
+lead_hole_angles = (160.0, 170.0)                       # heater lead holes: 160 / 170 since the 5-bolt rings (2026-11-12 later; 185 / 195
+                                                        # clashed with the 185.5 bolt), 180 / 190 before 2026-11-12
 seat_step_r = 47.25                                     # 03 riser = the centering wall line (52 before 2026-11-12)
 leg_r = housing_inner_r - 6.85                          # 54.0 leg circle (Ø108; r 60 on 2026-11-08, r 64 before)
 
@@ -114,7 +115,9 @@ for zi in range(perf_n_z):
 
 # ── M6 clamp-bolt rings (Ø6.6 radial holes through BOTH walls) ─────
 ring_screw_hole_r = 3.3                                  # M6 clearance, Ø6.6
-ring_screw_angles = [k * 60 + 52.4 for k in range(6)]    # 52.4, 112.4, 172.4, 232.4, 292.4, 352.4
+# 2026-11-12 (Matt, 4:50 AM): 5 bolts per ring, 72 deg apart, centred between the 4 glass slots (6.54/77.19/147.84/218.50),
+# every bolt >= 33 deg from a slot. Was 6 per ring at 52.4 + n*60 (52.4, 112.4, 172.4, 232.4, 292.4, 352.4).
+ring_screw_angles = [41.5 + 72 * k for k in range(5)]   # 41.5, 113.5, 185.5, 257.5, 329.5
 # (angle_list, z) for each ring:
 ring_screw_sets = [
     (ring_screw_angles,  59.0 + body_raise),    # top spacer ring (61.66; 59.0 before R2, it moves up with the cap)
@@ -148,7 +151,10 @@ tc_cable_hole_z = hole_center_height  # 8.2
 # ── Leg / standoff bolt holes (3) in the bottom region ─────────────
 leg_hole_r = leg_r                    # 54.0 (the package value, build_current_package.py)
 bolt_hole_size = 6.6                  # Ø6.6
-leg_angles = [40, 160, 280]
+# 2026-11-12 (5-bolt rings): 40 / 160 / 280 put the 40 leg screw head under the 41.5 bottom-ring nut. 3 legs on a 120 deg
+# pattern can never be more than 12 deg from a 72 deg bolt pattern (too tight for an M6 head + nut), so the legs sit
+# midway between bolts (36 deg from both): 77.5 / 221.5 / 293.5 (gaps 144 / 72 / 144; the oven is screwed to the tray).
+leg_angles = [77.5, 221.5, 293.5]
 
 # ── Bottom cap (02) ────────────────────────────────────────────────
 bottom_cap_lip_height = 16
@@ -159,9 +165,7 @@ bottom_cap_holes = [
     (wire_hole_angle,       air_gap_mid_r, 4),
     (wire_hole_angle + 5,   air_gap_mid_r, 4),
     (tc_cable_hole_angle,   air_gap_mid_r, 3),
-    (40,  leg_hole_r, bolt_hole_size),
-    (160, leg_hole_r, bolt_hole_size),
-    (280, leg_hole_r, bolt_hole_size),
+    *[(a, leg_hole_r, bolt_hole_size) for a in leg_angles],
 ]
 
 # ── Cap shell (04a) ────────────────────────────────────────────────
@@ -169,13 +173,14 @@ cap_outer_r = mesh_outer_r + skirt_cap_lip   # 67.35 (04 / 08 skirts)
 cap_inner_r = ceramic_inner_r               # 40.75
 ceramic_grab_lip = 3
 CAP_BOLT_Z = 59 + body_raise
-CAP_BOLT_ANGLES = [52.4 + k*60 for k in range(6)]
+CAP_BOLT_ANGLES = list(ring_screw_angles)
 CAP_TAB_HALF_DEG = np.degrees(6.0 / cap_outer_r)    # ~12 mm-wide fingers
 CAP_TAB_BOT = 55
 CAP_BOLT_HOLE_R = 1.8                         # bolt-clearance bored in each finger (radial)
 
-# hinge (piano style) on the finger at 292.4 deg
-HINGE_ANGLE_DEG = 292.4
+# hinge (placeholder) on the lid bolt at 257.5 deg since the 5-bolt rings (2026-11-12): the back bolt nearest the old
+# 292.4 (the back, opposite the handle); 292.4 before
+HINGE_ANGLE_DEG = 257.5
 HINGE_PIVOT_R = 81.5 - (24.6 - insulation_gap) - (4.4 - air_gap)   # 70.1 (77.5 on 2026-11-08, 81.5 before): moves with the outer tube
 HINGE_PIVOT_Z = 97 + body_raise
 HINGE_T_OFF = 14

@@ -23,7 +23,7 @@ def ring(ri, ro, z0, z1): return cyl(ro, z1 - z0, z0) - cyl(ri, z1 - z0, z0)
 def radial(ang, r_mid, z, rad, length): return Rot(0, 0, ang) * Pos(r_mid, 0, z) * Rot(0, 90, 0) * Cylinder(rad, length)
 RO, RI, H = P.ceramic_outer_r, P.ceramic_inner_r, P.ceramic_core_h_real    # 46.25 / 40.75 / 90.4 (R2: real core)
 U = P.body_raise                                                              # 2.66
-BOLT = P.ring_screw_angles                                                    # 52.4 + n*60
+BOLT = P.ring_screw_angles                                                    # 41.5 + n*72 (5 per ring since 2026-11-12; 52.4 + n*60 before)
 
 # C1 heater core: tube, 4 glass slots (10.5 wide, 23.5 deep, R5.25 round bottom) at the hnc_params angles,
 # thermocouple hole Ø6.4 at 314.6 deg z 8.2, helical heater-wire groove (30 wraps z 15.5-66.5, 1.0 wide, 0.6 deep, as the viewer mesh)
@@ -52,7 +52,7 @@ def disk(t=6.0):   # base / lid disk as modelled: Ø92.5 body + raised centre Ø
         revolve(axis=Axis.Z)
     return bp.part
 SP_RI, SP_RO = P.housing_outer_r + 0.4, P.mesh_inner_r   # fill the air gap: ID 124.1 / OD 129.3 (136.1 / 144.1 before 2026-11-12)
-def spacer(h):   # 6 radial Ø6.6 holes at mid height on the bolt angles
+def spacer(h):   # 5 radial Ø6.6 holes at mid height on the bolt angles
     ri, ro = SP_RI, SP_RO
     s = ring(ri, ro, 0, h)
     for a in BOLT: s -= radial(a, (ri + ro) / 2, h / 2, 3.3, 8)
@@ -80,7 +80,7 @@ for k, z0 in (("sp_bot", -29.0), ("sp_seat", -2.85), ("sp_top", 54.0 + U)): plac
 for k, z0 in (("sp_low", 95.2 + U), ("sp_high", 115.2 + U)): placed[k] = Pos(0, 0, z0) * CER["C5_Spacer_Ring_10mm"]
 cap_top = metal["05_One_Piece_Top_Cap"].bounding_box().max.Z
 print("FLUSH core top", round(CORE_Z + H, 3), "cap top", round(cap_top, 3), "diff", round(CORE_Z + H - cap_top, 3))
-for i, a in enumerate((40, 160, 280)):
+for i, a in enumerate(P.leg_angles):
     placed["foot%d" % i] = Pos(P.leg_r * math.cos(math.radians(a)), P.leg_r * math.sin(math.radians(a)), -56.7) * CER["C6_Ceramic_Foot"]
 for k, s in placed.items():
     bb = s.bounding_box()
@@ -100,7 +100,7 @@ for k, zb in zs.items():
         rod = radial(a, (SP_RI + SP_RO) / 2, zb, 3.0, 14)
         x = rod & placed[k]; v = x.volume if x is not None else 0
         if v > 0.01: print("BOLT BLOCKED", k, a, round(v, 2))
-for i, a in enumerate((40, 160, 280)):
+for i, a in enumerate(P.leg_angles):
     rod = Pos(P.leg_r * math.cos(math.radians(a)), P.leg_r * math.sin(math.radians(a)), -70) * cyl(3.0, 44)
     x = rod & placed["foot%d" % i]; v = x.volume if x is not None else 0
     if v > 0.01: print("LEG SCREW BLOCKED", i, round(v, 2))
@@ -137,6 +137,10 @@ ID {2*SP_RI:.1f} / OD {2*SP_RO:.1f}. Heights did not change: the C1 top is still
 2026-11-12（替换 2026-11-08 R2 打印套件）：顶盖圆环（陶瓷边到顶盖边）20.0 mm（原来 28.4），最小的玻璃 slurper（碗到弯头 21 mm）
 可以放上去：保温层 14.6（原来 20.6），空气层 3.0（原来 4.4），顶盖边比外管多 0.5（原来 1.5）。外管外径 131.7，底盖和盖子顶盘外径 134.7。
 垫圈环 C5 现在内径 {2*SP_RI:.1f} / 外径 {2*SP_RO:.1f}。高度不改：C1 顶面仍和 05 顶盖顶面齐平。
+2026-11-12 (later): 5 bolts per ring (was 6), 72 deg apart between the glass slots, so the spacer rings C5 have 5 holes;
+the 3 feet moved to {', '.join('%g' % a for a in P.leg_angles)} deg to stay clear of the bolts.
+2026-11-12（更新）：每圈 5 颗螺栓（原来 6 颗），间隔 72 度，位于玻璃槽之间，所以垫圈 C5 有 5 个孔；3 个脚移到
+{', '.join('%g' % a for a in P.leg_angles)} 度，避开螺栓。
 
 All files in mm, true size (scale 100%). Metal parts are placed in their assembled position; the slicer can re-centre them.
 所有文件单位为毫米，1:1 真实尺寸（100% 比例）。金属件按装配位置导出，切片软件可重新居中。
@@ -159,11 +163,11 @@ C1: OD 92.5 / ID 81.5, h {H}; 4 glass slots 10.5 wide x {P.slot_depth} deep, R5.
     热电偶孔 6.4，314.6 度，高 8.2；加热丝螺旋槽：30 圈，高 15.5 至 66.5，宽 1.0，深 0.6。
 C2: OD 92.5, {bd} overall: {bd - 1.5:.1f} body + raised centre 77.0 x 1.0 with a 0.5 taper. 外径 92.5，总厚 {bd}（{bd - 1.5:.1f} 主体 + 中间凸台 77.0 x 1.0，0.5 斜边）。
 C3: OD 92.5, 6.0 overall: 4.5 body + raised centre 77.0 x 1.0 with a 0.5 taper. 外径 92.5，总厚 6.0（4.5 主体 + 中间凸台 77.0 x 1.0，0.5 斜边）。
-C5 (all 5 rings, 3 body + 2 lid, 10 mm tall): ID {2*SP_RI:.1f} / OD {2*SP_RO:.1f}, 6 radial holes 6.6 at mid height, at 52.4 + n x 60 deg. C5（全部 5 个垫圈，机体 3 个 + 盖子 2 个，高 10 mm）：内径 {2*SP_RI:.1f} / 外径 {2*SP_RO:.1f}，6 个径向孔 6.6，位于中间高度，角度 52.4 + n x 60 度。
+C5 (all 5 rings, 3 body + 2 lid, 10 mm tall): ID {2*SP_RI:.1f} / OD {2*SP_RO:.1f}, {len(BOLT)} radial holes 6.6 at mid height, at {BOLT[0]:g} + n x {BOLT[1]-BOLT[0]:g} deg. C5（全部 5 个垫圈，机体 3 个 + 盖子 2 个，高 10 mm）：内径 {2*SP_RI:.1f} / 外径 {2*SP_RO:.1f}，{len(BOLT)} 个径向孔 6.6，位于中间高度，角度 {BOLT[0]:g} + n x {BOLT[1]-BOLT[0]:g} 度。
 C6: post 20 x 20 on a base 28 x 5, leg screw hole 6.6 through. 立柱 20 x 20，底座 28 x 5，通孔 6.6 用于脚螺丝。
 
-FASTENERS NOT INCLUDED, BUY THEM: 30 M6 bolts + nuts, 2 M4 screws (handle), 3 leg screws (M6).
-紧固件不包含，请购买：30 套 M6 螺栓 + 螺母，2 个 M4 螺丝（提手），3 个脚螺丝（M6）。
+FASTENERS NOT INCLUDED, BUY THEM: {5*len(BOLT)} M6 bolts + nuts, 2 M4 screws (handle), 3 leg screws (M6).
+紧固件不包含，请购买：{5*len(BOLT)} 套 M6 螺栓 + 螺母，2 个 M4 螺丝（提手），3 个脚螺丝（M6）。
 
 Part 14 Steel Tray is NOT in this round (it stays in the design).
 14 号钢托盘本次不打印（仍保留在设计中）。

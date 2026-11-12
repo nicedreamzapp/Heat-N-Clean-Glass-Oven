@@ -27,18 +27,18 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { makeLabeler } from './viewer-labels.js';
 // Base assembly with the ceramics and the fasteners in place. Metal parts are the fab-package meshes,
 // the top cap is the one-piece 03_Top_Cap from before the 2026-06-10 split, ceramics come from Core Split,
-// and the 18 ring bolts (6 per ring height, 52.4° + n·60°) are drawn M6: head outside, nut inside the inner tube.
+// and the 15 ring bolts (5 per ring height, 41.5° + n·72°, between the glass slots; 6 at 52.4° + n·60° before 2026-11-12) are drawn M6: head outside, nut inside the inner tube.
 // "Separated" lifts parts straight up in assembly order; bolts back straight out of their holes.
 const PARTS=[ // bottom to top
   {f:'liddisk',label:'Ceramic Lid Disk',col:'disk'},
   {f:'09',label:'09 Lid Ceramic Holder (48 vent holes)',col:'sup'},
   {f:'06',label:'06 Lid Inner Tube',col:'in'},
   {f:'spacer_low',label:'Lower Lid Spacer (ceramic)',col:'cer'},
-  {f:'bolts_low',label:'Lower Lid Bolts ×6',col:'bolt',side:'spacer_low',radial:true},
+  {f:'bolts_low',label:'Lower Lid Bolts ×5',col:'bolt',side:'spacer_low',radial:true},
   {f:'07',label:'07 Lid Outer Perforated Tube',col:'out'},
   {f:'spacer_high',label:'Upper Lid Spacer (ceramic)',col:'cer'},
   {f:'08',label:'08 Lid Top Disk',col:'top'},
-  {f:'bolts_high',label:'Upper Lid Bolts ×6 (hold the top disk)',col:'bolt',side:'spacer_high',radial:true},
+  {f:'bolts_high',label:'Upper Lid Bolts ×5 (hold the top disk)',col:'bolt',side:'spacer_high',radial:true},
   {f:'10',label:'10 Lid Handle',col:'bolt'},
   {f:'11',label:'11 Hinge Strap',col:'out',side:'07'},
   {f:'13',label:'13 Hinge Pin',col:'bolt',side:'07'},

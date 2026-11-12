@@ -2,6 +2,25 @@ Heat & Clean Glass Oven: machining files, 2026-11-12
 Replaces every earlier package, including 2026-11-08 R2. Metal parts only; we supply all ceramics.
 Same 13 parts as before (01-11, 13, 14). No new parts.
 
+LATEST, 2026-11-12 (later the same day): 5 BOLTS PER RING instead of 6
+  Every bolt ring (top, bottom, seat, lower lid, upper lid) now has 5 M6 bolts, evenly spaced 72 deg apart, each one
+  centred between the 4 glass slots (slots at 6.5 / 77.2 / 147.8 / 218.5 deg). Bolt angles, the same on every ring:
+  41.5 / 113.5 / 185.5 / 257.5 / 329.5 deg (were 6 at 52.4 + n x 60). Each bolt is at least 33 deg from a glass slot.
+  Total 25 M6 bolts + nuts (was 30). Bolt heights, hole sizes and diameters do not change.
+  01, 02 Tubes                 5 M6 holes per ring (15 per tube; 06, 07: 10)
+  03 Support Ring              5 seat bolt holes. Heater lead holes moved to 160 / 170 deg (were 185 / 195: the new
+                               185.5 bolt would sit on them); thermocouple hole stays at 315 deg; all r 53.5.
+                               Leg holes moved to 77.5 / 221.5 / 293.5 deg, still r 54 (were 40 / 160 / 280: the leg
+                               at 40 sat under the 41.5 bolt). They are midway between bolts.
+  04 Bottom Cap                5 M6 in the skirt; leg + wire holes as 03.
+  05 One-Piece Top Cap         5 bolt tabs (were 6), at the bolt angles. Vents not changed (none near a tab).
+  07 Lid Outer Perf. Tube      perforation holes next to the bolt holes follow the new bolt angles.
+  08 Lid Top Disk, 09 Holder   5 bolt holes each.
+  11 Hinge Strap, 13 Pin       on the lid bolt at 257.5 deg (was 292.4). Still a placeholder for your stock hinge.
+  14 Steel Tray                3 leg holes at 77.5 / 221.5 / 293.5 deg, r 54.
+  Ceramic spacer rings (we supply): 5 holes each.
+  The table below (2026-11-12 first version) still gives every size; its bolt, leg and wire hole angles are replaced by these.
+
 What changed on 2026-11-12 (since 2026-11-08 R2), and why:
   Our smallest glass slurper is only 21 mm from bowl to bend, and it has to sit across the top cap ring. The ring (from
   the ceramic outside edge to the outside edge of the 05 top cap) was 28.4 mm. It is now 20.0 mm.
@@ -169,6 +188,24 @@ Fit fixes, 2026-09-30 (same files, updated):
 加热清洁玻璃炉：加工文件，2026-11-12
 替换之前所有的文件包，包括 2026-11-08 R2。只包括金属件，陶瓷件全部由我方提供。
 还是同样的13个零件（01-11、13、14）。没有新增零件。
+
+最新，2026-11-12（同一天稍后）：每圈螺栓从 6 颗改为 5 颗
+  每一圈螺栓（顶部、底部、座圈、盖子下排、盖子上排）现在都是 5 颗 M6，间隔 72 度均布，每颗都在 4 个玻璃槽之间的正中
+  （玻璃槽在 6.5 / 77.2 / 147.8 / 218.5 度）。每圈角度相同：41.5 / 113.5 / 185.5 / 257.5 / 329.5 度（原来 6 颗，52.4 + n x 60）。
+  每颗螺栓离玻璃槽至少 33 度。一共 25 套 M6 螺栓 + 螺母（原来 30）。螺栓高度、孔径、直径都不改。
+  01、02 管                    每圈 5 个 M6 孔（每根管 15 个；06、07 为 10 个）
+  03 支撑环                    5 个座圈螺栓孔。加热线孔移到 160 / 170 度（原来 185 / 195：新的 185.5 度螺栓会压在上面）；
+                               热电偶孔仍在 315 度；都在 r 53.5。
+                               脚孔移到 77.5 / 221.5 / 293.5 度，仍是 r 54（原来 40 / 160 / 280：40 度的脚在 41.5 度螺栓下面）。
+                               脚孔都在两颗螺栓的正中间。
+  04 底盖                      裙边 5 个 M6；脚孔、线孔同 03。
+  05 一体顶盖                  5 个螺栓折边片（原来 6 个），在螺栓角度上。通风孔不改（没有靠近折边片的）。
+  07 盖子外冲孔管              螺栓孔旁边的冲孔跟着新的螺栓角度。
+  08 盖子顶盘、09 托架         各 5 个螺栓孔。
+  11 铰链片、13 销轴           装在 257.5 度的盖子螺栓上（原来 292.4）。仍是示意件，你们用标准合页。
+  14 托盘                      3 个脚孔在 77.5 / 221.5 / 293.5 度，r 54。
+  陶瓷垫圈环（我方提供）：每个 5 个孔。
+  下面的表（2026-11-12 第一版）仍给出所有尺寸；其中螺栓、脚孔和线孔的角度以这里为准。
 
 2026-11-12 的改动（和 2026-11-08 R2 相比）和原因：
   我们最小的玻璃 slurper 从碗到弯头只有 21 mm，它要跨放在顶盖圆环上。圆环（从陶瓷外边到 05 顶盖外边）原来是 28.4 mm，
