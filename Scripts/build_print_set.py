@@ -57,9 +57,9 @@ def spacer(h):   # 5 radial Ø6.6 holes at mid height on the bolt angles
     s = ring(ri, ro, 0, h)
     for a in BOLT: s -= radial(a, (ri + ro) / 2, h / 2, 3.3, 8)
     return solid(s)
-def foot():      # Ø20 x 20 post on a Ø28 x 5 base, Ø6.6 leg-screw hole through
+def foot():      # Ø20 x 20 post on a Ø28 x 5 base, Ø5.5 leg-screw hole through (M5 since 2026-11-12 5:19 AM, Ø6.6 before)
     f = cyl(14, 5) + cyl(10, 20, 5)
-    return solid(f - cyl(3.3, 30, -1))
+    return solid(f - cyl(P.leg_hole_d / 2, 30, -1))
 CER = {"C1_Ceramic_Heater_Core": core, "C2_Ceramic_Base_Disk": disk(P.base_disk_t_real), "C3_Ceramic_Lid_Disk": disk(),
        "C5_Spacer_Ring_10mm": spacer(10), "C6_Ceramic_Foot": foot()}
 info = {}
@@ -81,7 +81,8 @@ for k, z0 in (("sp_low", 95.2 + U), ("sp_high", 115.2 + U)): placed[k] = Pos(0, 
 cap_top = metal["05_One_Piece_Top_Cap"].bounding_box().max.Z
 print("FLUSH core top", round(CORE_Z + H, 3), "cap top", round(cap_top, 3), "diff", round(CORE_Z + H - cap_top, 3))
 for i, a in enumerate(P.leg_angles):
-    placed["foot%d" % i] = Pos(P.leg_r * math.cos(math.radians(a)), P.leg_r * math.sin(math.radians(a)), -56.7) * CER["C6_Ceramic_Foot"]
+    # on the tray top (-57.9 since the tray went down 1.2 on 2026-11-12), up to the 04 floor underside (-32.9); was -56.7, 1.2 into 04
+    placed["foot%d" % i] = Pos(P.leg_r * math.cos(math.radians(a)), P.leg_r * math.sin(math.radians(a)), -56.7 - P.tray_drop) * CER["C6_Ceramic_Foot"]
 for k, s in placed.items():
     bb = s.bounding_box()
     for n, m in metal.items():
@@ -101,7 +102,7 @@ for k, zb in zs.items():
         x = rod & placed[k]; v = x.volume if x is not None else 0
         if v > 0.01: print("BOLT BLOCKED", k, a, round(v, 2))
 for i, a in enumerate(P.leg_angles):
-    rod = Pos(P.leg_r * math.cos(math.radians(a)), P.leg_r * math.sin(math.radians(a)), -70) * cyl(3.0, 44)
+    rod = Pos(P.leg_r * math.cos(math.radians(a)), P.leg_r * math.sin(math.radians(a)), -70) * cyl(2.5, 44)   # M5 shank
     x = rod & placed["foot%d" % i]; v = x.volume if x is not None else 0
     if v > 0.01: print("LEG SCREW BLOCKED", i, round(v, 2))
 print("fit check done")
@@ -138,9 +139,9 @@ ID {2*SP_RI:.1f} / OD {2*SP_RO:.1f}. Heights did not change: the C1 top is still
 可以放上去：保温层 14.6（原来 20.6），空气层 3.0（原来 4.4），顶盖边比外管多 0.5（原来 1.5）。外管外径 131.7，底盖和盖子顶盘外径 134.7。
 垫圈环 C5 现在内径 {2*SP_RI:.1f} / 外径 {2*SP_RO:.1f}。高度不改：C1 顶面仍和 05 顶盖顶面齐平。
 2026-11-12 (later): 5 bolts per ring (was 6), 72 deg apart between the glass slots, so the spacer rings C5 have 5 holes;
-the 3 feet moved to {', '.join('%g' % a for a in P.leg_angles)} deg to stay clear of the bolts.
-2026-11-12（更新）：每圈 5 颗螺栓（原来 6 颗），间隔 72 度，位于玻璃槽之间，所以垫圈 C5 有 5 个孔；3 个脚移到
-{', '.join('%g' % a for a in P.leg_angles)} 度，避开螺栓。
+the 3 feet are evenly 120 deg apart at {', '.join('%g' % a for a in P.leg_angles)} deg (clear of the bolts) with M5 leg screws.
+2026-11-12（更新）：每圈 5 颗螺栓（原来 6 颗），间隔 72 度，位于玻璃槽之间，所以垫圈 C5 有 5 个孔；3 个脚均布 120 度，在
+{', '.join('%g' % a for a in P.leg_angles)} 度（避开螺栓），用 M5 脚螺丝。
 
 All files in mm, true size (scale 100%). Metal parts are placed in their assembled position; the slicer can re-centre them.
 所有文件单位为毫米，1:1 真实尺寸（100% 比例）。金属件按装配位置导出，切片软件可重新居中。
@@ -164,10 +165,10 @@ C1: OD 92.5 / ID 81.5, h {H}; 4 glass slots 10.5 wide x {P.slot_depth} deep, R5.
 C2: OD 92.5, {bd} overall: {bd - 1.5:.1f} body + raised centre 77.0 x 1.0 with a 0.5 taper. 外径 92.5，总厚 {bd}（{bd - 1.5:.1f} 主体 + 中间凸台 77.0 x 1.0，0.5 斜边）。
 C3: OD 92.5, 6.0 overall: 4.5 body + raised centre 77.0 x 1.0 with a 0.5 taper. 外径 92.5，总厚 6.0（4.5 主体 + 中间凸台 77.0 x 1.0，0.5 斜边）。
 C5 (all 5 rings, 3 body + 2 lid, 10 mm tall): ID {2*SP_RI:.1f} / OD {2*SP_RO:.1f}, {len(BOLT)} radial holes 6.6 at mid height, at {BOLT[0]:g} + n x {BOLT[1]-BOLT[0]:g} deg. C5（全部 5 个垫圈，机体 3 个 + 盖子 2 个，高 10 mm）：内径 {2*SP_RI:.1f} / 外径 {2*SP_RO:.1f}，{len(BOLT)} 个径向孔 6.6，位于中间高度，角度 {BOLT[0]:g} + n x {BOLT[1]-BOLT[0]:g} 度。
-C6: post 20 x 20 on a base 28 x 5, leg screw hole 6.6 through. 立柱 20 x 20，底座 28 x 5，通孔 6.6 用于脚螺丝。
+C6: post 20 x 20 on a base 28 x 5 (25 tall), leg screw hole 5.5 through (M5). 立柱 20 x 20，底座 28 x 5（高 25），通孔 5.5 用于 M5 脚螺丝。
 
-FASTENERS NOT INCLUDED, BUY THEM: {5*len(BOLT)} M6 bolts + nuts, 2 M4 screws (handle), 3 leg screws (M6).
-紧固件不包含，请购买：{5*len(BOLT)} 套 M6 螺栓 + 螺母，2 个 M4 螺丝（提手），3 个脚螺丝（M6）。
+FASTENERS NOT INCLUDED, BUY THEM: {5*len(BOLT)} M6 bolts + nuts, 2 M4 screws (handle), 3 leg screws M5 x 40 socket head + washers + nuts.
+紧固件不包含，请购买：{5*len(BOLT)} 套 M6 螺栓 + 螺母，2 个 M4 螺丝（提手），3 个 M5 x 40 内六角脚螺丝 + 垫片 + 螺母。
 
 Part 14 Steel Tray is NOT in this round (it stays in the design).
 14 号钢托盘本次不打印（仍保留在设计中）。

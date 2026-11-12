@@ -12,9 +12,9 @@ ID 124.1 / OD 129.3. Heights did not change: the C1 top is still flush with the 
 可以放上去：保温层 14.6（原来 20.6），空气层 3.0（原来 4.4），顶盖边比外管多 0.5（原来 1.5）。外管外径 131.7，底盖和盖子顶盘外径 134.7。
 垫圈环 C5 现在内径 124.1 / 外径 129.3。高度不改：C1 顶面仍和 05 顶盖顶面齐平。
 2026-11-12 (later): 5 bolts per ring (was 6), 72 deg apart between the glass slots, so the spacer rings C5 have 5 holes;
-the 3 feet moved to 77.5, 221.5, 293.5 deg to stay clear of the bolts.
-2026-11-12（更新）：每圈 5 颗螺栓（原来 6 颗），间隔 72 度，位于玻璃槽之间，所以垫圈 C5 有 5 个孔；3 个脚移到
-77.5, 221.5, 293.5 度，避开螺栓。
+the 3 feet are evenly 120 deg apart at 5.5, 125.5, 245.5 deg (clear of the bolts) with M5 leg screws.
+2026-11-12（更新）：每圈 5 颗螺栓（原来 6 颗），间隔 72 度，位于玻璃槽之间，所以垫圈 C5 有 5 个孔；3 个脚均布 120 度，在
+5.5, 125.5, 245.5 度（避开螺栓），用 M5 脚螺丝。
 
 All files in mm, true size (scale 100%). Metal parts are placed in their assembled position; the slicer can re-centre them.
 所有文件单位为毫米，1:1 真实尺寸（100% 比例）。金属件按装配位置导出，切片软件可重新居中。
@@ -54,10 +54,10 @@ C1: OD 92.5 / ID 81.5, h 90.4; 4 glass slots 10.5 wide x 23.5 deep, R5.25 round 
 C2: OD 92.5, 4.9 overall: 3.4 body + raised centre 77.0 x 1.0 with a 0.5 taper. 外径 92.5，总厚 4.9（3.4 主体 + 中间凸台 77.0 x 1.0，0.5 斜边）。
 C3: OD 92.5, 6.0 overall: 4.5 body + raised centre 77.0 x 1.0 with a 0.5 taper. 外径 92.5，总厚 6.0（4.5 主体 + 中间凸台 77.0 x 1.0，0.5 斜边）。
 C5 (all 5 rings, 3 body + 2 lid, 10 mm tall): ID 124.1 / OD 129.3, 5 radial holes 6.6 at mid height, at 41.5 + n x 72 deg. C5（全部 5 个垫圈，机体 3 个 + 盖子 2 个，高 10 mm）：内径 124.1 / 外径 129.3，5 个径向孔 6.6，位于中间高度，角度 41.5 + n x 72 度。
-C6: post 20 x 20 on a base 28 x 5, leg screw hole 6.6 through. 立柱 20 x 20，底座 28 x 5，通孔 6.6 用于脚螺丝。
+C6: post 20 x 20 on a base 28 x 5 (25 tall), leg screw hole 5.5 through (M5). 立柱 20 x 20，底座 28 x 5（高 25），通孔 5.5 用于 M5 脚螺丝。
 
-FASTENERS NOT INCLUDED, BUY THEM: 25 M6 bolts + nuts, 2 M4 screws (handle), 3 leg screws (M6).
-紧固件不包含，请购买：25 套 M6 螺栓 + 螺母，2 个 M4 螺丝（提手），3 个脚螺丝（M6）。
+FASTENERS NOT INCLUDED, BUY THEM: 25 M6 bolts + nuts, 2 M4 screws (handle), 3 leg screws M5 x 40 socket head + washers + nuts.
+紧固件不包含，请购买：25 套 M6 螺栓 + 螺母，2 个 M4 螺丝（提手），3 个 M5 x 40 内六角脚螺丝 + 垫片 + 螺母。
 
 Part 14 Steel Tray is NOT in this round (it stays in the design).
 14 号钢托盘本次不打印（仍保留在设计中）。

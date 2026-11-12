@@ -100,7 +100,7 @@ Crank the temperature up. Walk away. The oven burns off all char, resin, and bui
 | Insulation gap | 14.6mm between ceramic and inner tube (20.6mm before 2026-11-12, 24.6mm before 2026-11-08) |
 | Spacer rings | 5x ceramic, all 10mm, ID 124.1 / OD 129.3 (fill the 3.0mm air gap) |
 | Controller | REX-C100 PID + SSR + DH48S timer |
-| Legs | 3x ceramic feet with M6 mounting |
+| Legs | 3x ceramic feet, 120° apart, M5 leg screws |
 
 
 ### Specifications

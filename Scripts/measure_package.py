@@ -43,7 +43,7 @@ def measure(pkg):
               "z":(round(bb.min.Z,2),round(bb.max.Z,2))}
         bh=radial_holes(s,3.3)
         if bh: M[n]["M6_hole_r_mid"]=sorted(set(round((a+b)/2,2) for _,a,b in bh))
-        vh=sorted(set(vholes(s,3.3)+vholes(s,4.0)+vholes(s,3.2)))
+        vh=sorted(set(vholes(s,3.3)+vholes(s,2.75)+vholes(s,4.0)+vholes(s,3.2)))
         if vh: M[n]["vert_holes(ang,r)"]=vh
     cap=P["05_One_Piece_Top_Cap"]
     plate=cap & (Pos(0,0,91.6+U)*Box(400,400,0.4))
@@ -115,10 +115,12 @@ def measure(pkg):
     M["bolt_stack_parts"]=walls
     # vertical: leg screws, wires through 03/04/14
     vb=[]
-    legs=vholes(P["03_Support_Ring"],3.3); M["leg_holes_03(ang,r)"]=legs   # legs read from 03 (Ø6.6 vertical holes)
+    # legs read from 03's vertical holes: Ø5.5 (M5) since 2026-11-12 5:19 AM, Ø6.6 (M6) before; rod = hole - 0.2 on the radius
+    leg_hr=2.75 if vholes(P["03_Support_Ring"],2.75) else 3.3
+    legs=vholes(P["03_Support_Ring"],leg_hr); M["leg_holes_03(ang,r)"]=legs; M["leg_hole_dia"]=2*leg_hr
     legr=[r for a,r in legs]
     for a,r in legs:
-        rod=Pos(r*math.cos(math.radians(a)),r*math.sin(math.radians(a)),-80)*Cylinder(3.1,80,align=(Align.CENTER,Align.CENTER,Align.MIN))
+        rod=Pos(r*math.cos(math.radians(a)),r*math.sin(math.radians(a)),-80)*Cylinder(leg_hr-0.2,80,align=(Align.CENTER,Align.CENTER,Align.MIN))
         for n,s in P.items():
             v=(s&rod).volume
             if v>0.01: vb.append(("leg",a,n,round(v,2)))

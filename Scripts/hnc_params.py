@@ -150,11 +150,18 @@ tc_cable_hole_z = hole_center_height  # 8.2
 
 # ── Leg / standoff bolt holes (3) in the bottom region ─────────────
 leg_hole_r = leg_r                    # 54.0 (the package value, build_current_package.py)
-bolt_hole_size = 6.6                  # Ø6.6
-# 2026-11-12 (5-bolt rings): 40 / 160 / 280 put the 40 leg screw head under the 41.5 bottom-ring nut. 3 legs on a 120 deg
-# pattern can never be more than 12 deg from a 72 deg bolt pattern (too tight for an M6 head + nut), so the legs sit
-# midway between bolts (36 deg from both): 77.5 / 221.5 / 293.5 (gaps 144 / 72 / 144; the oven is screwed to the tray).
-leg_angles = [77.5, 221.5, 293.5]
+bolt_hole_size = 6.6                  # Ø6.6 (M6 clearance; the bolt rings)
+# 2026-11-12 (Matt, 5:19 AM: "smaller screws, everything can be adjusted and thought out for perfection"): legs back to
+# EVEN 120 deg, M5 leg screws. 3 legs on 120 deg vs 5 bolts on 72 deg: the best a leg can be from its nearest bolt is
+# 12 deg (legs at 41.5 + 12 + 24n). Of the two such patterns, 5.5 / 125.5 / 245.5 is the one far from the wire holes
+# (34.5 deg from the 160 lead, 69.5 from the 315 TC; 29.5 / 149.5 / 269.5 puts a foot 10.5 deg from the 160 lead).
+# Two legs are 12 deg from a bolt (5.5: 36 from both), which at r 54 needs the smaller M5 head (Ø8.5) next to an M6 nut.
+# Was 77.5 / 221.5 / 293.5 (uneven, M6) earlier on 2026-11-12, 40 / 160 / 280 before.
+leg_angles = [5.5, 125.5, 245.5]
+leg_screw = "M5 x 40 socket head cap screw ISO 4762, A2 stainless, + M5 washer + M5 nut"
+leg_hole_d = 5.5                      # M5 clearance (ISO 273 medium) in 03, 04, 14 and the feet (Ø6.6 for M6 before)
+tray_drop = 1.2                       # 14 tray 1.2 lower than the Sept 9 solid, so the 25.0 feet fit exactly between the
+                                      # tray top (-57.9) and the 04 floor underside (-32.9); they were 1.2 into the 04 floor
 
 # ── Bottom cap (02) ────────────────────────────────────────────────
 bottom_cap_lip_height = 16
@@ -165,7 +172,7 @@ bottom_cap_holes = [
     (wire_hole_angle,       air_gap_mid_r, 4),
     (wire_hole_angle + 5,   air_gap_mid_r, 4),
     (tc_cable_hole_angle,   air_gap_mid_r, 3),
-    *[(a, leg_hole_r, bolt_hole_size) for a in leg_angles],
+    *[(a, leg_hole_r, leg_hole_d / 2) for a in leg_angles],
 ]
 
 # ── Cap shell (04a) ────────────────────────────────────────────────

@@ -2,7 +2,16 @@ Heat & Clean Glass Oven: machining files, 2026-11-12
 Replaces every earlier package, including 2026-11-08 R2. Metal parts only; we supply all ceramics.
 Same 13 parts as before (01-11, 13, 14). No new parts.
 
-LATEST, 2026-11-12 (later the same day): 5 BOLTS PER RING instead of 6
+LATEST, 2026-11-12 (5:19 AM): THE 3 LEGS EVENLY 120 DEG APART AGAIN, M5 LEG SCREWS
+  Legs at 5.5 / 125.5 / 245.5 deg, still r 54 (Ø108 leg circle). This replaces the uneven 77.5 / 221.5 / 293.5 below.
+  With 5 bolts per ring (72 deg) and 3 legs (120 deg), the best a leg can be from its nearest bolt is 12 deg; that is
+  too tight for an M6 screw head beside an M6 nut, so the leg screws are now M5 (M5 x 40 socket head cap screw,
+  ISO 4762, A2 stainless, head Ø8.5, + M5 washer + nut under the tray). Nearest gap: screw head to a bottom bolt nut 2.6 mm.
+  03 Support Ring, 04 Bottom Cap, 14 Steel Tray: 3 leg holes Ø5.5 (were Ø6.6) at 5.5 / 125.5 / 245.5 deg, r 54.
+  14 Steel Tray: sits 1.2 mm lower, so the 25 mm ceramic feet fit exactly between the tray and the 04 floor
+  (they were drawn 1.2 mm into the 04 floor). The open space inside the base does not change. Nothing else changes.
+
+EARLIER, 2026-11-12 (later the same day): 5 BOLTS PER RING instead of 6
   Every bolt ring (top, bottom, seat, lower lid, upper lid) now has 5 M6 bolts, evenly spaced 72 deg apart, each one
   centred between the 4 glass slots (slots at 6.5 / 77.2 / 147.8 / 218.5 deg). Bolt angles, the same on every ring:
   41.5 / 113.5 / 185.5 / 257.5 / 329.5 deg (were 6 at 52.4 + n x 60). Each bolt is at least 33 deg from a glass slot.
@@ -189,7 +198,14 @@ Fit fixes, 2026-09-30 (same files, updated):
 替换之前所有的文件包，包括 2026-11-08 R2。只包括金属件，陶瓷件全部由我方提供。
 还是同样的13个零件（01-11、13、14）。没有新增零件。
 
-最新，2026-11-12（同一天稍后）：每圈螺栓从 6 颗改为 5 颗
+最新，2026-11-12（5:19）：3 个脚重新均布 120 度，脚螺丝改 M5
+  脚在 5.5 / 125.5 / 245.5 度，仍是 r 54（Ø108 脚圆）。取代下面不均布的 77.5 / 221.5 / 293.5。
+  每圈 5 颗螺栓（72 度）和 3 个脚（120 度）时，脚离最近的螺栓最多只能 12 度；M6 螺丝头放在 M6 螺母旁边太挤，所以脚螺丝改为
+  M5（M5 x 40 内六角圆柱头螺丝 ISO 4762，A2 不锈钢，头 Ø8.5，托盘下面加 M5 垫片 + 螺母）。最小间隙：螺丝头到底部螺栓螺母 2.6 mm。
+  03 支撑环、04 底盖、14 钢托盘：3 个脚孔 Ø5.5（原来 Ø6.6），在 5.5 / 125.5 / 245.5 度，r 54。
+  14 钢托盘：下移 1.2 mm，25 mm 陶瓷脚正好在托盘和 04 底板之间（原来画进 04 底板 1.2 mm）。其他不改。
+
+之前，2026-11-12（同一天稍后）：每圈螺栓从 6 颗改为 5 颗
   每一圈螺栓（顶部、底部、座圈、盖子下排、盖子上排）现在都是 5 颗 M6，间隔 72 度均布，每颗都在 4 个玻璃槽之间的正中
   （玻璃槽在 6.5 / 77.2 / 147.8 / 218.5 度）。每圈角度相同：41.5 / 113.5 / 185.5 / 257.5 / 329.5 度（原来 6 颗，52.4 + n x 60）。
   每颗螺栓离玻璃槽至少 33 度。一共 25 套 M6 螺栓 + 螺母（原来 30）。螺栓高度、孔径、直径都不改。

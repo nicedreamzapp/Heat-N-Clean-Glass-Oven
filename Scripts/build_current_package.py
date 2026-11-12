@@ -15,6 +15,9 @@ Later on 2026-11-12 (Matt, 4:50 AM): 5 bolts per ring (G["bolt"] = hnc_params.ri
 between the 4 glass slots; was 6 at 52.4 + n*60) on all 5 rings; 05 has 5 tabs; hinge strap + pin turned onto the 257.5
 lid bolt; heater lead holes 160/170 (185/195 sat under the 185.5 bolt); legs 77.5/221.5/293.5 (the 40 leg sat under the
 41.5 bolt). Viewer bolt sets are copied from one template onto the new angles, feet and leg screws turned onto LEGS.
+Later again (Matt, 5:19 AM): legs back to EVEN 120 deg at 5.5 / 125.5 / 245.5 (r 54), 12 deg off the nearest bolt, which the
+smaller M5 leg screw (head Ø8.5) clears; leg holes Ø5.5 in 03 / 04 / 14; tray 1.2 lower so the 25.0 feet no longer run 1.2
+into the 04 floor; feet + leg screws drawn here at true size.
 
 2026-11-08 R2 change (Matt, calipers on the REAL ceramic): bare core 90.4, core + base plate 95.3, but the drawn room from
 03's seat (z -0.44) to the 05 cap top (92.2) was 92.64, so the real ceramic stood 2.66 proud and the lid could not close.
@@ -63,11 +66,12 @@ SRC = os.path.join(ROOT, "cad-source")
 GEN = os.environ.get("HNC_GEN", "2026-11-12")
 if GEN == "R2":   # the 2026-11-08 R2 geometry (and with HNC_SHRINK / HNC_RAISE the older ones)
     G = dict(gap=20.6, air=4.4, lip=1.5, vent_r=1.75, wire_r=58.0, leads=(180.0, 190.0), step_r=52.0, skirt05=True,
-             bolt=[52.4 + 60 * k for k in range(6)], legs=(40, 160, 280), hinge=292.4)
+             bolt=[52.4 + 60 * k for k in range(6)], legs=(40, 160, 280), hinge=292.4, leg_hr=3.3, tray_drop=0.0)
 else:
     G = dict(gap=HP.insulation_gap, air=HP.air_gap, lip=HP.top_cap_lip, vent_r=HP.vent_r, wire_r=HP.wire_hole_r,
              leads=HP.lead_hole_angles, step_r=HP.seat_step_r, skirt05=False,
-             bolt=list(HP.ring_screw_angles), legs=tuple(HP.leg_angles), hinge=HP.HINGE_ANGLE_DEG)
+             bolt=list(HP.ring_screw_angles), legs=tuple(HP.leg_angles), hinge=HP.HINGE_ANGLE_DEG,
+             leg_hr=HP.leg_hole_d / 2, tray_drop=HP.tray_drop)
 D = float(os.environ.get("HNC_SHRINK", 24.6 - G["gap"]))   # inner tube in vs 2026-10-16 (4.0 R2, 10.0 2026-11-12)
 DO = D + (4.4 - G["air"])                                 # outer tube in (4.0 R2, 11.4 2026-11-12)
 DC = DO + (1.5 - G["lip"])                                # 05 top cap edge in (4.0 R2, 12.4 2026-11-12)
@@ -87,7 +91,10 @@ R_WIRE = G["wire_r"]                      # inside 03's bolt wall (r 58 until 20
 # 2026-11-08: moved in with the tube, r 60.0 (corners 65.8, same clearance to 03's bolt wall).
 # 2026-11-12: r 54.0 (head corners 59.85 = 03's bolt wall line, inner corners 48.15 clear of the r 47.25 riser).
 # 2026-11-12 (5-bolt rings): legs 77.5 / 221.5 / 293.5, midway between bolts (40 / 160 / 280 before; the source tray's holes are there)
+# 2026-11-12 (Matt 5:19 AM): legs back to even 120 deg, 5.5 / 125.5 / 245.5 (12 deg off the nearest bolt), M5 screws, Ø5.5 holes
 LEG_R, LEG_SRC, LEGS, LEGS_SRC = 64.0 - D, 65.85, G["legs"], (40, 160, 280)
+LEG_HR = G["leg_hr"]                      # leg hole radius: 2.75 (M5) since 2026-11-12 5:19 AM, 3.3 (M6) before
+TRAY_Z = -G["tray_drop"]                  # 14 tray moved down 1.2 (2026-11-12): feet 25.0 = tray top -57.9 to 04 underside -32.9
 
 # ── body / lid radii (2026-10-16 values minus D) ────────────────────────────────────────────────────────────────
 R01I, R01O = 70.85 - D, 71.65 - D         # 01 / 06 inner tube (0.8)
@@ -172,7 +179,7 @@ sr = (ring(STEP_R, R01I - 0.2, -6.3, -5.5)               # outer plate: unchange
       + ring(46.45, 47.25, SEAT_Z, 3.0 + SEAT_UP)        # centering wall, moved up with the seat
       + ring(R01I - 1.0, R01I - 0.2, -5.5, 8.5))         # bolt wall
 for a in BOLT: sr -= rhole(a, R01I - 0.6, 2.15, length=6)
-for a in LEGS: sr -= vhole(a, LEG_R, 3.3, -8, -4)
+for a in LEGS: sr -= vhole(a, LEG_R, LEG_HR, -8, -4)
 for a, r in WIRE: sr -= vhole(a, R_WIRE, r, -8, -4)
 parts["03_Support_Ring"] = solid(sr)
 # 04 bottom cap (rebuilt 2026-11-08): floor disk (1.2, z -32.9..-31.7) + skirt (1.2, up to z -15.7) at RCAP, 6 M6 in
@@ -180,7 +187,7 @@ parts["03_Support_Ring"] = solid(sr)
 # wire holes and Ø13.2 leg holes, plugged on 2026-09-30, are simply not drawn.)
 bc = Pos(0, 0, -32.9) * Cylinder(RCAP, 1.2, align=(Align.CENTER, Align.CENTER, Align.MIN)) + ring(RCAP - 1.2, RCAP, -32.9, -15.7)
 bc = cut_all(bc, [rhole(a, RCAP - 0.6, -24.0) for a in BOLT] + [vhole(a, R_WIRE, r, -40, -10) for a, r in WIRE]
-             + [vhole(a, LEG_R, 3.3, -40, -10) for a in LEGS])
+             + [vhole(a, LEG_R, LEG_HR, -40, -10) for a in LEGS])
 parts["04_Bottom_Cap"] = solid(bc)
 # 05 one-piece top cap, redrawn clean 2026-09-28 from the pre-June cap's layout:
 #   flat top (1.2) sitting ON the tube tops, open in the middle so the ceramic core top stays bare for the lid disk;
@@ -282,8 +289,8 @@ parts["11_Lid_Hinge_Strap"] = solid(HROT * UP * HMOVE * LIFT * src("11_Lid_Hinge
 parts["13_Hinge_Pin"] = solid(HROT * UP * HMOVE * LIFT * src("13_Hinge_Pin"))
 tr = src("14_Steel_Tray")   # floor z -59.7 to -56.7 (outline 204.5 wide, well clear of the cap: not resized)
 for a in LEGS_SRC: tr += vhole(a, LEG_SRC, 3.5, -59.7, -56.7)   # plug the source tray's holes
-for a in LEGS: tr -= vhole(a, LEG_R, 3.3, -62, -54)
-parts["14_Steel_Tray"] = solid(tr)
+for a in LEGS: tr -= vhole(a, LEG_R, LEG_HR, -62, -54)
+parts["14_Steel_Tray"] = solid(Pos(0, 0, TRAY_Z) * tr if TRAY_Z else tr)
 
 if os.path.isdir(OUT): shutil.rmtree(OUT)
 os.makedirs(os.path.join(OUT, "STEP")); os.makedirs(os.path.join(OUT, "STL"))
@@ -316,22 +323,29 @@ def snap_bodies(fp, r_target=None, dr=None):
             c.apply_translation([cx / r * m, cy / r * m, 0])
         out.append(c)
     trimesh.util.concatenate(out).export(fp)
-def turn_legs(fp):
-    """2026-11-12 (5-bolt rings): turn each leg's bodies (foot, or screw head / shank / washer / nut) about Z onto LEGS (idempotent)"""
-    ms = _mesh(fp); groups = {}
-    for c in ms.split(only_watertight=False):
-        cx, cy = c.bounds.mean(axis=0)[:2]; groups.setdefault(round(math.degrees(math.atan2(cy, cx)) % 360, 0), []).append(c)
-    assert len(groups) == len(LEGS), ("leg groups", sorted(groups))
-    out = []
-    for g, new in zip(sorted(groups), sorted(LEGS)):
-        for c in groups[g]:
-            cx, cy = c.bounds.mean(axis=0)[:2]
-            c.apply_transform(trimesh.transformations.rotation_matrix(math.radians(new) - math.atan2(cy, cx), [0, 0, 1]))
-            out.append(c)
-    trimesh.util.concatenate(out).export(fp)
-for f in ("feet", "legscrews"):   # each foot / screw turns onto LEGS and snaps to LEG_R (idempotent)
-    turn_legs(os.path.join(ROOT, "viewer-full", f + ".glb"))
-    snap_bodies(os.path.join(ROOT, "viewer-full", f + ".glb"), r_target=LEG_R)
+# 2026-11-12 (Matt 5:19 AM): feet + leg screws are drawn here at true size on LEGS (they used to be old meshes turned
+# and snapped). Foot: Ø28 x 5 base + Ø20 x 20 post (= C6 in the print set), Ø5.5 hole, from the tray top to the 04 floor
+# underside. Leg screw: M5 x 40 socket head cap screw (ISO 4762: head Ø8.5 x 5) standing on the 04 floor top (z -31.7),
+# down through 04, the foot and the tray, M5 washer (Ø10 x 1) + M5 nut (8 AF x 4.7) under the tray.
+Z04_BOT, Z04_TOP = -32.9, -31.7
+TRAY_TOP = -56.7 + TRAY_Z
+def _cyl_mesh(r, z0, z1, x, y, sections=48):
+    m = trimesh.creation.cylinder(radius=r, height=z1 - z0, sections=sections); m.apply_translation([x, y, (z0 + z1) / 2]); return m
+def _tube_mesh(ri, ro, z0, z1, x, y):
+    m = trimesh.creation.annulus(r_min=ri, r_max=ro, height=z1 - z0, sections=48); m.apply_translation([x, y, (z0 + z1) / 2]); return m
+feet, screws = [], []
+for a in LEGS:
+    x, y = LEG_R * math.cos(math.radians(a)), LEG_R * math.sin(math.radians(a))
+    feet += [_tube_mesh(LEG_HR, 14.0, TRAY_TOP, TRAY_TOP + 5.0, x, y), _tube_mesh(LEG_HR, 10.0, TRAY_TOP + 5.0, Z04_BOT, x, y)]
+    zt = TRAY_TOP - 3.0                                         # tray underside
+    nut = _cyl_mesh(8.0 / math.sqrt(3), zt - 1.0 - 4.7, zt - 1.0, x, y, sections=6)
+    nut.apply_transform(trimesh.transformations.rotation_matrix(math.radians(a), [0, 0, 1], [x, y, 0]))
+    screws += [_cyl_mesh(4.25, Z04_TOP, Z04_TOP + 5.0, x, y),          # head
+               _cyl_mesh(2.5, Z04_TOP - 40.0, Z04_TOP, x, y),         # shank M5 x 40
+               _tube_mesh(2.7, 5.0, zt - 1.0, zt, x, y), nut]          # washer, nut
+trimesh.util.concatenate(feet).export(os.path.join(ROOT, "viewer-full", "feet.glb"))
+trimesh.util.concatenate(screws).export(os.path.join(ROOT, "viewer-full", "legscrews.glb"))
+trimesh.load(os.path.join(OUT, "STL", "14_Steel_Tray.stl")).export(os.path.join(ROOT, "viewer-full", "tray.glb"))
 # bolts (2026-11-12): each bolt set = shank + head (outside, on the outer tube / its skirt or tab) + nut (inside the inner
 # tube, or inside 03's bolt wall for the seat ring). The tubes no longer move together, so each set is re-placed by
 # absolute radius: the nut and the shank tip follow the inner tube, the head and the shank's head end follow the outer
