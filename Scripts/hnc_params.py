@@ -1,11 +1,13 @@
 """
 Heat-N-Clean Glass Oven — SHARED PARAMETERS (single source of truth for the current build)
 
-Read by Scripts/build_current_package.py (FAB_PACKAGE_2026-11-08-R2), Scripts/build_print_set.py,
+Read by Scripts/build_current_package.py (FAB_PACKAGE_2026-11-12), Scripts/build_print_set.py,
 Scripts/measure_package.py and Scripts/verify_steps.py.
 2026-11-08: insulation_gap 24.6 -> 20.6 (glass slurper fit); see CURRENT.md.
 2026-11-08 R2: body_raise = 2.66, the body is taller ABOVE the seat so the real ceramic stack (95.3) ends flush
 with the 05 cap top; see CURRENT.md.
+2026-11-12: insulation_gap 20.6 -> 14.6, air gap 4.4 -> 3.0, top cap lip past the outer tube 1.5 -> 0.5 (the smallest glass
+slurper, 21 mm bowl-to-bend, must straddle the top cap ring: ring 28.4 -> 20.0); see CURRENT.md.
 
 Units: millimetres. Origin: chamber axis = Z. z=0 is the ceramic-disk seat
 reference used by the generator (housing_top_z = 91 is the chamber rim).
@@ -61,13 +63,29 @@ slot_arc_half_deg = (slot_width * scale_factor / 2 / circumference * 360)  # ≈
 # ── Tube walls (twin-wall chamber) ─────────────────────────────────
 # 2026-11-08 (Matt): 24.6 -> 20.6 so a glass terp slurper (31.0 mm bowl-to-joint gap) straddles the top cap ring
 # (33.8 measured on the print -> ~29.8). Every radius at or outside the inner tube moves in 4.0; thicknesses do not.
-insulation_gap = 20.6
-housing_inner_r = ceramic_outer_r + insulation_gap      # 66.85  -> inner tube ID 133.7 (141.7 before 2026-11-08)
-housing_outer_r = housing_inner_r + inner_sheet_thickness  # 67.65 -> inner tube OD 135.3 (143.3 before 2026-11-08)
-air_gap = 4
-mesh_inner_r = housing_inner_r + sheet_metal_thickness + air_gap   # 72.05 -> outer tube ID 144.1 (152.1 before 2026-11-08; real gap 4.4)
-mesh_outer_r = mesh_inner_r + sheet_metal_thickness     # 73.25  -> outer tube OD 146.5 (154.5 before 2026-11-08)
-perf_mid_r = (mesh_inner_r + mesh_outer_r) / 2          # 72.65
+# 2026-11-12 (Matt): 20.6 -> 14.6 and the air gap 4.4 -> 3.0 and the top cap lip 1.5 -> 0.5, for his smallest slurper
+# (21 mm bowl-to-bend): ring ceramic edge -> top cap edge 28.4 -> 20.0. NOT a uniform shift: inner tube in 6.0,
+# outer tube in 7.4, top cap edge in 8.4.
+insulation_gap = 14.6
+housing_inner_r = ceramic_outer_r + insulation_gap      # 60.85  -> inner tube ID 121.7 (133.7 on 2026-11-08, 141.7 before)
+housing_outer_r = housing_inner_r + inner_sheet_thickness  # 61.65 -> inner tube OD 123.3 (135.3 on 2026-11-08)
+air_gap = 3.0                                           # REAL gap, inner tube OD -> outer tube ID (4.4 before 2026-11-12;
+                                                        # until then this read 4 and was added to the inner tube ID + 1.2)
+mesh_inner_r = housing_outer_r + air_gap                # 64.65 -> outer tube ID 129.3 (144.1 on 2026-11-08)
+mesh_outer_r = mesh_inner_r + sheet_metal_thickness     # 65.85  -> outer tube OD 131.7 (146.5 on 2026-11-08)
+perf_mid_r = (mesh_inner_r + mesh_outer_r) / 2          # 65.25
+# Top cap lip past the outer tube OD (2026-11-12: 1.5 -> 0.5). 05's plate edge has always been 0.1 inside that line.
+# The bottom cap 04 and lid top disk 08 keep their 1.2 skirts OUTSIDE the outer tube (they carry the bottom and upper
+# lid bolt rings), and a 1.2 sheet + clearance cannot fit in 0.5, so they stay 1.5 past the outer tube.
+top_cap_lip = 0.5
+top_cap_edge_r = mesh_outer_r + top_cap_lip - 0.1       # 66.25 -> 05 ring Ø132.5, 20.0 from the ceramic OD
+skirt_cap_lip = 1.5
+vent_r = air_gap / 2                                    # 05 + 09 vents: Ø3.0 = the air gap (Ø3.5 before 2026-11-12, did not fit 3.0)
+vent_ring_r = housing_outer_r + air_gap / 2             # 63.15, centre of the air gap
+wire_hole_r = 53.5                                      # 03 / 04 lead + TC holes (r 58 before 2026-11-12: now inside 03's bolt wall)
+lead_hole_angles = (185.0, 195.0)                       # heater lead holes (180 / 190 before 2026-11-12, clear of the 172.4 seat bolt)
+seat_step_r = 47.25                                     # 03 riser = the centering wall line (52 before 2026-11-12)
+leg_r = housing_inner_r - 6.85                          # 54.0 leg circle (Ø108; r 60 on 2026-11-08, r 64 before)
 
 # ── Z reference levels ─────────────────────────────────────────────
 lip_top_z = -disk_thickness                             # -5.5  ceramic seat face (held)
@@ -119,7 +137,7 @@ hole_position_angle = slot_3_end_angle + (108.68 * (2/3) / circumference * 360)
 hole_diameter = 6.4
 hole_bottom_height = 5
 hole_center_height = hole_bottom_height + hole_diameter / 2  # 8.2
-air_gap_mid_r = housing_outer_r + air_gap / 2               # 70.05
+air_gap_mid_r = housing_outer_r + air_gap / 2               # 63.15 (old generator only)
 wire_hole_angle = groove_seam_angle
 wire_hole_diameter = 8
 wire_top_z = groove_start_height      # 66.5
@@ -128,13 +146,13 @@ tc_cable_hole_angle = hole_position_angle
 tc_cable_hole_z = hole_center_height  # 8.2
 
 # ── Leg / standoff bolt holes (3) in the bottom region ─────────────
-leg_hole_r = housing_inner_r - 5      # 61.85 (old generator value; the package uses r 60.0, see build_current_package.py)
+leg_hole_r = leg_r                    # 54.0 (the package value, build_current_package.py)
 bolt_hole_size = 6.6                  # Ø6.6
 leg_angles = [40, 160, 280]
 
 # ── Bottom cap (02) ────────────────────────────────────────────────
 bottom_cap_lip_height = 16
-bottom_cap_outer_r = mesh_outer_r + 1.5     # 74.75 -> Ø149.5 blank (157.5 before 2026-11-08)
+bottom_cap_outer_r = mesh_outer_r + skirt_cap_lip   # 67.35 -> Ø134.7 (149.5 on 2026-11-08, 157.5 before)
 bottom_cap_z = housing_bottom_z - sheet_metal_thickness   # -32.9 (underside of disk top face at +1.2)
 # bottom-cap drilled holes (angle, radius position, hole radius):
 bottom_cap_holes = [
@@ -147,7 +165,7 @@ bottom_cap_holes = [
 ]
 
 # ── Cap shell (04a) ────────────────────────────────────────────────
-cap_outer_r = mesh_outer_r + 1.5            # 74.75
+cap_outer_r = mesh_outer_r + skirt_cap_lip   # 67.35 (04 / 08 skirts)
 cap_inner_r = ceramic_inner_r               # 40.75
 ceramic_grab_lip = 3
 CAP_BOLT_Z = 59 + body_raise
@@ -158,7 +176,7 @@ CAP_BOLT_HOLE_R = 1.8                         # bolt-clearance bored in each fin
 
 # hinge (piano style) on the finger at 292.4 deg
 HINGE_ANGLE_DEG = 292.4
-HINGE_PIVOT_R = 81.5 - (24.6 - insulation_gap)   # 77.5 (81.5 before 2026-11-08)
+HINGE_PIVOT_R = 81.5 - (24.6 - insulation_gap) - (4.4 - air_gap)   # 70.1 (77.5 on 2026-11-08, 81.5 before): moves with the outer tube
 HINGE_PIVOT_Z = 97 + body_raise
 HINGE_T_OFF = 14
 HINGE_KN_LEN = 25/3                           # ≈ 8.333 each knuckle
@@ -197,7 +215,9 @@ PRINCIPAL_DIMS = {
     "M6 ring angles (deg)": [round(a, 1) for a in ring_screw_angles],
     "Bottom cap blank dia (mm)": round(2*bottom_cap_outer_r, 2),
     "Bottom cap lip height (mm)": bottom_cap_lip_height,
-    "Cap shell OD (mm)": round(2*cap_outer_r, 2),
+    "Top cap 05 ring OD (mm)": round(2*top_cap_edge_r, 2),
+    "Ring width ceramic OD to top cap edge (mm)": round(top_cap_edge_r - ceramic_outer_r, 2),
+    "Bottom cap 04 / lid disk 08 OD (mm)": round(2*cap_outer_r, 2),
     "Hinge barrel dia (mm)": 2*HINGE_BARREL_OUTER_R,
     "Hinge pin dia x len (mm)": f"{2*HINGE_PIN_R} x {HINGE_PIN_LEN}",
 }

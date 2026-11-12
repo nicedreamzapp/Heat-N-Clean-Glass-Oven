@@ -1,8 +1,57 @@
-Heat & Clean Glass Oven: machining files, 2026-11-08 R2
-Replaces every earlier package, including the first 2026-11-08 package and 2026-10-16. Metal parts only; we supply all ceramics.
+Heat & Clean Glass Oven: machining files, 2026-11-12
+Replaces every earlier package, including 2026-11-08 R2. Metal parts only; we supply all ceramics.
 Same 13 parts as before (01-11, 13, 14). No new parts.
 
-What changed in R2 (since the first 2026-11-08 package), and why:
+What changed on 2026-11-12 (since 2026-11-08 R2), and why:
+  Our smallest glass slurper is only 21 mm from bowl to bend, and it has to sit across the top cap ring. The ring (from
+  the ceramic outside edge to the outside edge of the 05 top cap) was 28.4 mm. It is now 20.0 mm.
+  How: the side insulation is 14.6 mm (was 20.6), the air gap between the tubes is 3.0 mm (was 4.4), and the 05 top cap
+  edge is 0.5 mm past the outer tube (was 1.5). Heights, sheet thicknesses, hole sizes, glass slot widths, bolt angles and
+  bolt heights, the ceramic core and the ceramic lid disk do NOT change.
+
+  Part                         2026-11-08 R2                 2026-11-12
+  01 Inner Wall Tube           ID 133.7 / OD 135.3           ID 121.7 / OD 123.3
+  02 Outer Perforated Tube     ID 144.1 / OD 146.5           ID 129.3 / OD 131.7
+                               76 holes per row              68 holes per row (same Ø4, same 6 mm pitch, same rows)
+  03 Support Ring              OD 133.3, bolt wall 131.7     OD 121.3, bolt wall 119.7
+                               raised seat r 36.25-52        raised seat r 36.25-47.25: the step wall is now on the
+                                                             centering wall line (one wall, r 46.45-47.25, down to the plate
+                                                             and up around the ceramic base disk), to make room for:
+                               leg holes on Ø120 (r 60)      leg holes on Ø108 (r 54)
+                               wire holes r 58, 180/190/315  wire holes r 53.5 at 185 / 190->195 / 315 deg (the old r 58
+                                                             would cut the bolt wall; the 2 heater lead holes turn 5 deg so
+                                                             they clear the seat bolt and nut at 172.4 deg)
+  04 Bottom Cap                OD 149.5                      OD 134.7 (skirt stays 1.5 past the outer tube: it carries the
+                                                             bottom bolts, a 1.2 sheet cannot fit in 0.5)
+                               leg + wire holes as 03        leg + wire holes as 03 (Ø108; r 53.5 at 185/195/315)
+  05 One-Piece Top Cap         ring OD 149.3, width 28.4     ring OD 132.5, width 20.0 (0.4 past the outer tube)
+                               skirt outside the outer tube  NO outer skirt any more (no room for a 1.2 sheet + clearance in
+                                                             0.5). The 6 bolt tabs still come down OUTSIDE the outer tube
+                                                             (14 wide, 1.2, 0.2 off the tube, outer face Ø134.5): they are
+                                                             ears of the flat ring bent down to the top bolts.
+                               4 grooves 25.1 long           4 grooves 17.7 long (still end just short of the outer tube)
+                               inner sleeve 131.7/133.3      inner sleeve 119.7/121.3
+                               48 vents Ø3.5 on Ø139.7       48 vents Ø3.0 on Ø126.3 (Ø3.0 = the new 3.0 air gap; Ø3.5 would
+                                                             not fit). Same 48 angles.
+  06 Lid Inner Tube            ID 133.7 / OD 135.3           ID 121.7 / OD 123.3
+  07 Lid Outer Perf. Tube      ID 144.1 / OD 146.5           ID 129.3 / OD 131.7, 68 holes per row
+  08 Lid Top Disk              OD 149.5                      OD 134.7 (skirt stays 1.5 past the outer tube, as 04)
+  09 Lid Ceramic Holder        plate OD 146.4                plate OD 131.6
+                               wall 131.7/133.3              wall 119.7/121.3
+                               lip 142.1/143.7               lip 127.3/128.9
+                               48 vents Ø3.5 on Ø139.7       48 vents Ø3.0 on Ø126.3, lined up with 05. The Ø3.0 now cuts
+                                                             right through the small outer lip at each hole; the lip stays
+                                                             between the holes and still locates 07.
+  10 Lid Handle                not changed
+  11 Hinge Strap, 13 Pin       moved in 7.4 mm with the lid outer tube (pivot r 70.1, was 77.5). Still a placeholder.
+  14 Steel Tray                leg holes r 60                leg holes r 54 (Ø108). Outline not changed.
+  Ceramic spacer rings (we supply): ID 124.1 / OD 129.3 (were 136.1 / 144.1), still 10 mm tall, wall 2.6 (was 4.0).
+  Bolts: same 30 x M6, same angles and heights. The stack through the walls is 1.4 mm thinner, so the same bolts stick
+  1.4 mm further past the nut (or use bolts 1-2 mm shorter).
+
+  Please check on the next print: the top cap ring, measured from the ceramic edge to the cap edge, should be 20.0 mm.
+
+Earlier change, 2026-11-08 R2 (still true, diameters now as above):
   We measured the REAL ceramic with calipers: the heater core is 90.4 mm tall (the same as your 10/21 measurement) and
   core + ceramic base plate together are 95.3 mm. In the last package the room from the ceramic seat (03, z -0.44) to the
   top of the 05 top cap was only 92.64 mm, so the real ceramic stood 2.66 mm ABOVE the top cap and the lid could not close.
@@ -117,11 +166,51 @@ Fit fixes, 2026-09-30 (same files, updated):
   Change sheets (2026-11-08 R2, old vs new): https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/change-sheets-2026-11-08-R2.html
 
 
-加热清洁玻璃炉：加工文件，2026-11-08 R2
-替换之前所有的文件包，包括第一版 2026-11-08 和 2026-10-16。只包括金属件，陶瓷件全部由我方提供。
+加热清洁玻璃炉：加工文件，2026-11-12
+替换之前所有的文件包，包括 2026-11-08 R2。只包括金属件，陶瓷件全部由我方提供。
 还是同样的13个零件（01-11、13、14）。没有新增零件。
 
-R2 的改动（和第一版 2026-11-08 相比）和原因：
+2026-11-12 的改动（和 2026-11-08 R2 相比）和原因：
+  我们最小的玻璃 slurper 从碗到弯头只有 21 mm，它要跨放在顶盖圆环上。圆环（从陶瓷外边到 05 顶盖外边）原来是 28.4 mm，
+  现在是 20.0 mm。
+  做法：侧面保温层 14.6 mm（原来 20.6），两根管子之间的空气层 3.0 mm（原来 4.4），05 顶盖外边只比外管多出 0.5 mm
+  （原来 1.5）。高度、板厚、孔径、玻璃槽宽、螺栓角度和高度、陶瓷加热芯和陶瓷盖盘都不改。
+
+  零件                     2026-11-08 R2                    2026-11-12
+  01 内壁管                内径 133.7 / 外径 135.3          内径 121.7 / 外径 123.3
+  02 外冲孔管              内径 144.1 / 外径 146.5          内径 129.3 / 外径 131.7
+                           每排 76 个孔                     每排 68 个孔（仍是 Ø4，孔距 6 mm，排数不变）
+  03 支撑环                外径 133.3，螺栓墙 131.7         外径 121.3，螺栓墙 119.7
+                           抬高座面 r 36.25-52              抬高座面 r 36.25-47.25：台阶墙现在和定位墙在同一圈
+                                                            （一圈墙 r 46.45-47.25，向下到底板，向上围住陶瓷底盘），为了让出位置给：
+                           脚孔 Ø120（r 60）                脚孔 Ø108（r 54）
+                           线孔 r 58，180/190/315 度        线孔 r 53.5，185 / 195 / 315 度（原来的 r 58 会切到螺栓墙；
+                                                            2 个加热线孔转 5 度，让开 172.4 度的座圈螺栓和螺母）
+  04 底盖                  外径 149.5                       外径 134.7（裙边仍比外管多 1.5：它要装下排螺栓，0.5 放不下 1.2 板）
+                           脚孔、线孔同 03                  脚孔、线孔同 03（Ø108；r 53.5，185/195/315 度）
+  05 一体顶盖              圆环外径 149.3，宽 28.4          圆环外径 132.5，宽 20.0（比外管多 0.4）
+                           外管外面有一圈裙边               不再有外裙边（0.5 里放不下 1.2 板加间隙）。6 个螺栓折边片仍在外管外面
+                                                            （宽 14，厚 1.2，离外管 0.2，外面 Ø134.5）：是平圆环上的耳片往下折到上排螺栓。
+                           4 条金属槽长 25.1                4 条金属槽长 17.7（仍停在外管里面一点）
+                           内套边 131.7/133.3               内套边 119.7/121.3
+                           48 个通风孔 Ø3.5，圆 Ø139.7      48 个通风孔 Ø3.0，圆 Ø126.3（Ø3.0 = 新的 3.0 空气层，Ø3.5 放不下）。角度不变。
+  06 盖子内管              内径 133.7 / 外径 135.3          内径 121.7 / 外径 123.3
+  07 盖子外冲孔管          内径 144.1 / 外径 146.5          内径 129.3 / 外径 131.7，每排 68 个孔
+  08 盖子顶盘              外径 149.5                       外径 134.7（裙边仍比外管多 1.5，同 04）
+  09 盖子陶瓷托架          底板外径 146.4                   底板外径 131.6
+                           立墙 131.7/133.3                 立墙 119.7/121.3
+                           外侧小边 142.1/143.7             外侧小边 127.3/128.9
+                           48 个通风孔 Ø3.5，圆 Ø139.7      48 个通风孔 Ø3.0，圆 Ø126.3，和 05 对齐。Ø3.0 孔在每个孔处把外侧小边切通；
+                                                            孔和孔之间小边保留，仍然给 07 定位。
+  10 提手                  不改
+  11 铰链片、13 销轴       跟着盖子外管往里移 7.4 mm（铰链轴 r 70.1，原来 77.5）。仍是示意件。
+  14 托盘                  脚孔 r 60                        脚孔 r 54（Ø108）。外形不改。
+  陶瓷垫圈环（我方提供）：内径 124.1 / 外径 129.3（原来 136.1 / 144.1），仍高 10 mm，壁厚 2.6（原来 4.0）。
+  螺栓：还是 30 个 M6，角度和高度不变。穿过的管壁总厚度少 1.4 mm，同样的螺栓在螺母外多出 1.4 mm（或用短 1-2 mm 的螺栓）。
+
+  下一个样品请确认：从陶瓷边量到顶盖外边，顶盖圆环应为 20.0 mm。
+
+之前的改动，2026-11-08 R2（仍然有效，直径以上面为准）：
   我们用卡尺量了真陶瓷：加热芯高 90.4 mm（和你们 10/21 量的一样），加热芯加陶瓷底盘一共 95.3 mm。
   上一版文件里，从陶瓷座面（03，z -0.44）到 05 顶盖顶面只有 92.64 mm，所以真陶瓷比顶盖高出 2.66 mm，盖子合不上。
   （10/16 的座面抬高是按塑料样品上量的间隙做的，不是按真陶瓷。）

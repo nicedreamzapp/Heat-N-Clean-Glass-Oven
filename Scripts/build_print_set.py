@@ -1,5 +1,5 @@
-"""PRINT_SET_2026-11-08-R2: plastic fit/display print set (Matt 2026-11-08).
-12 metal parts copied from FAB_PACKAGE_2026-11-08-R2 (no 14 tray this round) + 6 ceramic solids drawn here
+"""PRINT_SET_2026-11-12: plastic fit/display print set (Matt 2026-11-08; 2026-11-12 = the 20.0 mm ring).
+12 metal parts copied from FAB_PACKAGE_2026-11-12 (no 14 tray this round) + 6 ceramic solids drawn here
 at the measured sizes (hnc_params + the viewer meshes). Fit check places each ceramic where the viewers put it.
 R2: C1 core 90.4 tall and C2 base disk 4.9 thick (Matt's calipers on the real ceramic: stack 95.3), so on the print the
 core top is flush with the 05 cap top. Writes README.txt (EN + 中文) and the zip.
@@ -8,7 +8,7 @@ import os, sys, math, shutil, json
 from build123d import *
 sys.path.insert(0, os.path.dirname(__file__)); import hnc_params as P
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TAG = "2026-11-08-R2"
+TAG = "2026-11-12"
 PKG = os.path.join(ROOT, "FAB_PACKAGE_" + TAG); OUT = os.path.join(ROOT, "PRINT_SET_" + TAG)
 if os.path.isdir(OUT): shutil.rmtree(OUT)
 for d in ("STL", "STEP"): os.makedirs(os.path.join(OUT, d), exist_ok=True)
@@ -51,8 +51,9 @@ def disk(t=6.0):   # base / lid disk as modelled: Ø92.5 body + raised centre Ø
         with BuildSketch(Plane.XZ): Polygon(*pts, align=None)
         revolve(axis=Axis.Z)
     return bp.part
-def spacer(h):   # ID 136.1 / OD 144.1, 6 radial Ø6.6 holes at mid height on the bolt angles
-    ri, ro = 68.05, 72.05
+SP_RI, SP_RO = P.housing_outer_r + 0.4, P.mesh_inner_r   # fill the air gap: ID 124.1 / OD 129.3 (136.1 / 144.1 before 2026-11-12)
+def spacer(h):   # 6 radial Ø6.6 holes at mid height on the bolt angles
+    ri, ro = SP_RI, SP_RO
     s = ring(ri, ro, 0, h)
     for a in BOLT: s -= radial(a, (ri + ro) / 2, h / 2, 3.3, 8)
     return solid(s)
@@ -80,7 +81,7 @@ for k, z0 in (("sp_low", 95.2 + U), ("sp_high", 115.2 + U)): placed[k] = Pos(0, 
 cap_top = metal["05_One_Piece_Top_Cap"].bounding_box().max.Z
 print("FLUSH core top", round(CORE_Z + H, 3), "cap top", round(cap_top, 3), "diff", round(CORE_Z + H - cap_top, 3))
 for i, a in enumerate((40, 160, 280)):
-    placed["foot%d" % i] = Pos(60 * math.cos(math.radians(a)), 60 * math.sin(math.radians(a)), -56.7) * CER["C6_Ceramic_Foot"]
+    placed["foot%d" % i] = Pos(P.leg_r * math.cos(math.radians(a)), P.leg_r * math.sin(math.radians(a)), -56.7) * CER["C6_Ceramic_Foot"]
 for k, s in placed.items():
     bb = s.bounding_box()
     for n, m in metal.items():
@@ -96,11 +97,11 @@ for i, a in enumerate(list(placed)):
 zs = {"sp_bot": -24.0, "sp_seat": 2.15, "sp_top": 59.0 + U, "sp_low": 100.2 + U, "sp_high": 120.2 + U}
 for k, zb in zs.items():
     for a in BOLT:
-        rod = radial(a, 70.0, zb, 3.0, 14)
+        rod = radial(a, (SP_RI + SP_RO) / 2, zb, 3.0, 14)
         x = rod & placed[k]; v = x.volume if x is not None else 0
         if v > 0.01: print("BOLT BLOCKED", k, a, round(v, 2))
 for i, a in enumerate((40, 160, 280)):
-    rod = Pos(60 * math.cos(math.radians(a)), 60 * math.sin(math.radians(a)), -70) * cyl(3.0, 44)
+    rod = Pos(P.leg_r * math.cos(math.radians(a)), P.leg_r * math.sin(math.radians(a)), -70) * cyl(3.0, 44)
     x = rod & placed["foot%d" % i]; v = x.volume if x is not None else 0
     if v > 0.01: print("LEG SCREW BLOCKED", i, round(v, 2))
 print("fit check done")
@@ -129,11 +130,13 @@ txt = f"""HEAT & CLEAN GLASS OVEN - PLASTIC PRINT SET {TAG}
 PLASTIC FIT / DISPLAY MODEL ONLY, NOT HEAT RATED. Do not heat or use it as an oven.
 仅用于塑料试装 / 展示模型，不耐热。请勿加热或当作烤炉使用。
 
-R2 (replaces the earlier 2026-11-08 print set): the body is {U} mm taller above the ceramic seat, so the real ceramic
-(core 90.4 + base plate {bd} = 95.3 mm, measured with calipers) ends flush with the top of the 05 top cap and the lid closes.
-C1 is now 90.4 tall (was 91) and C2 is {bd} thick (was 6.0). On this print the C1 top is flush with the 05 cap top.
-R2（替换之前的 2026-11-08 打印套件）：陶瓷座面以上的机体加高 {U} mm，真陶瓷（加热芯 90.4 + 底盘 {bd} = 95.3 mm，卡尺实测）
-顶面和 05 顶盖顶面齐平，盖子可以合上。C1 现在高 90.4（原来 91），C2 厚 {bd}（原来 6.0）。打印件上 C1 顶面和 05 顶盖顶面齐平。
+2026-11-12 (replaces the 2026-11-08 R2 print set): the top cap ring, ceramic edge to cap edge, is 20.0 mm (was 28.4) so
+the smallest glass slurper (21 mm bowl to bend) fits: insulation 14.6 (was 20.6), air gap 3.0 (was 4.4), top cap edge 0.5
+past the outer tube (was 1.5). Outer tube OD 131.7, bottom cap and lid top disk OD 134.7. Spacer rings C5 are now
+ID {2*SP_RI:.1f} / OD {2*SP_RO:.1f}. Heights did not change: the C1 top is still flush with the 05 cap top.
+2026-11-12（替换 2026-11-08 R2 打印套件）：顶盖圆环（陶瓷边到顶盖边）20.0 mm（原来 28.4），最小的玻璃 slurper（碗到弯头 21 mm）
+可以放上去：保温层 14.6（原来 20.6），空气层 3.0（原来 4.4），顶盖边比外管多 0.5（原来 1.5）。外管外径 131.7，底盖和盖子顶盘外径 134.7。
+垫圈环 C5 现在内径 {2*SP_RI:.1f} / 外径 {2*SP_RO:.1f}。高度不改：C1 顶面仍和 05 顶盖顶面齐平。
 
 All files in mm, true size (scale 100%). Metal parts are placed in their assembled position; the slicer can re-centre them.
 所有文件单位为毫米，1:1 真实尺寸（100% 比例）。金属件按装配位置导出，切片软件可重新居中。
@@ -156,7 +159,7 @@ C1: OD 92.5 / ID 81.5, h {H}; 4 glass slots 10.5 wide x {P.slot_depth} deep, R5.
     热电偶孔 6.4，314.6 度，高 8.2；加热丝螺旋槽：30 圈，高 15.5 至 66.5，宽 1.0，深 0.6。
 C2: OD 92.5, {bd} overall: {bd - 1.5:.1f} body + raised centre 77.0 x 1.0 with a 0.5 taper. 外径 92.5，总厚 {bd}（{bd - 1.5:.1f} 主体 + 中间凸台 77.0 x 1.0，0.5 斜边）。
 C3: OD 92.5, 6.0 overall: 4.5 body + raised centre 77.0 x 1.0 with a 0.5 taper. 外径 92.5，总厚 6.0（4.5 主体 + 中间凸台 77.0 x 1.0，0.5 斜边）。
-C5 (all 5 rings, 3 body + 2 lid, 10 mm tall): ID 136.1 / OD 144.1, 6 radial holes 6.6 at mid height, at 52.4 + n x 60 deg. C5（全部 5 个垫圈，机体 3 个 + 盖子 2 个，高 10 mm）：内径 136.1 / 外径 144.1，6 个径向孔 6.6，位于中间高度，角度 52.4 + n x 60 度。
+C5 (all 5 rings, 3 body + 2 lid, 10 mm tall): ID {2*SP_RI:.1f} / OD {2*SP_RO:.1f}, 6 radial holes 6.6 at mid height, at 52.4 + n x 60 deg. C5（全部 5 个垫圈，机体 3 个 + 盖子 2 个，高 10 mm）：内径 {2*SP_RI:.1f} / 外径 {2*SP_RO:.1f}，6 个径向孔 6.6，位于中间高度，角度 52.4 + n x 60 度。
 C6: post 20 x 20 on a base 28 x 5, leg screw hole 6.6 through. 立柱 20 x 20，底座 28 x 5，通孔 6.6 用于脚螺丝。
 
 FASTENERS NOT INCLUDED, BUY THEM: 30 M6 bolts + nuts, 2 M4 screws (handle), 3 leg screws (M6).

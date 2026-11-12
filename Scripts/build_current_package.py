@@ -1,4 +1,16 @@
-"""Build FAB_PACKAGE_2026-11-08-R2 from the approved design (see CURRENT.md).
+"""Build FAB_PACKAGE_2026-11-12 from the approved design (see CURRENT.md).
+
+2026-11-12 change (Matt, ~4 AM): his smallest glass slurper is 21 mm bowl-to-bend, so the top cap ring (ceramic OD to
+the 05 cap edge) goes 28.4 -> 20.0: insulation 20.6 -> 14.6 (inner tube in DI = 6.0 vs R2), air gap 4.4 -> 3.0 (outer
+tube in DO = 7.4), top cap lip past the outer tube 1.5 -> 0.5 (05 plate edge in 8.4). Not a uniform shift, so the radii
+below are tied to the part they follow: inner tube (01, 06, 03 plate edge + bolt wall, 05 inner sleeve, 09 bolt wall,
+leg circle, every bolt's nut), outer tube (02, 07, 04 / 08 skirts, 05 tabs, 09 plate + lip, groove ends, hinge, every
+bolt's head), air gap (spacer rings, vents). Things that no longer fit and changed (see CURRENT.md 2026-11-12):
+05 loses its outer skirt (a 1.2 sheet cannot hang outside the tube in a 0.5 lip; the 6 bolt tabs stay outside the tube,
+bent down from ears in the plate); 04 / 08 keep their skirts 1.5 past the outer tube (they carry bolt rings); vents
+Ø3.5 -> Ø3.0 (= the air gap); 03 riser at the centering wall (r 47.25, was 52), wire holes r 58 -> 53.5 and the 2 lead
+holes 180/190 -> 185/195 (clear of the 172.4 seat bolt and its nut); legs r 60 -> 54.
+HNC_GEN=R2 HNC_OUT=/tmp/x rebuilds FAB_PACKAGE_2026-11-08-R2 exactly (regression check).
 
 2026-11-08 R2 change (Matt, calipers on the REAL ceramic): bare core 90.4, core + base plate 95.3, but the drawn room from
 03's seat (z -0.44) to the 05 cap top (92.2) was 92.64, so the real ceramic stood 2.66 proud and the lid could not close.
@@ -44,8 +56,16 @@ import hnc_params as HP
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "cad-source")
-D = float(os.environ.get("HNC_SHRINK", 24.6 - HP.insulation_gap))   # 4.0: how far every body/lid radius moved in
-OUT = os.environ.get("HNC_OUT", os.path.join(ROOT, "FAB_PACKAGE_2026-11-08-R2"))
+GEN = os.environ.get("HNC_GEN", "2026-11-12")
+if GEN == "R2":   # the 2026-11-08 R2 geometry (and with HNC_SHRINK / HNC_RAISE the older ones)
+    G = dict(gap=20.6, air=4.4, lip=1.5, vent_r=1.75, wire_r=58.0, leads=(180.0, 190.0), step_r=52.0, skirt05=True)
+else:
+    G = dict(gap=HP.insulation_gap, air=HP.air_gap, lip=HP.top_cap_lip, vent_r=HP.vent_r, wire_r=HP.wire_hole_r,
+             leads=HP.lead_hole_angles, step_r=HP.seat_step_r, skirt05=False)
+D = float(os.environ.get("HNC_SHRINK", 24.6 - G["gap"]))   # inner tube in vs 2026-10-16 (4.0 R2, 10.0 2026-11-12)
+DO = D + (4.4 - G["air"])                                 # outer tube in (4.0 R2, 11.4 2026-11-12)
+DC = DO + (1.5 - G["lip"])                                # 05 top cap edge in (4.0 R2, 12.4 2026-11-12)
+OUT = os.environ.get("HNC_OUT", os.path.join(ROOT, "FAB_PACKAGE_2026-11-12"))
 U = float(os.environ.get("HNC_RAISE", HP.body_raise))   # 2.66: everything above the seat goes up this much (R2)
 UP = Pos(0, 0, U)
 TOP = 91.0 + U                            # tube tops (93.66)
@@ -53,20 +73,22 @@ ZB_TOP = 59.0 + U                         # top bolt ring, moves with the cap ta
 REAL = "HNC_OUT" not in os.environ
 T = 0.8                                   # inside parts
 BOLT = [52.4 + 60 * k for k in range(6)]  # one bolt clocking for every ring
-WIRE = [(180.0, 4.0), (190.0, 4.0), (315.0, 3.2)]   # heater leads Ø8, thermocouple Ø6.4, at r 58
+WIRE = [(G["leads"][0], 4.0), (G["leads"][1], 4.0), (315.0, 3.2)]   # heater leads Ø8, thermocouple Ø6.4
 # (2026-09-30 audit: were 183/188, only 5.06 mm apart at r 58, so the two Ø8 holes merged into one slot; now 2.1 mm web)
-R_WIRE = 58.0                             # inside the inner tube, in 03's plate: does not move with the shrink
+R_WIRE = G["wire_r"]                      # inside 03's bolt wall (r 58 until 2026-11-12, then 53.5: 03's bolt wall moved to 59.85)
 # 2026-09-30 audit: leg screws at r 65.85 put the M6 head's flats right on 01's inside face (70.85) and its corners
 # 0.8 mm into the wall; moved in to r 64.0 (corners at 69.8, 1 mm clear) in 03, 04 and the tray.
 # 2026-11-08: moved in with the tube, r 60.0 (corners 65.8, same clearance to 03's bolt wall).
+# 2026-11-12: r 54.0 (head corners 59.85 = 03's bolt wall line, inner corners 48.15 clear of the r 47.25 riser).
 LEG_R, LEG_SRC, LEGS = 64.0 - D, 65.85, (40, 160, 280)
 
 # ── body / lid radii (2026-10-16 values minus D) ────────────────────────────────────────────────────────────────
 R01I, R01O = 70.85 - D, 71.65 - D         # 01 / 06 inner tube (0.8)
-R02I, R02O = 76.05 - D, 77.25 - D         # 02 / 07 outer perforated tube (1.2)
+R02I, R02O = 76.05 - DO, 77.25 - DO       # 02 / 07 outer perforated tube (1.2)
 R02M = (R02I + R02O) / 2
-RCAP = 78.75 - D                          # 04 / 08 cap OD (1.5 past the outer tube)
-R_SP_I, R_SP_O = 72.05 - D, 76.05 - D     # ceramic spacer rings between the tubes (viewer only, we supply them)
+RCAP = 78.75 - DO                         # 04 / 08 cap OD (skirt outside the outer tube: 1.5 past it, always)
+R05 = 78.75 - DC                          # 05 top cap line (plate edge = R05 - 0.1): 1.5 past the tube in R2, 0.5 since 2026-11-12
+R_SP_I, R_SP_O = 72.05 - D, 76.05 - DO    # ceramic spacer rings fill the air gap (0.4 off the inner tube, viewer only, we supply them)
 
 def solid(x): return x if not isinstance(x, ShapeList) else Compound(children=list(x))
 def ring(ri, ro, z0, z1):
@@ -89,7 +111,8 @@ LIFT = Pos(0, 0, CAP_T)
 SEAT_UP = 5.06              # ceramic top was this far below the 05 cap top -> raise the seat this much
 SLOT_DROP = 0.24            # Alice's 5.3 slot mismatch minus SEAT_UP: real slot bottom ends this far below the groove
 SEAT_Z = -5.5 + SEAT_UP     # -0.44 = new ceramic seat face
-STEP_R = 52.0               # riser of the raised middle: outside the centering wall (47.25), inside the wire holes (54.0)
+STEP_R = G["step_r"]        # riser of the raised middle (52.0 until 2026-11-12, then 47.25 = on the centering wall line,
+                            # so the leg holes and wire holes fit between it and the bolt wall)
 SLOT_R = 5.25                                   # half of the 10.5 slot = radius of its round bottom
 SLOT_ZC = 67.5 - SLOT_DROP + SLOT_R             # centre of the round bottom (72.51; was 72.75 before 2026-10-16), R1 frame
 def u_solid(L, rad, z_top, zc=SLOT_ZC):
@@ -159,24 +182,27 @@ parts["04_Bottom_Cap"] = solid(bc)
 #   vent holes over the gap between the tubes. The 5 old screw ears are gone (nothing screws into them anymore).
 # (OCC fails cutting the slots through the fused cap, so each ring gets its slots first, then everything fuses)
 # 2026-11-08: plate edge, inner-tube sleeve, skirt, tabs and vents in by D; the ceramic sleeve stays at the ceramic.
-SB0, SB1 = 43.42, 83.32 - D                     # slot cutter: from inside the ceramic sleeve to past the skirt
+SB0, SB1 = 43.42, 83.32 - DO                    # slot cutter: from inside the ceramic sleeve to past the skirt
 def slot_box(a): return Rot(0, 0, a) * Pos((SB0 + SB1) / 2, 0, 86.13) * Box(SB1 - SB0, 10.5, 16.3)
 rings = []
-for ri, ro, z0, z1 in [(46.45, RCAP - 0.1, 91.0, 91.0 + CAP_T),     # top plate
+# 2026-11-12: the plate edge is only 0.4 past the outer tube, so the outer skirt is gone; the 6 tabs stay outside the
+# tube and now run up to the plate top (ears in the plate, bent down).
+for ri, ro, z0, z1 in [(46.45, R05 - 0.1, 91.0, 91.0 + CAP_T),      # top plate
                        (46.45, 47.65, 81.0, 91.2),                   # sleeve around the ceramic core
-                       (R01I - 1.0, R01I - 0.2, 86.0, 91.2),         # sleeve just inside the inner tube
-                       (R02O + 0.2, RCAP - 0.1, 81.0, 91.2)]:        # skirt outside the outer tube
+                       (R01I - 1.0, R01I - 0.2, 86.0, 91.2)] + ([
+                       (R02O + 0.2, RCAP - 0.1, 81.0, 91.2)] if G["skirt05"] else []):   # skirt outside the outer tube
     r = ring(ri, ro, z0, z1)
     for a in SLOTS: r = r - slot_box(a)
     rings.append(r)
 cap = rings[0]
 for r in rings[1:]: cap = cap + r
-R_TAB = RCAP - 0.7                              # tab mid-sheet (78.05 before 2026-11-08)
+R_TAB = RCAP - 0.7                              # tab mid-sheet = outer tube OD + 0.8 (78.05 before 2026-11-08)
+TAB_Z1 = 81.2 if G["skirt05"] else 91.0 + CAP_T   # tab top: into the skirt (R2) / up to the plate top (2026-11-12)
 for a in BOLT:
-    cap = cap + Rot(0, 0, a) * Pos(R_TAB, 0, 66.1) * Box(CAP_T, 14.0, 30.2) - rhole(a, R_TAB, 59.0, length=6)
-R_VENT = 73.85 - D                              # vents over the air gap
+    cap = cap + Rot(0, 0, a) * Pos(R_TAB, 0, (51.0 + TAB_Z1) / 2) * Box(CAP_T, 14.0, TAB_Z1 - 51.0) - rhole(a, R_TAB, 59.0, length=6)
+R_VENT = (R01O + R02I) / 2                      # vents over the middle of the air gap (69.85 R2, 63.15 2026-11-12)
 VENT_ANGLES = [k * 6.0 for k in range(60) if min(abs((k * 6.0 - s_ + 180) % 360 - 180) for s_ in SLOTS) > 9]   # 48
-VENT_R = 1.75                                   # Ø3.5
+VENT_R = G["vent_r"]                            # Ø3.5 until 2026-11-12, then Ø3.0 = the 3.0 air gap
 for a in VENT_ANGLES:
     cap = cap - vhole(a, R_VENT, VENT_R, 90.0, 93.0)
 # 2026-09-28 (Matt): metal slot grooves, the SAME shape as the ceramic's glass slot. The slot in the core and both
@@ -187,7 +213,7 @@ def groove(a, r0, r1):
     L, rm = r1 - r0, (r0 + r1) / 2
     g = u_solid(L, SLOT_R + CAP_T, 91.0 + CAP_T) - u_solid(L + 2, SLOT_R, 95.0)
     return Rot(0, 0, a) * Pos(rm, 0, 0) * g
-G_END = 75.55 - D                                # groove end: corners clear the outer tube (sqrt(71.85^2 - 6.45^2) = 71.56 >= 71.55)
+G_END = 75.55 - DO                               # groove end: corners clear the outer tube (sqrt(71.85^2 - 6.45^2) = 71.56 >= 71.55)
 for a in SLOTS:   # ONE groove per slot (Matt): ceramic -> just short of the outer tube, straight through the inner tube.
     cap = cap + groove(a, 46.45, G_END)
 # the inner tube's 4 glass slots are widened to let the groove pass: groove outside (R6.45) + 0.2 clearance
@@ -242,7 +268,7 @@ parts["10_Lid_Handle"] = solid(UP * hd)
 # 11 strap + 13 pin (placeholder hinge, Tianrun fits their stock hinge): moved in D along the 292.4° bolt line, so the
 # strap's bolt hole stays on its lid bolt and the pin stays in the barrels (pivot r 81.5 -> 77.5)
 HA = math.radians(HP.HINGE_ANGLE_DEG)
-HMOVE = Pos(-D * math.cos(HA), -D * math.sin(HA), 0)
+HMOVE = Pos(-DO * math.cos(HA), -DO * math.sin(HA), 0)   # the strap sits on the lid outer tube
 parts["11_Lid_Hinge_Strap"] = solid(UP * HMOVE * LIFT * src("11_Lid_Hinge_Strap"))
 parts["13_Hinge_Pin"] = solid(UP * HMOVE * LIFT * src("13_Hinge_Pin"))
 tr = src("14_Steel_Tray")   # floor z -59.7 to -56.7 (outline 204.5 wide, well clear of the cap: not resized)
@@ -284,32 +310,35 @@ def snap_bodies(fp, r_target=None, dr=None):
     trimesh.util.concatenate(out).export(fp)
 for f in ("feet", "legscrews"):   # each foot / screw snaps to LEG_R (idempotent)
     snap_bodies(os.path.join(ROOT, "viewer-full", f + ".glb"), r_target=LEG_R)
-# bolts: each bolt / nut / washer keeps its shape and the whole set moves in by D. Idempotent: the inner nut (the
-# 11.6-tall body nearest the axis) is placed by absolute radius, its 2026-10-16 position minus D.
-NUT_R = {"viewer-full/bolts_top": 68.3, "viewer-full/bolts_bot": 68.3, "viewer-full/bolts_seat": 67.0,
-         "viewer-lid-full/bolts_low": 68.3, "viewer-lid-full/bolts_high": 68.3}
-for key, r_old in NUT_R.items():   # move each bolt / nut node (instanced meshes) so the parts sheet and viewers keep them separate
+# bolts (2026-11-12): each bolt set = shank + head (outside, on the outer tube / its skirt or tab) + nut (inside the inner
+# tube, or inside 03's bolt wall for the seat ring). The tubes no longer move together, so each set is re-placed by
+# absolute radius: the nut and the shank tip follow the inner tube, the head and the shank's head end follow the outer
+# tube (the shank gets 1.4 shorter vs R2, the same tip past the nut). Offsets = the R2 positions (idempotent), except
+# the lower lid nut: it sits inside 09's upright bolt wall (inner face R01I - 1.0); until 2026-11-12 it was drawn 0.95
+# into that wall.
+BOLT_FIT = {   # key: (nut outer face - R01I, head inner face - R02O, bolt axis z)
+    "viewer-full/bolts_top": (-0.05, 1.45, 59.0 + U), "viewer-full/bolts_bot": (-0.05, 2.25, -24.0),
+    "viewer-full/bolts_seat": (-1.35, 0.15, 2.15),
+    "viewer-lid-full/bolts_low": (-1.05, 0.15, 100.2 + U), "viewer-lid-full/bolts_high": (-0.05, 1.65, 120.2 + U)}
+for key, (off_n, off_h, ZAX) in BOLT_FIT.items():
     fp = os.path.join(ROOT, key + ".glb"); sc = trimesh.load(fp, force="scene")
-    nodes = []
+    new = trimesh.Scene()
     for nm in sc.graph.nodes_geometry:
         Tm, gname = sc.graph[nm]
         w = sc.geometry[gname].copy(); w.apply_transform(Tm)
-        nodes.append((nm, Tm, gname, w.bounds))
-    nuts = []
-    for nm, Tm, gname, bd in nodes:   # each node is one bolt set (bolt + nut + washer): find its inner 11.6-tall nut
-        w = sc.geometry[gname].copy(); w.apply_transform(Tm)
-        nuts += [math.hypot(*c.bounds.mean(axis=0)[:2]) for c in w.split(only_watertight=False)
-                 if abs((c.bounds[1, 2] - c.bounds[0, 2]) - 11.6) < 0.2]
-    dr = (r_old - D) - min(nuts)
-    # R2: the top ring and both lid rings go up U with the cap (absolute: each set's bolt axis = its R1 height + U)
-    ZAX = {"viewer-full/bolts_top": 59.0 + U, "viewer-full/bolts_bot": -24.0, "viewer-full/bolts_seat": 2.15,
-           "viewer-lid-full/bolts_low": 100.2 + U, "viewer-lid-full/bolts_high": 120.2 + U}[key]
-    allb = np.vstack([bd for _, _, _, bd in nodes]); dz = ZAX - (allb[:, 2].min() + allb[:, 2].max()) / 2
-    for nm, Tm, gname, bd in nodes:
-        cx, cy = bd.mean(axis=0)[:2]; r = math.hypot(cx, cy)
-        M = np.eye(4); M[:2, 3] = [cx / r * dr, cy / r * dr]; M[2, 3] = dz
-        sc.graph.update(frame_to=nm, matrix=M @ Tm, geometry=gname)
-    sc.export(fp)
+        a = math.radians(float(nm.split("_")[-1])); d = np.array([math.cos(a), math.sin(a)])
+        r = w.vertices[:, :2] @ d
+        hexes = sorted((c for c in w.split(only_watertight=False) if abs((c.bounds[1, 2] - c.bounds[0, 2]) - 11.6) < 0.2),
+                       key=lambda c: (c.vertices[:, :2] @ d).mean())
+        nut_out = (hexes[0].vertices[:, :2] @ d).max(); head_in = (hexes[-1].vertices[:, :2] @ d).min()
+        inner = r <= (nut_out + head_in) / 2
+        dn = (R01I + off_n) - nut_out; dh = (R02O + off_h) - head_in
+        v = w.vertices.copy(); mv = np.where(inner, dn, dh)
+        v[:, 0] += mv * d[0]; v[:, 1] += mv * d[1]
+        v[:, 2] += ZAX - (w.bounds[0, 2] + w.bounds[1, 2]) / 2
+        w.vertices = v
+        new.add_geometry(w, node_name=nm, geom_name=nm)
+    new.export(fp)
 # ceramic spacer rings between the tubes (we supply them; not in the machining package): rebuilt at the new size,
 # 6 Ø6.6 bolt holes on their bolt ring. 2026-11-10 (Matt): all five rings 10 mm, centred on their bolts (body rings were 14)
 SPACERS = {"viewer-full/spacer_bot": (-29.0, -19.0, -24.0), "viewer-full/spacer_seat": (-2.85, 7.15, 2.15),

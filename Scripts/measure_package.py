@@ -47,8 +47,11 @@ def measure(pkg):
         if vh: M[n]["vert_holes(ang,r)"]=vh
     cap=P["05_One_Piece_Top_Cap"]
     plate=cap & (Pos(0,0,91.6+U)*Box(400,400,0.4))
-    M["cap_plate_outer_r"]=rmax(plate)
-    M["cap_ring_width_ceramicOD_to_cap_edge"]=round(rmax(plate)-46.25,2)
+    M["cap_plate_outer_r_incl_tab_ears"]=rmax(plate)
+    # 2026-11-12: the ring is measured on a line at 30 deg (between a glass slot and a bolt tab), where the glass sits
+    edge=rmax(plate & (Rot(0,0,30)*Pos(60,0,91.6+U)*Box(40,0.5,1)))
+    M["cap_plate_edge_r_at_30deg"]=edge
+    M["cap_ring_width_ceramicOD_to_cap_edge"]=round(edge-46.25,2)
     tab=cap & (Pos(0,0,70+U)*Box(400,400,1))
     M["cap_tab_outer_r"]=rmax(tab)
     # groove length: inside U face r range at slot 6.5
@@ -73,13 +76,14 @@ def measure(pkg):
         if not (isinstance(v,float) and v<0.01): col.append((a,b,round(v,3)))
     M["part_overlaps(>0.01mm3)"]=col
     # ceramic core and spacer rings vs parts
-    D=round(78.75-(o02+1.5),3)
     # ceramic core as drawn in the viewers: R2 = the real one (base plate 4.9 on the seat, core 90.4 on it); R1 = 5.06..92.2
     cz0,ch=(HP.seat_z+HP.base_disk_t_real,HP.ceramic_core_h_real) if U>0.01 else (5.06,87.14)
     core=Pos(0,0,cz0)*(Cylinder(46.25,ch,align=(Align.CENTER,Align.CENTER,Align.MIN))-Cylinder(40.75,ch,align=(Align.CENTER,Align.CENTER,Align.MIN)))
     bd=Pos(0,0,HP.seat_z)*(Cylinder(46.25,cz0-HP.seat_z,align=(Align.CENTER,Align.CENTER,Align.MIN)))
-    sp_i,sp_o=72.05-D,76.05-D
-    spacers={"sp_bot":(-31,-17),"sp_seat":(-5,9),"sp_top":(52+U,66+U),"sp_low":(95.2+U,105.2+U),"sp_high":(115.2+U,125.2+U)}
+    sp_i,sp_o=o01+0.4,i02   # spacer rings fill the air gap, 0.4 off the inner tube
+    # 2026-11-10: all five rings 10 mm, centred on their bolt lines
+    spacers={"sp_bot":(-29,-19),"sp_seat":(-2.85,7.15),"sp_top":(54+U,64+U),"sp_low":(95.2+U,105.2+U),"sp_high":(115.2+U,125.2+U)}
+    M["spacer_ring_ID/OD"]=(round(2*sp_i,2),round(2*sp_o,2))
     extra=[]
     for n,s in P.items():
         v=(s&core).volume
@@ -97,7 +101,8 @@ def measure(pkg):
     ZS=(59.0+U,-24.0,2.15,100.2+U,120.2+U)
     for z in ZS:
         for a in BOLT:
-            rod=Rot(0,0,a)*Pos(72,0,z)*Rot(0,90,0)*Cylinder(3.1,30)
+            r0,r1=i01-9,o02+8   # from inside the nut to outside the head
+            rod=Rot(0,0,a)*Pos((r0+r1)/2,0,z)*Rot(0,90,0)*Cylinder(3.1,r1-r0)
             for n,s in P.items():
                 v=(s&rod).volume
                 if v>0.01: bad.append((z,a,n,round(v,2)))
@@ -116,8 +121,10 @@ def measure(pkg):
         for n,s in P.items():
             v=(s&rod).volume
             if v>0.01: vb.append(("leg",a,n,round(v,2)))
-    for a,rr in ((180,3.9),(190,3.9),(315,3.1)):
-        rod=Pos(58*math.cos(math.radians(a)),58*math.sin(math.radians(a)),-40)*Cylinder(rr,40,align=(Align.CENTER,Align.CENTER,Align.MIN))
+    wires=[(a,r,3.9) for a,r in vholes(P["03_Support_Ring"],4.0)]+[(a,r,3.1) for a,r in vholes(P["03_Support_Ring"],3.2)]
+    M["wire_holes_03(ang,r)"]=[(a,r) for a,r,_ in wires]
+    for a,wr,rr in wires:
+        rod=Pos(wr*math.cos(math.radians(a)),wr*math.sin(math.radians(a)),-40)*Cylinder(rr,40,align=(Align.CENTER,Align.CENTER,Align.MIN))
         for n,s in P.items():
             v=(s&rod).volume
             if v>0.01: vb.append(("wire",a,n,round(v,2)))
@@ -128,7 +135,12 @@ def measure(pkg):
     M["seat_z / core bottom / core top / cap top"]=(HP.seat_z if U>0.01 else -0.44, round(cz0,3), core_top, cap_top)
     M["ceramic_top_minus_cap_top"]=round(core_top-cap_top,3)
     M["lid_09_bottom_minus_cap_top"]=round(P["09_Lid_Ceramic_Holder"].bounding_box().min.Z-cap_top,3)
-    v05=vholes(cap,1.75); v09=vholes(P["09_Lid_Ceramic_Holder"],1.75)
+    vr=sorted({round(f.radius,3) for f in cap.faces() if f.geom_type==GeomType.CYLINDER and f.radius<2.5
+               and abs(f.geom_adaptor().Cylinder().Axis().Direction().Z())>0.99
+               and math.hypot(f.geom_adaptor().Cylinder().Axis().Location().X(),f.geom_adaptor().Cylinder().Axis().Location().Y())>50})
+    M["vent_radius"]=vr
+    v05=vholes(cap,vr[0]); v09=vholes(P["09_Lid_Ceramic_Holder"],vr[0])
+    M["vent_ring_r"]=sorted({r for _,r in v05})
     off=max(min(math.hypot(r1*math.cos(math.radians(a1))-r2*math.cos(math.radians(a2)),r1*math.sin(math.radians(a1))-r2*math.sin(math.radians(a2))) for a2,r2 in v09) for a1,r1 in v05)
     M["vents_05/09_count, max_offset_mm"]=(len(v05),len(v09),round(off,3))
     zs=[]
