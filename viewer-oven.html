@@ -256,6 +256,7 @@ function apply(v,f){
   else { lidOuter.position.set(0,0,0); lidPivot.quaternion.identity(); }
   v.w.forEach(w=>{ w.g.position.set(0,0,w.dz*f); if(w.kids) w.kids.forEach(kd=>kd.o.position.copy(kd.base).addScaledVector(kd.dir,RADIAL*f)); });
   mode.textContent=f<0.02?'assembled':(f>0.98?'separated':'…'); v.LB.setVisible(labelsOn(v,f));
+  lbtn.style.display=(v.name!=='whole'||(f>0.5&&!cutOn))?'':'none';   // whole oven: labels only exist when separated, so the button only shows then
   dimG.visible=v.name==='base'&&cutOn&&f<0.05; }
 function frame(v,f,_n=0){ const box=new THREE.Box3(); scene.updateMatrixWorld(true);
   v.w.forEach(w=>box.expandByObject(w.m));
@@ -274,9 +275,7 @@ function syncBtns(v){ sl.value=v.k; btn.textContent=v.goal>0.5?'Assemble':'Separ
 sl.oninput=()=>{ const v=cur(); v.goal=v.k=parseFloat(sl.value); apply(v,v.k); syncBtns(v); };
 sl.onchange=()=>frame(cur(),cur().k);
 btn.onclick=()=>{ const v=cur(); v.goal=v.goal>0.5?0:1; syncBtns(v); };
-lbtn.onclick=()=>{ const v=cur(); v.showL=!v.showL;
-  if(v.showL&&v.name==='whole'){ if(cutOn){ cutOn=false; setClip(); } if(v.goal<0.5) v.goal=1; }   // labels need the parts apart + no cut: do it for him
-  apply(v,v.k); frame(v,v.k); syncBtns(v); };
+lbtn.onclick=()=>{ const v=cur(); v.showL=!v.showL; apply(v,v.k); frame(v,v.k); syncBtns(v); };
 lidb.onclick=()=>{ lidAng=lidAng?0:110; const v=cur(); apply(v,v.k); frame(v,v.k); syncBtns(v); };
 $('fbtn').onclick=()=>{ if(tab==='build'){ userCam=false; return; } const v=cur(); frame(v,v.k); };
 
