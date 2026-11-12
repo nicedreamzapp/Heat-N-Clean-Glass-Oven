@@ -133,11 +133,11 @@ Crank the temperature up. Walk away. The oven burns off all char, resin, and bui
 <picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-banner-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-banner-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-banner.svg" width="100%" alt="04. Built to be built. Zero welds, all bolts, and the design journey"></picture>
 <picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s04-r1.svg" width="100%" alt="M6 bolts and nuts. 3 fastener types total. Bolted strap hinge. No welded hinge, low profile. Measured, not copied. Thickness was measured from the STEP files."></picture>
 
-The entire oven assembles with **M6 bolts and nuts**. The only welds in the
+The entire oven assembles with **M6 bolts and nuts**, plus **M5 leg screws** and **M4 handle screws**. The only welds in the
 product are the seams of the rolled tubes. No welded brackets, no welded
-bosses. 13 metal parts plus the ceramics and M6 hardware (see [PARTS_LIST.md](PARTS_LIST.md)).
+bosses. 13 metal parts plus the ceramics and the M6 / M5 / M4 hardware (see [PARTS_LIST.md](PARTS_LIST.md)).
 
-- **One-piece top cap (05)** -- flat ring on the tube tops, open over the ceramic, 6 tabs that bolt
+- **One-piece top cap (05)** -- flat ring on the tube tops, open over the ceramic, 5 tabs (72° apart) that bolt
   through the top bolt line, 4 metal grooves the exact shape of the ceramic glass slots, 48 vent holes.
 - **Lid ceramic holder (09)** -- holds the ceramic lid disk flush with the lid bottom; its 48 vent holes
   line up with the top cap vents so air goes straight through when the lid is closed.
@@ -145,7 +145,7 @@ bosses. 13 metal parts plus the ceramics and M6 hardware (see [PARTS_LIST.md](PA
 - **Handle** -- screws on with 2 M4 screws from inside the lid.
 - **2026-11-08 size** -- insulation 20.6 mm so a glass slurper (31 mm gap) sits across the 28.4 mm top cap ring.
 - **2026-11-08 R2** -- body 2.66 mm taller above the ceramic seat, so the real ceramic (core 90.4 + base plate 4.9 = 95.3 mm, measured with calipers) ends flush with the top cap and the lid closes.
-- **2026-11-12** -- top cap ring 20.0 mm (was 28.4) so the smallest glass slurper (21 mm bowl to bend) fits: insulation 14.6 mm, air gap 3.0 mm, top cap edge 0.5 mm past the outer tube.
+- **2026-11-12** -- top cap ring 20.0 mm (was 28.4) so the smallest glass slurper (21 mm bowl to bend) fits: insulation 14.6 mm, air gap 3.0 mm, top cap edge 0.4 mm past the outer tube.
 
 ### The design journey (June 2026, history: the current design is above and in [CURRENT.md](CURRENT.md))
 
@@ -162,9 +162,9 @@ decision reviewed against 3D renders before any shop quotes:
    collision (fixed by sliding the knuckles sideways), painted-on holes that
    weren't really cut (now real boolean-cut holes), and a recessed ceramic
    lid face (now flush). The commit log tells the whole story.
-4. Open question for first articles: hinge strap stiffness with the lid
-   hanging open. Cheap fixes ready if needed: 1.5mm strap stock or a second
-   bolt hole.
+4. The hinge strap stiffness question from June is settled differently: since
+   2026-09-28 the factory fits its own stock butt hinge, and the strap (11) and
+   pin (13) in the package are placeholders.
 
 ### Current metal spec (2026-11-12)
 
@@ -179,7 +179,7 @@ decision reviewed against 3D renders before any shop quotes:
 ring; every body and lid diameter is 8 mm smaller: inner wall ID 133.7, outer tube 144.1 / 146.5, caps Ø149.5.
 2026-11-08 R2: the body is 2.66 mm taller above the ceramic seat (inner and outer tube 125.36 tall), so the real ceramic
 stack (95.3 mm with its base plate) ends flush with the top cap; the cap and the lid are the same parts, 2.66 mm higher.
-2026-11-12: top cap ring 28.4 -> 20.0 mm for the smallest slurper: insulation 14.6, air gap 3.0, top cap edge 0.5 past the
+2026-11-12: top cap ring 28.4 -> 20.0 mm for the smallest slurper: insulation 14.6, air gap 3.0, top cap edge 0.4 past the
 outer tube: inner wall ID 121.7, outer tube 129.3 / 131.7, top cap ring Ø132.5, bottom cap and lid top disk Ø134.7.
 Every size is re-measured from the STEP files themselves
 (`Scripts/measure_package.py`), not copied from a spec sheet.
@@ -204,7 +204,7 @@ Upstream tools used, not written here: [build123d](https://github.com/gumyr/buil
 <picture><source media="(max-width: 610px), (min-width: 768px) and (max-width: 895px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-r1-m.svg"><source media="(max-width: 1149px)" srcset="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-r1-mid.svg"><img src="https://raw.githubusercontent.com/nicedreamzapp/Heat-N-Clean-Glass-Oven/main/assets/readme/s05-r1.svg" width="100%" alt="No prototype results. Design only so far; first articles pending. Open hardware. CERN-OHL-S-2.0, GPL-3.0-or-later, CC-BY-SA-4.0."></picture>
 
 - The only physical article so far is the October 2026 plastic test print (see [the photos](#latest-plastic-test-print-on-the-real-ceramic-october-2026)); no heated stainless prototype results are in this repo yet. Temperatures and safety limits are the controller settings in [Controller_Setup_Guide.md](Controller_Setup_Guide.md), not logged test data.
-- Hinge strap stiffness with the lid open is still an open question (see the design journey above).
+- Hinge: the factory fits its own stock butt hinge; strap 11 and pin 13 in the package are placeholders for its position.
 - The package rebuilds from this repo alone: `cad-source/` holds the 4 Sept 9 solids the builder still starts from (10, 11, 13, 14).
 - There is no `requirements.txt`. The scripts expect a local venv (`.venv-cad`) with build123d, trimesh and numpy.
 

@@ -2,7 +2,7 @@
 
 Generated from `FAB_PACKAGE_2026-11-12` (the only current machining files, see [CURRENT.md](CURRENT.md)) by `Scripts/make_parts_list.py`. Sizes in mm; overall size and volume measured from each STEP file.
 
-2026-11-12: the top cap ring (ceramic OD to the 05 cap edge) is 20.0 mm (was 28.4) for the smallest glass slurper: insulation 14.6, air gap 3.0, 05 edge 0.5 past the outer tube. Heights as R2: the real ceramic stack (core 90.4 + base plate 4.9 = 95.3) ends flush with the 05 cap top. Later the same day: 5 bolts per ring (was 6), 72° apart between the 4 glass slots (41.5/113.5/185.5/257.5/329.5°); hinge on the 257.5° lid bolt; heater lead holes 160/170°; legs back to even 120° at 5.5/125.5/245.5° with M5 leg screws (Ø5.5 holes); tray 1.2 lower so the 25 mm feet meet the 04 floor exactly.
+2026-11-12: the top cap ring (ceramic OD to the 05 cap edge) is 20.0 mm (was 28.4) for the smallest glass slurper: insulation 14.6, air gap 3.0, 05 edge 0.4 past the outer tube. Heights as R2: the real ceramic stack (core 90.4 + base plate 4.9 = 95.3) ends flush with the 05 cap top. Later the same day: 5 bolts per ring (was 6), 72° apart between the 4 glass slots (41.5/113.5/185.5/257.5/329.5°); hinge on the 257.5° lid bolt; heater lead holes 160/170°; legs back to even 120° at 5.5/125.5/245.5° with M5 leg screws (Ø5.5 holes); tray 1.2 lower so the 25 mm feet meet the 04 floor exactly.
 
 | # | Part | 零件 | Material | Key sizes | Overall (x × y × z) | Volume cm³ |
 |---|---|---|---|---|---|---|

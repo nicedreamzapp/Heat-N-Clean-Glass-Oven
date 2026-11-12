@@ -1,7 +1,7 @@
 """2026-11-12 change sheets, drawn from the STEP files themselves.
 
   The 11-12 change: top cap ring 28.4 -> 20.0 for the smallest glass slurper (insulation 20.6 -> 14.6, air gap 4.4 -> 3.0,
-  cap lip 1.5 -> 0.5), 6 -> 5 bolts per ring (41.5 + 72k), hinge onto the 257.5 bolt, legs 5.5/125.5/245.5 with M5
+  cap lip 1.4 -> 0.4), 6 -> 5 bolts per ring (41.5 + 72k), hinge onto the 257.5 bolt, legs 5.5/125.5/245.5 with M5
   screws, wire holes r 53.5 at 160/170/315, tray 1.2 lower. OLD = FAB_PACKAGE_2026-11-08-R2 (archive folder),
   NEW = FAB_PACKAGE_2026-11-12. Old = grey dashed, new = solid blue. Sections are cut from the real solids (build123d),
   iso pictures are headless Blender (Workbench) renders of the new STLs.
@@ -158,10 +158,10 @@ PANELS = {
 HEAD_EN = "Change 2026-11-12: top cap ring 28.4 → 20.0 mm for the smallest glass slurper, 5 bolts per ring, legs 120° apart with M5 screws"
 HEAD_ZH = "改动 2026-11-12：顶环 28.4 → 20.0 mm（适配最小玻璃吸管），每圈 5 个螺栓，三脚 120° 均布、M5 螺丝"
 NOTE_EN = ("The smallest glass slurper is 21 mm bowl to bend, so the ring from the ceramic to the cap edge goes 28.4 → 20.0: insulation 20.6 → 14.6, "
-           "air gap 4.4 → 3.0, cap lip 1.5 → 0.5. Overall Ø149.5 → 134.7. Every bolt ring has 5 M6 bolts 72° apart (41.5 + 72k), between the glass slots. "
+           "air gap 4.4 → 3.0, cap lip 1.4 → 0.4. Overall Ø149.5 → 134.7. Every bolt ring has 5 M6 bolts 72° apart (41.5 + 72k), between the glass slots. "
            "Hinge on the 257.5° lid bolt. Legs 5.5 / 125.5 / 245.5° at r 54 with M5 × 40 screws. Wire holes r 53.5 at 160 / 170 / 315°. Tray 1.2 lower. "
            "NOT changed: heights, sheet thicknesses, glass slot widths, the handle, the tray outline, the ceramics.")
-NOTE_ZH = ("最小玻璃吸管碗到弯头 21 mm，所以陶瓷到顶盖边的环宽 28.4 → 20.0：保温层 20.6 → 14.6，空气层 4.4 → 3.0，顶盖外沿 1.5 → 0.5。整机外径 149.5 → 134.7。"
+NOTE_ZH = ("最小玻璃吸管碗到弯头 21 mm，所以陶瓷到顶盖边的环宽 28.4 → 20.0：保温层 20.6 → 14.6，空气层 4.4 → 3.0，顶盖外沿 1.4 → 0.4。整机外径 149.5 → 134.7。"
            "每圈 5 个 M6 螺栓，间隔 72°（41.5 + 72k），在玻璃槽之间。铰链在 257.5° 盖子螺栓上。三脚 5.5 / 125.5 / 245.5°，r 54，M5 × 40 螺丝。"
            "线孔 r 53.5，160 / 170 / 315°。托盘低 1.2。不改：高度、板厚、玻璃槽宽、提手、托盘外形、陶瓷。")
 

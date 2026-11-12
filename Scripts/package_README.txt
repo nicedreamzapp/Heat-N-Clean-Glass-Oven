@@ -34,7 +34,7 @@ What changed on 2026-11-12 (since 2026-11-08 R2), and why:
   Our smallest glass slurper is only 21 mm from bowl to bend, and it has to sit across the top cap ring. The ring (from
   the ceramic outside edge to the outside edge of the 05 top cap) was 28.4 mm. It is now 20.0 mm.
   How: the side insulation is 14.6 mm (was 20.6), the air gap between the tubes is 3.0 mm (was 4.4), and the 05 top cap
-  edge is 0.5 mm past the outer tube (was 1.5). Heights, sheet thicknesses, hole sizes, glass slot widths, bolt angles and
+  edge is 0.4 mm past the outer tube (was 1.4). Heights, sheet thicknesses, hole sizes, glass slot widths, bolt angles and
   bolt heights, the ceramic core and the ceramic lid disk do NOT change.
 
   Part                         2026-11-08 R2                 2026-11-12
@@ -50,11 +50,11 @@ What changed on 2026-11-12 (since 2026-11-08 R2), and why:
                                                              would cut the bolt wall; the 2 heater lead holes turn 5 deg so
                                                              they clear the seat bolt and nut at 172.4 deg)
   04 Bottom Cap                OD 149.5                      OD 134.7 (skirt stays 1.5 past the outer tube: it carries the
-                                                             bottom bolts, a 1.2 sheet cannot fit in 0.5)
+                                                             bottom bolts, a 1.2 sheet cannot fit in 0.4)
                                leg + wire holes as 03        leg + wire holes as 03 (Ø108; r 53.5 at 185/195/315)
   05 One-Piece Top Cap         ring OD 149.3, width 28.4     ring OD 132.5, width 20.0 (0.4 past the outer tube)
                                skirt outside the outer tube  NO outer skirt any more (no room for a 1.2 sheet + clearance in
-                                                             0.5). The 6 bolt tabs still come down OUTSIDE the outer tube
+                                                             0.4). The 5 bolt tabs (72° apart) still come down OUTSIDE the outer tube
                                                              (14 wide, 1.2, 0.2 off the tube, outer face Ø134.5): they are
                                                              ears of the flat ring bent down to the top bolts.
                                4 grooves 25.1 long           4 grooves 17.7 long (still end just short of the outer tube)
@@ -170,7 +170,7 @@ Look at the 3D first:
 Earlier changes (already in the 2026-09-28 files, still true):
   05 Top Cap: ONE piece (not shell + ring). Flat top sits on the tube tops, open in the middle over the ceramic core.
   05 Top Cap: each of the 4 glass slots has a metal groove the exact shape of the ceramic slot (10.5 mm wide, round R5.25 bottom; depth updated 2026-10-16, see top) welded under the cap, flush with the ceramic slot and butted right against the ceramic. ONE groove per slot, from the ceramic straight out to the outer tube. The inner tube's 4 glass slots are widened (13.3 mm, round bottom) so the groove passes through, so the insulation is never open and the cap stays one piece.
-     Sleeves hug the ceramic, the inner tube and the outer tube. 6 tabs come down the outside and bolt through the
+     Sleeves hug the ceramic, the inner tube and the outer tube. 5 tabs, 72° apart, come down the outside and bolt through the
      top bolts. 4 glass slots straight through, lined up with the walls. Vent holes over the gap between the tubes.
   03 Support Ring: new short wall around the edge with 6 bolt holes (the seat bolts hold it).
      3 new holes in the flat plate for the heater wires (Ø8 x2) and thermocouple (Ø6.4).
@@ -226,8 +226,8 @@ Fit fixes, 2026-09-30 (same files, updated):
 2026-11-12 的改动（和 2026-11-08 R2 相比）和原因：
   我们最小的玻璃 slurper 从碗到弯头只有 21 mm，它要跨放在顶盖圆环上。圆环（从陶瓷外边到 05 顶盖外边）原来是 28.4 mm，
   现在是 20.0 mm。
-  做法：侧面保温层 14.6 mm（原来 20.6），两根管子之间的空气层 3.0 mm（原来 4.4），05 顶盖外边只比外管多出 0.5 mm
-  （原来 1.5）。高度、板厚、孔径、玻璃槽宽、螺栓角度和高度、陶瓷加热芯和陶瓷盖盘都不改。
+  做法：侧面保温层 14.6 mm（原来 20.6），两根管子之间的空气层 3.0 mm（原来 4.4），05 顶盖外边只比外管多出 0.4 mm
+  （原来 1.4）。高度、板厚、孔径、玻璃槽宽、螺栓角度和高度、陶瓷加热芯和陶瓷盖盘都不改。
 
   零件                     2026-11-08 R2                    2026-11-12
   01 内壁管                内径 133.7 / 外径 135.3          内径 121.7 / 外径 123.3
@@ -239,10 +239,10 @@ Fit fixes, 2026-09-30 (same files, updated):
                            脚孔 Ø120（r 60）                脚孔 Ø108（r 54）
                            线孔 r 58，180/190/315 度        线孔 r 53.5，185 / 195 / 315 度（原来的 r 58 会切到螺栓墙；
                                                             2 个加热线孔转 5 度，让开 172.4 度的座圈螺栓和螺母）
-  04 底盖                  外径 149.5                       外径 134.7（裙边仍比外管多 1.5：它要装下排螺栓，0.5 放不下 1.2 板）
+  04 底盖                  外径 149.5                       外径 134.7（裙边仍比外管多 1.5：它要装下排螺栓，0.4 放不下 1.2 板）
                            脚孔、线孔同 03                  脚孔、线孔同 03（Ø108；r 53.5，185/195/315 度）
   05 一体顶盖              圆环外径 149.3，宽 28.4          圆环外径 132.5，宽 20.0（比外管多 0.4）
-                           外管外面有一圈裙边               不再有外裙边（0.5 里放不下 1.2 板加间隙）。6 个螺栓折边片仍在外管外面
+                           外管外面有一圈裙边               不再有外裙边（0.4 里放不下 1.2 板加间隙）。5 个螺栓折边片（间隔 72°）仍在外管外面
                                                             （宽 14，厚 1.2，离外管 0.2，外面 Ø134.5）：是平圆环上的耳片往下折到上排螺栓。
                            4 条金属槽长 25.1                4 条金属槽长 17.7（仍停在外管里面一点）
                            内套边 131.7/133.3               内套边 119.7/121.3
