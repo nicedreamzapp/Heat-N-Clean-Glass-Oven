@@ -69,7 +69,7 @@ if GEN == "R2":   # the 2026-11-08 R2 geometry (and with HNC_SHRINK / HNC_RAISE 
              bolt=[52.4 + 60 * k for k in range(6)], legs=(40, 160, 280), hinge=292.4, leg_hr=3.3, tray_drop=0.0)
 else:
     G = dict(gap=HP.insulation_gap, air=HP.air_gap, lip=HP.top_cap_lip, vent_r=HP.vent_r, wire_r=HP.wire_hole_r,
-             leads=HP.lead_hole_angles, step_r=HP.seat_step_r, skirt05=False,
+             leads=HP.lead_hole_angles, step_r=HP.seat_step_r, skirt05=True,
              bolt=list(HP.ring_screw_angles), legs=tuple(HP.leg_angles), hinge=HP.HINGE_ANGLE_DEG,
              leg_hr=HP.leg_hole_d / 2, tray_drop=HP.tray_drop)
 D = float(os.environ.get("HNC_SHRINK", 24.6 - G["gap"]))   # inner tube in vs 2026-10-16 (4.0 R2, 10.0 2026-11-12)

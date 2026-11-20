@@ -24,15 +24,15 @@ Ceramic parts (C1-C6) are drawn at the measured ceramic sizes; STEP files for th
 陶瓷件（C1-C6）按实测陶瓷尺寸绘制，其 STEP 文件在 STEP/ 文件夹。
 
 TOTAL: 23 pieces, 17 files.   合计：23 件，17 个文件。
-Largest part 134.7 x 134.7 x 17.2 mm (04_Bottom_Cap): every part fits a 256 x 256 x 256 mm bed.
-最大零件 134.7 x 134.7 x 17.2 mm：全部零件可放入 256 x 256 x 256 mm 打印平台。
+Largest part 134.9 x 134.5 x 41.2 mm (05_One_Piece_Top_Cap): every part fits a 256 x 256 x 256 mm bed.
+最大零件 134.9 x 134.5 x 41.2 mm：全部零件可放入 256 x 256 x 256 mm 打印平台。
 
 File                                Part / 零件                              Qty 数量  Size mm (x*y*z)
 01_Inner_Wall_Tube.stl              Inner Wall Tube 内壁管                           1     123.3 x 123.3 x 125.4
 02_Outer_Perforated_Tube.stl        Outer Perforated Tube 外冲孔管                    1     131.7 x 131.7 x 125.4
 03_Support_Ring.stl                 Support Ring 支撑环                              1     121.3 x 121.3 x 14.8
 04_Bottom_Cap.stl                   Bottom Cap 底盖                                 1     134.7 x 134.7 x 17.2
-05_One_Piece_Top_Cap.stl            One-Piece Top Cap 一体顶盖                        1     133.9 x 133.4 x 41.2
+05_One_Piece_Top_Cap.stl            One-Piece Top Cap 一体顶盖                        1     134.9 x 134.5 x 41.2
 06_Lid_Inner_Tube.stl               Lid Inner Tube 盖子内管                           1     123.3 x 123.3 x 34.2
 07_Lid_Outer_Perforated_Tube.stl    Lid Outer Perforated Tube 盖子外冲孔管              1     131.7 x 131.7 x 34.2
 08_Lid_Top_Disk.stl                 Lid Top Disk 盖子顶盘                             1     134.7 x 134.7 x 14.2

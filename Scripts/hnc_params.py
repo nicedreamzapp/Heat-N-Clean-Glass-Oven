@@ -77,7 +77,7 @@ perf_mid_r = (mesh_inner_r + mesh_outer_r) / 2          # 65.25
 # Top cap lip past the outer tube OD (2026-11-12: 1.5 -> 0.5). 05's plate edge has always been 0.1 inside that line.
 # The bottom cap 04 and lid top disk 08 keep their 1.2 skirts OUTSIDE the outer tube (they carry the bottom and upper
 # lid bolt rings), and a 1.2 sheet + clearance cannot fit in 0.5, so they stay 1.5 past the outer tube.
-top_cap_lip = 0.5
+top_cap_lip = 1.5   # 2026-11-16 Matt: lip (outer skirt) back on 05, never remove it
 top_cap_edge_r = mesh_outer_r + top_cap_lip - 0.1       # 66.25 -> 05 ring Ø132.5, 20.0 from the ceramic OD
 skirt_cap_lip = 1.5
 vent_r = air_gap / 2                                    # 05 + 09 vents: Ø3.0 = the air gap (Ø3.5 before 2026-11-12, did not fit 3.0)
