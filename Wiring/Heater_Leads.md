@@ -45,6 +45,10 @@ the screw.
 
 ## Better build (researched 2026-11-20)
 
+**3D view:** [viewer-heater-leads.html](https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/viewer-heater-leads.html)
+shows this build on the real oven parts (C1 core with its grooves and temp hole, 03, 04, 01), with a
+close-up of each connection part. Rebuild it with `python3 Scripts/build_viewer_heater_leads.py`.
+
 Every kiln maker (Skutt, Paragon, Olympic, Evenheat, L&L) gets the hot kanthal out of the hot zone
 first, then makes the joint. None of them clamp kanthal under a brass screw against the core.
 
