@@ -65,16 +65,23 @@ first, then makes the joint. None of them clamp kanthal under a brass screw agai
 1. **Lead:** fold back and twist the last ~70 mm (the steps above), so the twist starts inside the hot
    zone and runs through the insulation plus the 25 mm space. Slide 12-15 steatite beads (2.3 mm bore)
    over the twist. Beads keep the wire spaced and don't fray or hold moisture like fiber sleeve.
-2. **Through the stainless plate:** a porcelain tube insulator pressed into a 3/8" hole. Never a bare
-   hole.
-3. **The joint:** trim the pigtail ~8 mm past the insulator, crimp a nickel-plated kiln element
-   connector (or a 12-10 AWG high-temp butt splice) onto it, and 12 AWG MG wire into the other end.
-   No screw. Use an uninsulated-terminal crimper.
-4. **Where it lives:** in the 25 mm space under the base, outside the insulation, with a few vent
-   holes so air moves. Keep the joint under ~200 C.
-5. **To the controller:** MG wire to a steatite terminal block with stainless hardware on the bottom
-   cap, then regular wire to the SSR.
+2. **Through 03:** the beaded lead passes straight through the Ø8 lead hole in the 03 support ring.
+   The beads keep the kanthal off the steel edge, the way kilns pass beaded leads through brick.
+3. **The joint:** in the 25 mm open space, trim the pigtail and crimp a nickel-plated kiln element
+   connector (or a 12-10 AWG high-temp butt splice) onto it, with 12 AWG MG wire in the other end.
+   No screw. Use an uninsulated-terminal crimper. Keep the joint under ~200 C.
+4. **Out through 04:** a Skutt porcelain kiln insulator (body Ø11.2, lip Ø22.1, $1.50) sits in each
+   Ø11.5 lead hole in the 04 bottom cap, lip on the floor and body pointing down out of the oven. The
+   MG wire runs down through it.
+5. **To the controller:** in the controller box, the MG wire lands on a steatite terminal block with
+   stainless hardware, then regular wire runs to the SSR.
 6. **Strain relief:** a stainless P-clip on the MG wire past the joint, so the crimp never carries load.
+
+**Lead holes (changed 2026-11-20 for the Skutt insulator):** 145 and 173 deg. 03: Ø8 at r 53.5.
+04: Ø11.5 at r 49, so the 22.1 mm lip clears the 01 tube that runs down to the floor. The two lips are
+1.6 mm apart, and a clash check against 01, 02, 03, 04, the tray, feet, leg screws, spacers and every
+bolt came back clean. The insulator length isn't published; with the body pointing down out of the
+oven, the length doesn't matter.
 
 Avoid: brass or zinc-plated screws on kanthal, porcelain wire nuts (they loosen on kanthal), solder
 (won't take on kanthal A1).
@@ -84,7 +91,7 @@ Avoid: brass or zinc-plated screws on kanthal, porcelain wire nuts (they loosen 
 | Part | Example | Approx |
 |---|---|---|
 | Steatite beads, 2.3 mm bore | Tempco CER-103-105, or 400-pc packs on Amazon/Newegg | ~$10 |
-| Porcelain tube insulator | Skutt porcelain insulator (Krueger Pottery) | ~$2.50 ea |
+| Skutt porcelain insulator (ELPINS) | The Ceramic Shop, theceramicshop.com/product/7877 | $1.50 ea |
 | Element crimp connectors | Skutt element connectors (6 pack), or Crimp Supply 12-10 high-temp butt splices | $8-22 |
 | 12 AWG MG wire, 450 C | Supco 25 ft, or Nassau by the foot | ~$2.70/ft |
 | Steatite terminal block, stainless hardware | Tempco EHD-108-101 (Zoro) | $10-15 |

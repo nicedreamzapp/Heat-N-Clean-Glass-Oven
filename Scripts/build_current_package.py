@@ -83,9 +83,11 @@ ZB_TOP = 59.0 + U                         # top bolt ring, moves with the cap ta
 REAL = "HNC_OUT" not in os.environ
 T = 0.8                                   # inside parts
 BOLT = G["bolt"]                          # one bolt clocking for every ring: 5 x 72 deg from 41.5 (2026-11-12 later; 6 x 60 from 52.4 before)
-WIRE = [(G["leads"][0], 4.0), (G["leads"][1], 4.0), (315.0, 3.2)]   # heater leads Ø8, thermocouple Ø6.4
+WIRE = [(G["leads"][0], 4.0), (G["leads"][1], 4.0), (315.0, 3.2)]   # heater leads Ø8 (03: the beaded lead passes), thermocouple Ø6.4
 # (2026-09-30 audit: were 183/188, only 5.06 mm apart at r 58, so the two Ø8 holes merged into one slot; now 2.1 mm web)
 R_WIRE = G["wire_r"]                      # inside 03's bolt wall (r 58 until 2026-11-12, then 53.5: 03's bolt wall moved to 59.85)
+# 2026-11-20: in 04 the two lead holes are Ø11.5 at r 49 for Skutt porcelain kiln insulators (lip on the floor, body down)
+WIRE04 = [(a, R_WIRE, r) for a, r in WIRE] if GEN == "R2" else [(a, HP.lead_hole_r04, HP.lead_hole_d / 2) if r == 4.0 else (a, R_WIRE, r) for a, r in WIRE]
 # 2026-09-30 audit: leg screws at r 65.85 put the M6 head's flats right on 01's inside face (70.85) and its corners
 # 0.8 mm into the wall; moved in to r 64.0 (corners at 69.8, 1 mm clear) in 03, 04 and the tray.
 # 2026-11-08: moved in with the tube, r 60.0 (corners 65.8, same clearance to 03's bolt wall).
@@ -186,7 +188,7 @@ parts["03_Support_Ring"] = solid(sr)
 # the skirt on the bottom bolt ring, wire/TC holes under 03's holes, 3 leg holes Ø6.6. (The Sept 9 cap's old tube-gap
 # wire holes and Ø13.2 leg holes, plugged on 2026-09-30, are simply not drawn.)
 bc = Pos(0, 0, -32.9) * Cylinder(RCAP, 1.2, align=(Align.CENTER, Align.CENTER, Align.MIN)) + ring(RCAP - 1.2, RCAP, -32.9, -15.7)
-bc = cut_all(bc, [rhole(a, RCAP - 0.6, -24.0) for a in BOLT] + [vhole(a, R_WIRE, r, -40, -10) for a, r in WIRE]
+bc = cut_all(bc, [rhole(a, RCAP - 0.6, -24.0) for a in BOLT] + [vhole(a, rr, r, -40, -10) for a, rr, r in WIRE04]
              + [vhole(a, LEG_R, LEG_HR, -40, -10) for a in LEGS])
 parts["04_Bottom_Cap"] = solid(bc)
 # 05 one-piece top cap, redrawn clean 2026-09-28 from the pre-June cap's layout:
