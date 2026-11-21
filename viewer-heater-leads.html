@@ -90,8 +90,8 @@ const part=async(k,mat,g)=>{const m=await load(k);if(!m)return null;m.traverse(c
 const g04=G(); await part('04',mSteel,g04); L(g04,'04 Bottom Cap',P(68,125,CAP_TOP-4));
 const R04=49;
 for(const a of LEADS){const p=P(R04,a,0);
-  g04.add(zcyl(11.05,CAP_TOP,CAP_TOP+3,p,mPorc)); g04.add(zcyl(5.6,CAP_TOP-19,CAP_TOP,p,mPorc));
-  const hole=new THREE.Mesh(new THREE.CylinderGeometry(2.3,2.3,22.2,24),M(0x555555));hole.geometry.rotateX(Math.PI/2);hole.position.set(p.x,p.y,CAP_TOP-7.9);g04.add(hole)}
+  g04.add(zcyl(11.05,CAP_TOP,CAP_TOP+3,p,mPorc)); g04.add(zcyl(5.6,CAP_TOP-8,CAP_TOP,p,mPorc));   // body 8 mm long: drawn short, real length not published
+  const hole=new THREE.Mesh(new THREE.CylinderGeometry(2.3,2.3,11.2,24),M(0x555555));hole.geometry.rotateX(Math.PI/2);hole.position.set(p.x,p.y,CAP_TOP-2.4);g04.add(hole)}
 L(g04,'Skutt porcelain insulators in 04 (lip on the floor)',P(R04+4,LEADS[0]-8,CAP_TOP+4));
 const gLeg=G(); await part('feet',mCer,gLeg); await part('legscrews',mBolt,gLeg); L(gLeg,'3 ceramic feet + leg screws',P(60,245,CAP_BOT-14));
 const g01=G(); await part('01',mSteelT,g01); L(g01,'01 Inner Wall Tube',P(61,40,60));
@@ -140,7 +140,7 @@ L(g2,'Kanthal coil (same wire as the leads)',P(R+2,250,(Z0+Z1)/2));
 L(g2,'Lead: same kanthal, folded in half + twisted',P(52,LEADS[1],Z1-6));
 L(beadG,'Steatite beads over the twisted lead',P(WIRE_R+3,LEADS[0],Z0-3));
 // joint in the chamber under 03: crimp standing in the 25 mm space, MG wire down through the 04 insulator and out
-const g5=G(); const UNDER=CAP_BOT-21;
+const g5=G(); const UNDER=CAP_BOT-10;
 for(const a of LEADS){
   g5.add(zcyl(2.4,-23,-12,P(WIRE_R,a,0),mCrimp));
   g5.add(tube([P(WIRE_R,a,-23),P(WIRE_R-1.5,a,-26),P(R04,a,CAP_TOP+1),P(R04,a,UNDER+2),P(R04+3,a,UNDER),P(R04+40,a-4,UNDER),P(R04+70,a-6,UNDER)],1.6,mMG,140))}
