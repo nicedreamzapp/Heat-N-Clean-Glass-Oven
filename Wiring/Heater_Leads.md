@@ -43,5 +43,51 @@ the screw.
   into the 25 mm open space under the base, so the block can sit there instead of against the core.
 - The doubled leads are insulated with ceramic fiber sleeve where they pass through the insulation.
 
-Connection methods and insulation options (better blocks, crimp splices, ceramic beads) are being
-researched; this page will be updated with the result.
+## Better build (researched 2026-11-20)
+
+Every kiln maker (Skutt, Paragon, Olympic, Evenheat, L&L) gets the hot kanthal out of the hot zone
+first, then makes the joint. None of them clamp kanthal under a brass screw against the core.
+
+| Part | Rated to |
+|---|---|
+| Brass-screw porcelain block (what burned) | ~200-240 C at the screw |
+| Steatite block with stainless hardware | ~450 C |
+| MG (mica/fiberglass) high-temp wire | 450 C |
+| Nickel-plated crimp splice | ~650 C |
+| Steatite / porcelain beads | ~1200 C |
+
+**Recommended build, per lead:**
+
+1. **Lead:** fold back and twist the last ~70 mm (the steps above), so the twist starts inside the hot
+   zone and runs through the insulation plus the 25 mm space. Slide 12-15 steatite beads (2.3 mm bore)
+   over the twist. Beads keep the wire spaced and don't fray or hold moisture like fiber sleeve.
+2. **Through the stainless plate:** a porcelain tube insulator pressed into a 3/8" hole. Never a bare
+   hole.
+3. **The joint:** trim the pigtail ~8 mm past the insulator, crimp a nickel-plated kiln element
+   connector (or a 12-10 AWG high-temp butt splice) onto it, and 12 AWG MG wire into the other end.
+   No screw. Use an uninsulated-terminal crimper.
+4. **Where it lives:** in the 25 mm space under the base, outside the insulation, with a few vent
+   holes so air moves. Keep the joint under ~200 C.
+5. **To the controller:** MG wire to a steatite terminal block with stainless hardware on the bottom
+   cap, then regular wire to the SSR.
+6. **Strain relief:** a stainless P-clip on the MG wire past the joint, so the crimp never carries load.
+
+Avoid: brass or zinc-plated screws on kanthal, porcelain wire nuts (they loosen on kanthal), solder
+(won't take on kanthal A1).
+
+**Parts (about $110 for both leads, with spares):**
+
+| Part | Example | Approx |
+|---|---|---|
+| Steatite beads, 2.3 mm bore | Tempco CER-103-105, or 400-pc packs on Amazon/Newegg | ~$10 |
+| Porcelain tube insulator | Skutt porcelain insulator (Krueger Pottery) | ~$2.50 ea |
+| Element crimp connectors | Skutt element connectors (6 pack), or Crimp Supply 12-10 high-temp butt splices | $8-22 |
+| 12 AWG MG wire, 450 C | Supco 25 ft, or Nassau by the foot | ~$2.70/ft |
+| Steatite terminal block, stainless hardware | Tempco EHD-108-101 (Zoro) | $10-15 |
+| Stainless P-clips | any hardware supplier | a few $ |
+
+Sources: Skutt element replacement guide (cdn.shopify.com/s/files/1/0272/1968/9606/files/elements.pdf),
+L&L terminal hardware (theceramicshop.com/product/24201), Skutt element connectors
+(theceramicshop.com/product/2497), Tempco ceramic accessories catalog (tempco.com), Bev Howard kiln
+rewiring (bevhoward.com/kiln/KilnWire.htm), Nassau MG wire (nassaunationalcable.com), Crimp Supply
+high-temp butt splices (crimpsupply.com). Prices are from the research date and may change.
