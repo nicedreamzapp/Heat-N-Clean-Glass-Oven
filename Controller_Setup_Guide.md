@@ -32,6 +32,8 @@ Wall Power (120V AC) → On/Off Switch → DH48S Timer → REX-C100 Power
                                               K-Type Thermocouple ← Oven Chamber
 ```
 
+The kanthal coil leads join the power wire at 1-way porcelain terminal blocks. How to prepare the leads so the blocks don't burn: [Wiring/Heater_Leads.md](Wiring/Heater_Leads.md).
+
 ---
 
 ## Programming Each Unit (5 minutes)
