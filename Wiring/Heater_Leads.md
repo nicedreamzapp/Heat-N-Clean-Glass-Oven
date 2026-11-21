@@ -67,9 +67,10 @@ first, then makes the joint. None of them clamp kanthal under a brass screw agai
    over the twist. Beads keep the wire spaced and don't fray or hold moisture like fiber sleeve.
 2. **Through 03:** the beaded lead passes straight through the Ø8 lead hole in the 03 support ring.
    The beads keep the kanthal off the steel edge, the way kilns pass beaded leads through brick.
-3. **The joint:** in the 25 mm open space, trim the pigtail and crimp a nickel-plated kiln element
+3. **The joint:** on the bench, before the core goes in, crimp a nickel-plated kiln element
    connector (or a 12-10 AWG high-temp butt splice) onto it, with 12 AWG MG wire in the other end.
-   No screw. Use an uninsulated-terminal crimper. Keep the joint under ~200 C.
+   No screw. Use an uninsulated-terminal crimper. Then feed the crimp and MG wire down through the Ø8
+   hole in 03 (the crimp passes), so the joint sits in the 25 mm chamber between 03 and 04.
 4. **Out through 04:** a Skutt porcelain kiln insulator (body Ø11.2, lip Ø22.1, $1.50) sits in each
    Ø11.5 lead hole in the 04 bottom cap, lip on the floor and body pointing down out of the oven. The
    MG wire runs down through it.
@@ -82,6 +83,9 @@ first, then makes the joint. None of them clamp kanthal under a brass screw agai
 1.6 mm apart, and a clash check against 01, 02, 03, 04, the tray, feet, leg screws, spacers and every
 bolt came back clean. The insulator length isn't published; with the body pointing down out of the
 oven, the length doesn't matter.
+
+**Build order:** follows the approved oven build, with the 3 feet screwed onto 04 right after it
+(03 no longer has leg holes) and the Skutt insulators dropped into 04 before 03 closes the floor off.
 
 Avoid: brass or zinc-plated screws on kanthal, porcelain wire nuts (they loosen on kanthal), solder
 (won't take on kanthal A1).
