@@ -48,7 +48,7 @@ import {STLLoader} from 'three/addons/loaders/STLLoader.js';
 import {CSS2DRenderer,CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
 
 // Oven frame, mm, z up. Real parts = viewer-full/*.glb (FAB_PACKAGE_2026-11-12), embedded below.
-// Lead holes (Scripts/hnc_params.py, 2026-11-20): 145° and 173°. 03: Ø8 at r 53.5 (the beaded lead passes). 04: Ø11.5 at r 49 for the
+// Lead holes (Scripts/hnc_params.py, 2026-11-20): 145° and 173°. 03: Ø10 at r 53.5 (2026-11-21, was Ø8: the Ø8 porcelain beads pass). 04: Ø11.5 at r 49 for the
 // Skutt porcelain insulator (body Ø11.2, lip Ø22.1 on the floor, body down out of the oven).
 // 03 outer plate top z -5.5, 04 floor top z -31.7 (25.4 mm open space between). Slots 23.5 deep.
 const MODELS=__MODELS__;
@@ -125,11 +125,11 @@ function lead(center){
   for(let i=0;i<=12;i++){const a=i/12*Math.PI;fold.push(pe.clone().add(ve.clone().multiplyScalar(Math.cos(a))).add(te.clone().multiplyScalar(Math.sin(a)*1.2)))}
   const wire=[...s1,...fold.slice(1,-1),...s2.slice().reverse()];
   g2.add(tube(wire,0.5,mKan,2400));
-  for(let d=3;d<len;d+=4.6){const t=d/len,p=c.getPointAt(t);if(p.z<PLATE_BOT-3)break;
-    const b=new THREE.Mesh(new THREE.CylinderGeometry(2.1,2.1,4,20),mBead);b.position.copy(p);b.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),c.getTangentAt(t));beadG.add(b)}
+  for(let d=4;d<len;d+=7.2){const t=d/len,p=c.getPointAt(t);if(p.z<PLATE_BOT-3)break;
+    const b=new THREE.Mesh(new THREE.CylinderGeometry(4,3,7,20),mBead);b.position.copy(p);b.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),c.getTangentAt(t));beadG.add(b)}
 }
-// leads: down the insulation space and through 03 (Ø8, r 53.5); the crimp sits in the chamber under 03 (Matt 11/20).
-// It is crimped on the bench first, then crimp + MG wire feed down through the Ø8 hole in 03 (crimp Ø4.8 passes).
+// leads: down the insulation space and through 03 (Ø10, r 53.5); the crimp sits in the chamber under 03 (Matt 11/20).
+// It is crimped on the bench first, then crimp + MG wire feed down through the Ø10 hole in 03 (crimp Ø4.8 passes).
 function leadPath(a,top){return [...top,P(WIRE_R,a,PLATE_TOP),P(WIRE_R,a,-11)]}
 lead(leadPath(LEADS[0],[P(R,LEADS[0],Z0),P(49,LEADS[0],Z0-2),P(WIRE_R,LEADS[0],Z0-5)]));
 lead(leadPath(LEADS[1],[P(R,LEADS[1],Z1),P(50,LEADS[1],Z1-3),P(50.5,LEADS[1],(Z0+Z1)/2),P(51.5,LEADS[1],Z0+2),P(WIRE_R,LEADS[1],Z0-5)]));
@@ -160,7 +160,7 @@ const STEPS=[
  ['Base disk','Ceramic base disk onto the raised seat of 03.'],
  ['Core, coil, leads','The C1 core with the kanthal coil in its grooves. Each lead is the same wire, folded in half and twisted. The thermocouple goes in the core temp hole.'],
  ['Beads + crimp on the bench','Steatite beads over each twisted lead, then on the bench each lead is crimped to MG high-temp wire with a nickel crimp. No screw.'],
- ['Feed down','The MG wire and crimp feed down through the Ø8 hole in 03 (the crimp passes), so the crimp sits in the chamber under 03, and the MG wire goes out through the Skutt insulator in 04 to the controller box. Pack the side insulation and go on with the top cap.'],
+ ['Feed down','The MG wire and crimp feed down through the Ø10 hole in 03 (the crimp passes), so the crimp sits in the chamber under 03, and the MG wire goes out through the Skutt insulator in 04 to the controller box. Pack the side insulation and go on with the top cap.'],
 ];
 let cur=STEPS.length-1;
 const stxt=document.getElementById('stxt'), bar=document.querySelector('#bar i');
@@ -178,8 +178,8 @@ const bl=document.getElementById('labels');bl.onclick=()=>{const on=!bl.classLis
 // part close-ups: cut in half, fly to the part, make it glow, explain it
 const PARTS_CU=[
  ['Doubled + twisted lead',[mKan],()=>P(50,173,CZ+34),'The same kanthal as the coil, folded in half and twisted on itself from where the coil stops. Two strands share the current, so the lead runs cool and stops cooking the joint.'],
- ['Steatite beads',[mBead],()=>P(WIRE_R,159,CZ+4),'Small ceramic beads strung over the twisted lead through the insulation. Good to about 1200°C, they never fray like fiber sleeve and keep the wire off everything.'],
- ['Beads through 03',[mBead],()=>P(WIRE_R,159,PLATE_TOP-1),'The beaded lead passes straight through the Ø8 hole in the 03 support ring. The ceramic beads keep the kanthal off the steel edge, the way kilns pass beaded leads through brick.'],
+ ['Porcelain beads',[mBead],()=>P(WIRE_R,159,CZ+4),'Tapered porcelain beads (3 mm hole, 8 mm wide, 7 mm long) strung over the twisted lead through the insulation. Good to about 1000°C, they never fray like fiber sleeve and keep the wire off everything.'],
+ ['Beads through 03',[mBead],()=>P(WIRE_R,159,PLATE_TOP-1),'The beaded lead passes straight through the Ø10 hole in the 03 support ring (1 mm clear around the 8 mm beads). The ceramic beads keep the kanthal off the steel edge, the way kilns pass beaded leads through brick.'],
  ['Nickel crimp',[mCrimp],()=>P(WIRE_R,159,-17),'A bare nickel-plated barrel: kanthal in one end, MG wire in the other, squeezed with a crimper on the bench. No screw to oxidize or loosen, good to about 650°C. It sits in the chamber under 03.'],
  ['MG high-temp wire',[mMG],()=>P(R04,159,CAP_BOT-10),'Mica and fiberglass insulated power wire, rated 450°C. It carries the power from the crimp out of the oven to the controller box.'],
  ['Skutt insulator in 04',[mPorc],()=>P(R04,159,CAP_BOT-4),'Skutt porcelain kiln insulator ($1.50): body Ø11.2 in the Ø11.5 hole in 04, lip Ø22.1 on the floor, body down out of the oven. Checked clear of 01, the bolts, leg screws and feet. In the controller box the MG wire can land on a steatite block with stainless screws, then normal wire runs to the SSR.'],

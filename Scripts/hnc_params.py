@@ -83,12 +83,13 @@ skirt_cap_lip = 1.5
 vent_r = air_gap / 2                                    # 05 + 09 vents: Ø3.0 = the air gap (Ø3.5 before 2026-11-12, did not fit 3.0)
 vent_ring_r = housing_outer_r + air_gap / 2             # 63.15, centre of the air gap
 wire_hole_r = 53.5                                      # 03 / 04 lead + TC holes (r 58 before 2026-11-12: now inside 03's bolt wall)
-lead_hole_angles = (145.0, 173.0)                       # heater lead holes (2026-11-20, for Skutt porcelain kiln insulators in 04): 03 keeps Ø8 at
+lead_hole_angles = (145.0, 173.0)                       # heater lead holes (2026-11-20, for Skutt porcelain kiln insulators in 04): 03 Ø10 (lead_hole_d03) at
                                                         # r 53.5 (the beaded lead passes); 04 gets Ø11.5 at r 49 (lead_hole_r04) so the Ø22.1
                                                         # insulator lip sits on the 04 floor inside the 01 tube, body down out of the oven.
                                                         # 28 deg apart = lips 1.6 mm clear; 12.5 deg off the 185.5 seat + bottom bolts, 19.5 off the 125.5 leg.
                                                         # 160 / 170 before; 185 / 195 clashed with the 185.5 bolt; 180 / 190 before 2026-11-12
 lead_hole_r04 = 49.0
+lead_hole_d03 = 10.0                                    # 03 lead holes (2026-11-21, Ø8 -> Ø10: the Ø8 tapered porcelain beads pass with 1 mm clear)
 lead_hole_d = 11.5                                      # 04 only (Skutt insulator body Ø11.2, 0.15 clear)
 seat_step_r = 47.25                                     # 03 riser = the centering wall line (52 before 2026-11-12)
 leg_r = housing_inner_r - 6.85                          # 54.0 leg circle (Ø108; r 60 on 2026-11-08, r 64 before)

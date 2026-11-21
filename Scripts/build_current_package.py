@@ -83,11 +83,12 @@ ZB_TOP = 59.0 + U                         # top bolt ring, moves with the cap ta
 REAL = "HNC_OUT" not in os.environ
 T = 0.8                                   # inside parts
 BOLT = G["bolt"]                          # one bolt clocking for every ring: 5 x 72 deg from 41.5 (2026-11-12 later; 6 x 60 from 52.4 before)
-WIRE = [(G["leads"][0], 4.0), (G["leads"][1], 4.0), (315.0, 3.2)]   # heater leads Ø8 (03: the beaded lead passes), thermocouple Ø6.4
+LEAD_R03 = 4.0 if GEN == "R2" else HP.lead_hole_d03 / 2   # 2026-11-21: Ø10 so the Ø8 porcelain beads pass (Ø8 before)
+WIRE = [(G["leads"][0], LEAD_R03), (G["leads"][1], LEAD_R03), (315.0, 3.2)]   # heater leads (03: the beaded lead passes), thermocouple Ø6.4
 # (2026-09-30 audit: were 183/188, only 5.06 mm apart at r 58, so the two Ø8 holes merged into one slot; now 2.1 mm web)
 R_WIRE = G["wire_r"]                      # inside 03's bolt wall (r 58 until 2026-11-12, then 53.5: 03's bolt wall moved to 59.85)
 # 2026-11-20: in 04 the two lead holes are Ø11.5 at r 49 for Skutt porcelain kiln insulators (lip on the floor, body down)
-WIRE04 = [(a, R_WIRE, r) for a, r in WIRE] if GEN == "R2" else [(a, HP.lead_hole_r04, HP.lead_hole_d / 2) if r == 4.0 else (a, R_WIRE, r) for a, r in WIRE]
+WIRE04 = [(a, R_WIRE, r) for a, r in WIRE] if GEN == "R2" else [(a, HP.lead_hole_r04, HP.lead_hole_d / 2) if r == LEAD_R03 else (a, R_WIRE, r) for a, r in WIRE]
 # 2026-09-30 audit: leg screws at r 65.85 put the M6 head's flats right on 01's inside face (70.85) and its corners
 # 0.8 mm into the wall; moved in to r 64.0 (corners at 69.8, 1 mm clear) in 03, 04 and the tray.
 # 2026-11-08: moved in with the tube, r 60.0 (corners 65.8, same clearance to 03's bolt wall).
