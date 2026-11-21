@@ -181,7 +181,8 @@ sr = (ring(STEP_R, R01I - 0.2, -6.3, -5.5)               # outer plate: unchange
       + ring(46.45, 47.25, SEAT_Z, 3.0 + SEAT_UP)        # centering wall, moved up with the seat
       + ring(R01I - 1.0, R01I - 0.2, -5.5, 8.5))         # bolt wall
 for a in BOLT: sr -= rhole(a, R01I - 0.6, 2.15, length=6)
-for a in LEGS: sr -= vhole(a, LEG_R, LEG_HR, -8, -4)
+# (2026-11-20, Matt: leg holes in 03 closed; the legs are screwed onto 04 before 03 goes on, and the leg screws stand on
+#  the 04 floor and never reach 03)
 for a, r in WIRE: sr -= vhole(a, R_WIRE, r, -8, -4)
 parts["03_Support_Ring"] = solid(sr)
 # 04 bottom cap (rebuilt 2026-11-08): floor disk (1.2, z -32.9..-31.7) + skirt (1.2, up to z -15.7) at RCAP, 6 M6 in

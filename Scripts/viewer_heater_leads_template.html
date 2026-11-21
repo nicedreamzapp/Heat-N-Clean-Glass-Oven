@@ -86,8 +86,10 @@ const load=k=>new Promise(res=>loader.load(MODELS[k],g=>{g.scene.traverse(c=>{if
 const part=async(k,mat,g)=>{const m=await load(k);if(!m)return null;m.traverse(c=>{if(c.isMesh)c.material=mat});g.add(m);return m};
 
 // 1 real ceramic core + base disk, on 03 + 04 + feet
+const g0=G();
+for(const [k,mat] of [['feet',mCer],['legscrews',mBolt],['04',mSteel]]) await part(k,mat,g0);
 const g1=G();
-for(const [k,mat] of [['feet',mCer],['legscrews',mBolt],['04',mSteel],['spacer_bot',mCer],['bolts_bot',mBolt],['03',mSteel],['spacer_seat',mCer],['bolts_seat',mBolt],['basedisk',mCer]]) await part(k,mat,g1);
+for(const [k,mat] of [['spacer_bot',mCer],['bolts_bot',mBolt],['03',mSteel],['spacer_seat',mCer],['bolts_seat',mBolt],['basedisk',mCer]]) await part(k,mat,g1);
 // the real ceramic core = our C1 CAD (PRINT_SET_2026-11-12/STL/C1_Ceramic_Heater_Core.stl): 29 coil grooves + the Ø6.4 temp-probe hole at 314.6°.
 // It is placed where the oven's core sits (core.glb only gives the position, then is dropped).
 const cpos=await load('core'); const cb=new THREE.Box3().setFromObject(cpos);
@@ -96,7 +98,7 @@ const core=new THREE.Mesh(c1g,mCer); core.position.z=cb.min.z-c1g.boundingBox.mi
 const CZ=core.position.z;
 L(g1,'Ceramic heater core',P(46,200,cb.max.z+3));
 L(g1,'03 Support Ring',P(71,120,PLATE_TOP+1));
-L(g1,'04 Bottom Cap',P(68,125,CAP_TOP-4));
+L(g0,'04 Bottom Cap',P(68,125,CAP_TOP-4));
 L(g1,'25 mm open space',P(45,165,-19));
 
 // 2 coil on the real core OD, then the SAME wire doubled + twisted down to the crimp
@@ -151,7 +153,8 @@ L(g5,'MG wire to the controller box (SSR)',P(R04+40,LEADS[0]-6,CAP_BOT-36));
 const g6=G(); await part('01',mSteelT,g6); L(g6,'01 Inner Wall Tube (insulation space inside it)',P(61,40,cb.max.z-8));
 
 const STEPS=[
- ['Your oven parts','The real ceramic heater core (C1, with its 29 coil grooves and the temp-probe hole) and base disk on the 03 support ring and 04 bottom cap, from the 11-12 oven files.'],
+ ['Legs on 04 first','The 04 bottom cap with the three ceramic feet screwed on first. The leg screws stand on the 04 floor, so 03 needs no leg holes.'],
+ ['Your oven parts','The 03 support ring goes on, then the real ceramic heater core (C1, with its 29 coil grooves and the temp-probe hole) on its base disk, from the 11-12 oven files.'],
  ['Kanthal coil, leads and thermocouple','One kanthal wire: it sits in the core grooves, and each end is folded in half and twisted on itself from where the coil stops down to the plate. Same wire the whole way. The thermocouple goes in the core temp hole and out its own holes.'],
  ['Steatite beads','Beads slide over the twisted lead through the insulation space, in place of the fiber sleeve.'],
  ['Porcelain insulators','The beaded lead passes the Ø8 hole in 03 (the beads keep it off the steel). In 04 a Skutt porcelain kiln insulator sits in each Ø11.5 hole, lip on the floor, body down out of the oven.'],
