@@ -3,7 +3,7 @@
 import base64, json, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-PARTS = ["feet", "legscrews", "04", "spacer_bot", "bolts_bot", "03", "spacer_seat", "bolts_seat", "basedisk", "core", "01"]
+PARTS = ["feet", "legscrews", "04", "spacer_bot", "bolts_bot", "03", "spacer_seat", "bolts_seat", "basedisk", "core", "01", "02"]
 
 models = {p: "data:model/gltf-binary;base64," + base64.b64encode((ROOT / "viewer-full" / f"{p}.glb").read_bytes()).decode() for p in PARTS}
 models["c1"] = "data:application/octet-stream;base64," + base64.b64encode((ROOT / "PRINT_SET_2026-11-12" / "STL" / "C1_Ceramic_Heater_Core.stl").read_bytes()).decode()
