@@ -14,7 +14,7 @@ body{background:#e8e8ec;font-family:-apple-system,sans-serif;color:#16181d}
 <div id="wrap">
 <div id="loading">Loading…</div>
 <div id="ctl"><b>LID — every part</b><button id="btn">Assemble</button><input id="sl" type="range" min="0" max="1" step="0.01" value="1"><span id="mode">separated</span><button id="cut">Cut in half</button><button id="lbtn">Hide labels</button><button id="fbtn">Fit</button></div>
-<div id="key"><span><i style="background:#2fa84f"></i>ceramic holder</span><span><i style="background:#fff;border:1px solid #bbb"></i>ceramic lid disk</span><span><i style="background:#9b59b6"></i>top disk</span><span><i style="background:#a9b4c2"></i>outer tube</span><span><i style="background:#d9825a"></i>inner tube</span><span><i style="background:#efe9da;border:1px solid #bbb"></i>ceramic</span><span><i style="background:#4a4f56"></i>bolts + nuts</span></div>
+<div id="key"><span><i style="background:#2fa84f"></i>ceramic holder</span><span><i style="background:#fff;border:1px solid #bbb"></i>ceramic lid disk</span><span><i style="background:#9b59b6"></i>top disk</span><span><i style="background:#a9b4c2"></i>outer tube</span><span><i style="background:#d9825a"></i>inner tube</span><span><i style="background:#efe9da;border:1px solid #bbb"></i>ceramic</span><span><i style="background:#4a4f56"></i>bolts</span><span><i style="background:#ff7a00"></i>weld nuts (welded in their part)</span></div>
 <canvas id="c"></canvas>
 </div>
 <script type="importmap">
@@ -27,12 +27,14 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { makeLabeler } from './viewer-labels.js';
 // Base assembly with the ceramics and the fasteners in place. Metal parts are the fab-package meshes,
 // the top cap is the one-piece 03_Top_Cap from before the 2026-06-10 split, ceramics come from Core Split,
-// and the 15 ring bolts (5 per ring height, 41.5° + n·72°, between the glass slots; 6 at 52.4° + n·60° before 2026-11-12) are drawn M6: head outside, nut inside the inner tube.
+// and the ring bolts (5 per ring height, 41.5° + n·72°, between the glass slots) are drawn M6: head outside, threading into the weld nut.
+// 2026-11-28: every nut is a stainless M6 weld nut welded inside its part (01, 03, 06, 09), drawn orange as the "weldnuts" mesh of that
+// part's glb, so it is always shown with its part; bolts are head + shank only. Hinge H1/H2/H3 at 292.5° on its own bolts.
 // "Separated" lifts parts straight up in assembly order; bolts back straight out of their holes.
 const PARTS=[ // bottom to top
   {f:'liddisk',label:'Ceramic Lid Disk',col:'disk'},
-  {f:'09',label:'09 Lid Ceramic Holder (48 vent holes)',col:'sup'},
-  {f:'06',label:'06 Lid Inner Tube',col:'in'},
+  {f:'09',label:'09 Lid Ceramic Holder (7 weld nuts, 48 vents)',col:'sup'},
+  {f:'06',label:'06 Lid Inner Tube (5 weld nuts)',col:'in'},
   {f:'spacer_low',label:'Lower Lid Spacer (ceramic)',col:'cer'},
   {f:'bolts_low',label:'Lower Lid Bolts ×5',col:'bolt',side:'spacer_low',radial:true},
   {f:'07',label:'07 Lid Outer Perforated Tube',col:'out'},
@@ -40,9 +42,10 @@ const PARTS=[ // bottom to top
   {f:'08',label:'08 Lid Top Disk',col:'top'},
   {f:'bolts_high',label:'Upper Lid Bolts ×5 (hold the top disk)',col:'bolt',side:'spacer_high',radial:true},
   {f:'10',label:'10 Lid Handle',col:'bolt'},
-  {f:'11',label:'11 Hinge Strap',col:'out',side:'07'},
-  {f:'13',label:'13 Hinge Pin',col:'bolt',side:'07'},
-];const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6};
+  {f:'h2',label:'H2 Hinge Lid Leaf (292.5°)',col:'hin',side:'07'},
+  {f:'bolts_hinge_lid',label:'Hinge Lid Bolts ×2 (into 09 weld nuts)',col:'bolt',side:'07',radial:true},
+  {f:'h3',label:'H3 Hinge Pin',col:'bolt',side:'07'},
+];const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6,hin:0xc0c6cf,wn:0xff7a00};
 const GAP=40, RADIAL=70;
 const V='?v='+Date.now();
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
@@ -60,12 +63,12 @@ scene.add(new THREE.AmbientLight(0xffffff,0.95));
 const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,-200,400); scene.add(d1);
 const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
 scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
-// "Cut in half" removes the half facing the camera so the spacers, bolts and nuts show in section
+// "Cut in half" removes the half facing the camera so the spacers, bolts and weld nuts show in section
 const clip=new THREE.Plane(new THREE.Vector3(0,1,0),0); let cutOn=false;
 const loader=new GLTFLoader();
 const load=p=>new Promise((res,rej)=>loader.load(p,g=>res(g.scene),undefined,rej));
-function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
-  ch.material=new THREE.MeshStandardMaterial({color,side:THREE.DoubleSide,metalness:(color===COL.cer||color===COL.disk)?0.05:0.45,roughness:(color===COL.cer||color===COL.disk)?0.8:0.45,clippingPlanes:[]}); } }); }
+function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){ const wn=ch.name.startsWith('weldnuts'); ch.userData.em0=wn?0x7a2c00:0; ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({color:wn?COL.wn:color,emissive:ch.userData.em0,side:THREE.DoubleSide,metalness:(!wn&&(color===COL.cer||color===COL.disk))?0.05:0.45,roughness:(!wn&&(color===COL.cer||color===COL.disk))?0.8:0.45,clippingPlanes:[]}); } }); }
 function makeLabel(text){ const c=document.createElement('canvas'); let x=c.getContext('2d'); x.font='bold 28px -apple-system, sans-serif';
   const w=Math.ceil(x.measureText(text).width)+30, h=48; c.width=w; c.height=h; x=c.getContext('2d');
   x.fillStyle='rgba(255,255,255,0.94)'; x.beginPath(); x.roundRect(0,0,w,h,11); x.fill();

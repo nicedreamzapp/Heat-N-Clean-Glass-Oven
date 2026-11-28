@@ -193,7 +193,14 @@ CAP_BOLT_HOLE_R = 1.8                         # bolt-clearance bored in each fin
 
 # hinge (placeholder) on the lid bolt at 257.5 deg since the 5-bolt rings (2026-11-12): the back bolt nearest the old
 # 292.4 (the back, opposite the handle); 292.4 before
-HINGE_ANGLE_DEG = 257.5
+HINGE_ANGLE_DEG_1112 = 257.5                 # FAB_PACKAGE_2026-11-12 (and HINGE_2026-11-18): on the 257.5 lid bolt
+# 2026-11-28 (Matt, 1:46 AM "Yes, make it real"): the hinge is centred in the slot-free arc, (218.50 + 6.54 + 360) / 2 = 292.5,
+# on its OWN 2 radial M6 holes per leaf at 292.5 -/+ 6.0 (no longer on a ring bolt), each into a weld nut.
+HINGE_ANGLE_DEG = 292.5
+hinge_hole_angles = [HINGE_ANGLE_DEG - 6.0, HINGE_ANGLE_DEG + 6.0]   # 286.5, 298.5
+# 2026-11-28: every M6 bolt threads into a stainless M6 projection weld nut welded inside its part at the factory
+# (DIN 929 hex weld nut, A2 stainless: 10 across flats, 5 thick, corners up/down 11.55). Bore drawn Ø5.0 (thread minor).
+weld_nut = dict(s=10.0, m=5.0, bore=5.0, spec="M6 hex projection weld nut, DIN 929, A2 (304) stainless")
 HINGE_PIVOT_R = 81.5 - (24.6 - insulation_gap) - (4.4 - air_gap)   # 70.1 (77.5 on 2026-11-08, 81.5 before): moves with the outer tube
 HINGE_PIVOT_Z = 97 + body_raise
 HINGE_T_OFF = 14

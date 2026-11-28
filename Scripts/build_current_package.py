@@ -1,4 +1,8 @@
-"""Build FAB_PACKAGE_2026-11-12 from the approved design (see CURRENT.md).
+"""Build FAB_PACKAGE_2026-11-28 from the approved design (see CURRENT.md).
+
+2026-11-28 (Matt, 1:46 AM): stainless M6 projection weld nuts at every bolt, welded inside their part (01, 03, 06, 09),
+and the 11/18 thick hinge (H1/H2/H3) moved from the 257.5 lid bolt to 292.5 on its own 2 holes per leaf (see the
+WELD NUTS + HINGE block below and CURRENT.md). HNC_GEN=2026-11-12 HNC_OUT=/tmp/x rebuilds FAB_PACKAGE_2026-11-12.
 
 2026-11-12 change (Matt, ~4 AM): his smallest glass slurper is 21 mm bowl-to-bend, so the top cap ring (ceramic OD to
 the 05 cap edge) goes 28.4 -> 20.0: insulation 20.6 -> 14.6 (inner tube in DI = 6.0 vs R2), air gap 4.4 -> 3.0 (outer
@@ -63,24 +67,25 @@ import hnc_params as HP
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "cad-source")
-GEN = os.environ.get("HNC_GEN", "2026-11-12")
+GEN = os.environ.get("HNC_GEN", "2026-11-28")
+NEW = GEN == "2026-11-28"   # weld nuts at every bolt + the hinge (H1/H2/H3) at 292.5 on its own holes; "2026-11-12" rebuilds FAB_PACKAGE_2026-11-12
 if GEN == "R2":   # the 2026-11-08 R2 geometry (and with HNC_SHRINK / HNC_RAISE the older ones)
     G = dict(gap=20.6, air=4.4, lip=1.5, vent_r=1.75, wire_r=58.0, leads=(180.0, 190.0), step_r=52.0, skirt05=True,
              bolt=[52.4 + 60 * k for k in range(6)], legs=(40, 160, 280), hinge=292.4, leg_hr=3.3, tray_drop=0.0)
 else:
     G = dict(gap=HP.insulation_gap, air=HP.air_gap, lip=HP.top_cap_lip, vent_r=HP.vent_r, wire_r=HP.wire_hole_r,
              leads=HP.lead_hole_angles, step_r=HP.seat_step_r, skirt05=True,
-             bolt=list(HP.ring_screw_angles), legs=tuple(HP.leg_angles), hinge=HP.HINGE_ANGLE_DEG,
+             bolt=list(HP.ring_screw_angles), legs=tuple(HP.leg_angles), hinge=HP.HINGE_ANGLE_DEG if NEW else HP.HINGE_ANGLE_DEG_1112,
              leg_hr=HP.leg_hole_d / 2, tray_drop=HP.tray_drop)
 D = float(os.environ.get("HNC_SHRINK", 24.6 - G["gap"]))   # inner tube in vs 2026-10-16 (4.0 R2, 10.0 2026-11-12)
 DO = D + (4.4 - G["air"])                                 # outer tube in (4.0 R2, 11.4 2026-11-12)
 DC = DO + (1.5 - G["lip"])                                # 05 top cap edge in (4.0 R2, 12.4 2026-11-12)
-OUT = os.environ.get("HNC_OUT", os.path.join(ROOT, "FAB_PACKAGE_2026-11-12"))
+OUT = os.environ.get("HNC_OUT", os.path.join(ROOT, "FAB_PACKAGE_" + GEN))
 U = float(os.environ.get("HNC_RAISE", HP.body_raise))   # 2.66: everything above the seat goes up this much (R2)
 UP = Pos(0, 0, U)
 TOP = 91.0 + U                            # tube tops (93.66)
 ZB_TOP = 59.0 + U                         # top bolt ring, moves with the cap tabs (61.66)
-REAL = "HNC_OUT" not in os.environ
+REAL = "HNC_OUT" not in os.environ and NEW
 T = 0.8                                   # inside parts
 BOLT = G["bolt"]                          # one bolt clocking for every ring: 5 x 72 deg from 41.5 (2026-11-12 later; 6 x 60 from 52.4 before)
 LEAD_R03 = 4.0 if GEN == "R2" else HP.lead_hole_d03 / 2   # 2026-11-21: Ø10 so the Ø8 porcelain beads pass (Ø8 before)
@@ -143,7 +148,7 @@ BODY_ROWS = ([-14.7, -8.7] + [z + U / 2 for z in (9.3, 15.3, 21.3, 27.3, 33.3, 3
              + [z + U for z in (69.3, 75.3)])   # parity from z = -26.7 + 6*i; R2: middle block centred in the taller band
                                                  # (seat ring top 9 .. top ring bottom 52+U), top 2 rows up with the top ring
 LID_ROWS = [96.0, 102.0, 108.0, 114.0]                                                 # pre-lift, parity from z = 96 + 6*i
-def perf_tools(rows, z_first, bolt_z):
+def perf_tools(rows, z_first, bolt_z, extra=()):
     n = int(2 * math.pi * R02M / 6)
     out = []
     for z in rows:
@@ -153,6 +158,8 @@ def perf_tools(rows, z_first, bolt_z):
             a = k * 360.0 / n + off
             if any(math.hypot(R02M * math.radians((a - b + 180) % 360 - 180), z - bz) < 5.85 for b in BOLT for bz in bolt_z):
                 continue
+            if any(math.hypot(R02M * math.radians((a - b + 180) % 360 - 180), z - bz) < 5.85 for b, bz in extra):
+                continue   # 2026-11-28: same rule around the hinge holes
             out.append(rhole(a, R02M, z, rad=2.0, length=4))
     return out
 
@@ -247,7 +254,8 @@ LID_BOLT_Z = (99.0, 119.0)                      # pre-lift (100.2 / 120.2 in pla
 # 06 / 07 lid tubes (rebuilt 2026-11-08 like 01 / 02; source z 91-126 before the lift)
 t = cut_all(ring(R01I, R01O, 91.0, 126.0), [rhole(a, (R01I + R01O) / 2, z) for a in BOLT for z in LID_BOLT_Z])
 parts["06_Lid_Inner_Tube"] = solid(UP * (LIFT * t & above(LID_FLOOR)))   # R2: the whole lid goes up U with the cap
-t = cut_all(ring(R02I, R02O, 91.0, 126.0), [rhole(a, R02M, z) for a in BOLT for z in LID_BOLT_Z] + perf_tools(LID_ROWS, 96.0, LID_BOLT_Z))
+t = cut_all(ring(R02I, R02O, 91.0, 126.0), [rhole(a, R02M, z) for a in BOLT for z in LID_BOLT_Z] + perf_tools(LID_ROWS, 96.0, LID_BOLT_Z,
+    extra=[(b, LID_BOLT_Z[0]) for b in (HP.hinge_hole_angles if NEW else [])]))
 parts["07_Lid_Outer_Perforated_Tube"] = solid(UP * (LIFT * t & above(LID_FLOOR)))
 # 08 lid top disk (rebuilt 2026-11-08): plate z 126.0-127.2 + skirt down to 113.0 (before the lift), at RCAP
 # 6 holes in the skirt for the upper lid bolts
@@ -296,9 +304,97 @@ for a in LEGS_SRC: tr += vhole(a, LEG_SRC, 3.5, -59.7, -56.7)   # plug the sourc
 for a in LEGS: tr -= vhole(a, LEG_R, LEG_HR, -62, -54)
 parts["14_Steel_Tray"] = solid(Pos(0, 0, TRAY_Z) * tr if TRAY_Z else tr)
 
+# ── 2026-11-28 (Matt 1:46 AM "Yes, make it real"): WELD NUTS + HINGE AT 292.5 ──────────────────────────────────────
+# Every M6 bolt threads into a stainless M6 projection weld nut (DIN 929, A2) that the factory welds to the inside face
+# of its part, so every bolt goes in from outside and comes back out for service. The nut is PART of its part
+# (weldment): one solid in the STEP / STL, drawn orange in the viewers from that part's first step.
+#   01: bottom ring 5 + top ring 5 + hinge body leaf 2 = 12      03: seat ring 5 (on the bolt wall)
+#   09: lower lid ring 5 + hinge lid leaf 2 = 7 (on the bolt wall) 06: upper lid ring 5            total 29
+# Hinge = the 11/18 thick hinge (H1 body leaf, H2 lid leaf, H3 pin; Scripts/build_hinge_2026-11-18.py) turned from the
+# 257.5 lid bolt to 292.5 = the middle of the slot-free arc (slots 218.50 and 6.54), on its own 2 radial M6 holes per leaf:
+#   H1 at 292.5 -/+ 6.0 on the top ring line (z 61.66): H1, a new 05 hinge pad (the 05 skirt carried down like the bolt
+#      tabs, 28 wide), 02, the top spacer ring, 01 -> weld nuts in 01. Ø13 spot faces on H1's flat outer face, back now curved.
+#   H2 at 292.5 -/+ 18.4 on the lower lid ring line (z 102.86): H2, 07, the lower lid spacer, 06, the 09 wall -> weld nuts
+#      on 09. The holes cannot be under the knuckles (the bolt head would sit in the body knuckles), so H2 gets two curved
+#      wings beside the knuckles and the pin head (r 66.05-71.45, 14-24 deg off centre), the holes go through the wings.
+WELD = {}
+HANG = G["hinge"]
+ZLL, ZUL = 99.0 + CAP_T + U, 119.0 + CAP_T + U          # lid bolt lines in place (102.86 / 122.86)
+HB = [HANG + d for d in (-6.0, 6.0)]                     # H1 holes (286.5 / 298.5) = HP.hinge_hole_angles
+HL = [HANG + d for d in (-18.4, 18.4)]                   # H2 holes (274.1 / 310.9)
+WN = HP.weld_nut
+def weld_nut(a, r_face, z, flats_up=False):
+    """hex weld nut, face on the inside face r_face of its wall (0.05 into it so it fuses), corners up (flats up on 09,
+    where a corner would come within 0.23 of the wall's top edge; flats up = 1.0), M6 bore"""
+    e = WN["s"] / math.cos(math.radians(30))
+    hx = extrude(RegularPolygon(e / 2, 6), amount=WN["m"]) - Cylinder(WN["bore"] / 2, 40)
+    if flats_up: hx = Rot(0, 0, 30) * hx
+    return Rot(0, 0, a) * Pos(r_face + 0.05, 0, z) * Rot(0, -90, 0) * hx     # local +Z -> inward, local +X (a corner) -> up
+if NEW:
+    assert [round(x, 2) for x in HB] == [round(x, 2) for x in HP.hinge_hole_angles]
+    R01M = (R01I + R01O) / 2
+    parts["01_Inner_Wall_Tube"] = solid(cut_all(parts["01_Inner_Wall_Tube"], [rhole(a, R01M, ZB_TOP) for a in HB]))
+    parts["02_Outer_Perforated_Tube"] = solid(cut_all(parts["02_Outer_Perforated_Tube"], [rhole(a, R02M, ZB_TOP) for a in HB]))
+    parts["06_Lid_Inner_Tube"] = solid(cut_all(parts["06_Lid_Inner_Tube"], [rhole(a, R01M, ZLL) for a in HL]))
+    parts["07_Lid_Outer_Perforated_Tube"] = solid(cut_all(parts["07_Lid_Outer_Perforated_Tube"], [rhole(a, R02M, ZLL) for a in HL]))
+    parts["09_Lid_Ceramic_Holder"] = solid(cut_all(parts["09_Lid_Ceramic_Holder"], [rhole(a, UP_RO - T / 2, ZLL, length=6) for a in HL]))
+    # 05 hinge pad: the skirt (r R02O+0.2 .. RCAP-0.1) carried down to the tab bottom over the H1 width, 2 holes
+    pad = ring(R02O + 0.2, RCAP - 0.1, 51.0 + U, 81.2 + U) & (Rot(0, 0, HANG) * Pos(80.0, 0, 66.1 + U) * Box(40.0, 28.0, 30.2))
+    pad = cut_all(pad, [rhole(a, RCAP - 0.7, ZB_TOP, length=6) for a in HB])
+    parts["05_One_Piece_Top_Cap"] = solid(parts["05_One_Piece_Top_Cap"] + pad)
+    WELD["01_Inner_Wall_Tube"] = [weld_nut(a, R01I, z) for z in (-24.0, ZB_TOP) for a in BOLT] + [weld_nut(a, R01I, ZB_TOP) for a in HB]
+    WELD["03_Support_Ring"] = [weld_nut(a, R01I - 1.0, 2.15) for a in BOLT]
+    WELD["09_Lid_Ceramic_Holder"] = [weld_nut(a, UP_RO - T, ZLL, flats_up=True) for a in BOLT + HL]
+    WELD["06_Lid_Inner_Tube"] = [weld_nut(a, R01I, ZUL) for a in BOLT]
+    # ---- hinge, drawn on +X then turned to HANG (numbers as Scripts/build_hinge_2026-11-18.py) ----
+    ZS = 91.0 + CAP_T + U                                 # 94.86 seam = pin height
+    XB0, XL0, XO = 67.45, 66.05, 71.45
+    RK, XC, W, GK, HM = 6.0, 73.55, 28.0, 0.5, 6.0
+    def hbox(x0, x1, y0, y1, z0, z1): return Pos((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2) * Box(x1 - x0, y1 - y0, z1 - z0)
+    def knuck(y0, y1): return Pos(XC, (y0 + y1) / 2, ZS) * Rot(90, 0, 0) * Cylinder(RK, y1 - y0)
+    def curve(p_, r): return (p_ & (Cylinder(200, 400) - Cylinder(r, 400))).clean()
+    def fuse(*ps):
+        o = ps[0]
+        for q in ps[1:]: o = o.fuse(q)
+        return o.clean()
+    def biggest(p_): return max(p_.solids(), key=lambda x: x.volume)
+    yo0 = HM + GK; kb_top = ZS - RK - GK
+    bl = [curve(hbox(63.0, XO, -W / 2, W / 2, 54.66, kb_top), XB0)]          # back now curved (sits on the 05 pad, 0.2)
+    for a_, b_ in [(-W / 2, -yo0), (yo0, W / 2)]:
+        bl += [curve(hbox(63.0, XO, a_, b_, kb_top - 0.5, ZS), XB0), hbox(XC - 0.01, XC + RK, a_, b_, ZS - RK, ZS), curve(knuck(a_, b_), XB0 + 0.1)]
+    h1 = fuse(*bl)
+    for d in (-6.0, 6.0):
+        h1 = h1 - Rot(0, 0, d) * Pos(66.0, 0, ZB_TOP) * Rot(0, 90, 0) * Cylinder(3.3, 20)
+        sf0 = (XO - 6.5 * math.sin(math.radians(6.0))) / math.cos(math.radians(6.0))     # spot face: flat Ø13 seat square to the bolt
+        h1 = h1 - Rot(0, 0, d) * Pos(sf0 + 5.0, 0, ZB_TOP) * Rot(0, 90, 0) * Cylinder(6.5, 10.0)
+    H1_SEAT = sf0
+    h2 = fuse(curve(hbox(63.0, XO, -W / 2, W / 2, ZS + RK + GK, 108.86), XL0), curve(hbox(63.0, XO, -HM, HM, ZS + 0.1, ZS + RK + GK + 0.5), XL0),
+              hbox(XC - 0.01, XC + RK, -HM, HM, ZS, ZS + RK), curve(knuck(-HM, HM), XL0 + 0.1))
+    def sector(r0, r1, a0, a1, z0, z1):   # annulus between two angles (a1 - a0 < 180)
+        hp = lambda a, sgn: Rot(0, 0, a) * Pos(0, sgn * 100.0, (z0 + z1) / 2) * Box(400.0, 200.0, z1 - z0 + 2)
+        return ring(r0, r1, z0, z1) & hp(a0, 1) & hp(a1, -1)
+    # wings: 14-24 deg below the knuckle top line (clear of the body knuckles), joined to the plate above it from 10 deg
+    wings = [sector(XL0, XO, 14.0, 24.0, ZS + 0.5, 108.86), sector(XL0, XO, -24.0, -14.0, ZS + 0.5, 108.86),
+             sector(XL0, XO, 10.0, 14.5, ZS + RK + GK, 108.86), sector(XL0, XO, -14.5, -10.0, ZS + RK + GK, 108.86)]
+    h2 = fuse(h2, *wings)
+    for d in (-18.4, 18.4):
+        h2 = h2 - Rot(0, 0, d) * Pos(66.0, 0, ZLL) * Rot(0, 90, 0) * Cylinder(3.3, 20)
+    pinhole = lambda dd: Pos(XC, 0, ZS) * Rot(90, 0, 0) * Cylinder(dd / 2, W + 4)
+    h1 = biggest(h1 - pinhole(6.1)); h2 = biggest(h2 - pinhole(6.4))
+    h3 = Pos(XC, 0, ZS) * Rot(90, 0, 0) * Cylinder(3.0, W + 1) + Pos(XC, -(W / 2 + 0.5 + 0.75), ZS) * Rot(90, 0, 0) * Cylinder(5.0, 1.5)
+    HR = Rot(0, 0, HANG)
+    for k in ("11_Lid_Hinge_Strap", "13_Hinge_Pin"): parts.pop(k)
+    parts["H1_Hinge_Body_Leaf"] = solid(HR * h1); parts["H2_Hinge_Lid_Leaf"] = solid(HR * h2); parts["H3_Hinge_Pin"] = solid(HR * h3)
+    PLAIN = dict(parts)                                   # the parts without their nuts (viewer body meshes)
+    for k, nuts in WELD.items():
+        w_ = parts[k]
+        for n_ in nuts: w_ = w_ + n_
+        parts[k] = solid(w_)
+
 if os.path.isdir(OUT): shutil.rmtree(OUT)
 os.makedirs(os.path.join(OUT, "STEP")); os.makedirs(os.path.join(OUT, "STL"))
 shutil.copy(os.path.join(ROOT, "Scripts", "package_README.txt"), os.path.join(OUT, "README.txt"))
+if NEW: shutil.copy(os.path.join(ROOT, "Scripts", "BUILD_PLAN_2026-11-28.md"), os.path.join(OUT, "BUILD_PLAN.md"))
 for name, shape in parts.items():
     export_step(shape, os.path.join(OUT, "STEP", name + ".step"))
     export_stl(shape, os.path.join(OUT, "STL", name + ".stl"))
@@ -310,9 +406,18 @@ VIEW = {"01_Inner_Wall_Tube": "viewer-full/01", "02_Outer_Perforated_Tube": "vie
         "04_Bottom_Cap": "viewer-full/04",
         "05_One_Piece_Top_Cap": "viewer-full/cap", "06_Lid_Inner_Tube": "viewer-lid-full/06", "07_Lid_Outer_Perforated_Tube": "viewer-lid-full/07",
         "08_Lid_Top_Disk": "viewer-lid-full/08", "09_Lid_Ceramic_Holder": "viewer-lid-full/09", "10_Lid_Handle": "viewer-lid-full/10",
-        "11_Lid_Hinge_Strap": "viewer-lid-full/11", "13_Hinge_Pin": "viewer-lid-full/13"}
+        "H1_Hinge_Body_Leaf": "viewer-full/h1", "H2_Hinge_Lid_Leaf": "viewer-lid-full/h2", "H3_Hinge_Pin": "viewer-lid-full/h3"}
+# 2026-11-28: a part with weld nuts is ONE glb with two meshes, "body" and "weldnuts" (the viewers paint the weldnuts
+# mesh orange), so the nuts can never show up, or be left out, apart from their part.
+_tmp = os.path.join(OUT, "_v.stl")
+def _shape_mesh(shape):
+    export_stl(shape, _tmp); m = trimesh.load(_tmp); os.remove(_tmp); return m
 for name, dst in VIEW.items():
-    trimesh.load(os.path.join(OUT, "STL", name + ".stl")).export(os.path.join(ROOT, dst + ".glb"))
+    sc = trimesh.Scene(); sc.add_geometry(_shape_mesh(PLAIN[name]), node_name="body", geom_name="body")
+    if name in WELD: sc.add_geometry(_shape_mesh(Compound(children=WELD[name])), node_name="weldnuts", geom_name="weldnuts")
+    sc.export(os.path.join(ROOT, dst + ".glb"))
+for old in ("viewer-lid-full/11.glb", "viewer-lid-full/13.glb"):   # the placeholder strap + pin (11-12 and before)
+    if os.path.exists(os.path.join(ROOT, old)): os.remove(os.path.join(ROOT, old))
 import numpy as np
 def _mesh(fp):
     sc = trimesh.load(fp); return sc.to_geometry() if isinstance(sc, trimesh.Scene) else sc
@@ -350,38 +455,28 @@ for a in LEGS:
 trimesh.util.concatenate(feet).export(os.path.join(ROOT, "viewer-full", "feet.glb"))
 trimesh.util.concatenate(screws).export(os.path.join(ROOT, "viewer-full", "legscrews.glb"))
 trimesh.load(os.path.join(OUT, "STL", "14_Steel_Tray.stl")).export(os.path.join(ROOT, "viewer-full", "tray.glb"))
-# bolts (2026-11-12): each bolt set = shank + head (outside, on the outer tube / its skirt or tab) + nut (inside the inner
-# tube, or inside 03's bolt wall for the seat ring). The tubes no longer move together, so each set is re-placed by
-# absolute radius: the nut and the shank tip follow the inner tube, the head and the shank's head end follow the outer
-# tube (the shank gets 1.4 shorter vs R2, the same tip past the nut). Offsets = the R2 positions (idempotent), except
-# the lower lid nut: it sits inside 09's upright bolt wall (inner face R01I - 1.0); until 2026-11-12 it was drawn 0.95
-# into that wall.
-BOLT_FIT = {   # key: (nut outer face - R01I, head inner face - R02O, bolt axis z)
-    "viewer-full/bolts_top": (-0.05, 1.45, 59.0 + U), "viewer-full/bolts_bot": (-0.05, 2.25, -24.0),
-    "viewer-full/bolts_seat": (-1.35, 0.15, 2.15),
-    "viewer-lid-full/bolts_low": (-1.05, 0.15, 100.2 + U), "viewer-lid-full/bolts_high": (-0.05, 1.65, 120.2 + U)}
-for key, (off_n, off_h, ZAX) in BOLT_FIT.items():
-    fp = os.path.join(ROOT, key + ".glb"); sc = trimesh.load(fp, force="scene")
+# bolts (2026-11-28): shank + hex head only; the nut is a weld nut that belongs to its part (above). Every bolt is drawn
+# at true size: head 10 AF x 4 on its seat, shank Ø6 to the same tip as the 11-12 bolts (past the weld nut).
+# key: (angles, head seat r, tip r, axis z)
+def _hex_mesh(a, r0, r1, z):
+    m = trimesh.creation.cylinder(radius=10.0 / math.sqrt(3), height=r1 - r0, sections=6)
+    m.apply_transform(trimesh.transformations.rotation_matrix(math.pi / 2, [0, 1, 0]))   # axis -> X, a corner up
+    m.apply_translation([(r0 + r1) / 2, 0, z]); m.apply_transform(trimesh.transformations.rotation_matrix(math.radians(a), [0, 0, 1])); return m
+def _shank_mesh(a, r0, r1, z):
+    m = trimesh.creation.cylinder(radius=3.0, height=r1 - r0, sections=24)
+    m.apply_transform(trimesh.transformations.rotation_matrix(math.pi / 2, [0, 1, 0]))
+    m.apply_translation([(r0 + r1) / 2, 0, z]); m.apply_transform(trimesh.transformations.rotation_matrix(math.radians(a), [0, 0, 1])); return m
+BOLT_SETS = {"viewer-full/bolts_bot": (BOLT, 68.10, 53.0, -24.0), "viewer-full/bolts_seat": (BOLT, 66.0, 51.0, 2.15),
+             "viewer-full/bolts_top": (BOLT, 67.30, 53.0, ZB_TOP), "viewer-lid-full/bolts_low": (BOLT, 66.0, 52.0, ZLL),
+             "viewer-lid-full/bolts_high": (BOLT, 67.5, 53.0, ZUL),
+             "viewer-full/bolts_hinge": (HB, H1_SEAT, H1_SEAT - 16.0, ZB_TOP),          # M6 x 16, into the 01 weld nuts
+             "viewer-lid-full/bolts_hinge_lid": (HL, XO, XO - 18.0, ZLL)}              # M6 x 18, into the 09 weld nuts
+for key, (angs, rh, rt, zz) in BOLT_SETS.items():
     new = trimesh.Scene()
-    # 2026-11-12 (5-bolt rings): one bolt set (shank + head + nut) is the template, copied onto every BOLT angle (b0_41.5 ...)
-    nm0 = sorted(sc.graph.nodes_geometry)[0]; Tm, gname = sc.graph[nm0]
-    w0 = sc.geometry[gname].copy(); w0.apply_transform(Tm); a0 = float(nm0.split("_")[-1])
-    for i, ang in enumerate(BOLT):
-        nm = "b%d_%s" % (i, ("%.1f" % ang).rstrip("0").rstrip("."))
-        w = w0.copy(); w.apply_transform(trimesh.transformations.rotation_matrix(math.radians(ang - a0), [0, 0, 1]))
-        a = math.radians(ang); d = np.array([math.cos(a), math.sin(a)])
-        r = w.vertices[:, :2] @ d
-        hexes = sorted((c for c in w.split(only_watertight=False) if abs((c.bounds[1, 2] - c.bounds[0, 2]) - 11.6) < 0.2),
-                       key=lambda c: (c.vertices[:, :2] @ d).mean())
-        nut_out = (hexes[0].vertices[:, :2] @ d).max(); head_in = (hexes[-1].vertices[:, :2] @ d).min()
-        inner = r <= (nut_out + head_in) / 2
-        dn = (R01I + off_n) - nut_out; dh = (R02O + off_h) - head_in
-        v = w.vertices.copy(); mv = np.where(inner, dn, dh)
-        v[:, 0] += mv * d[0]; v[:, 1] += mv * d[1]
-        v[:, 2] += ZAX - (w.bounds[0, 2] + w.bounds[1, 2]) / 2
-        w.vertices = v
-        new.add_geometry(w, node_name=nm, geom_name=nm)
-    new.export(fp)
+    for i_, ang in enumerate(angs):
+        nm = "b%d_%s" % (i_, ("%.1f" % ang).rstrip("0").rstrip("."))
+        new.add_geometry(trimesh.util.concatenate([_shank_mesh(ang, rt, rh, zz), _hex_mesh(ang, rh, rh + 4.0, zz)]), node_name=nm, geom_name=nm)
+    new.export(os.path.join(ROOT, key + ".glb"))
 # ceramic spacer rings between the tubes (we supply them; not in the machining package): rebuilt at the new size,
 # 6 Ø6.6 bolt holes on their bolt ring. 2026-11-10 (Matt): all five rings 10 mm, centred on their bolts (body rings were 14)
 SPACERS = {"viewer-full/spacer_bot": (-29.0, -19.0, -24.0), "viewer-full/spacer_seat": (-2.85, 7.15, 2.15),
@@ -389,7 +484,8 @@ SPACERS = {"viewer-full/spacer_bot": (-29.0, -19.0, -24.0), "viewer-full/spacer_
            "viewer-lid-full/spacer_high": (115.2 + U, 125.2 + U, 120.2 + U)}   # R2: top + lid rings up U
 _tmp = os.path.join(OUT, "_spacer.stl")
 for key, (z0, z1, zb) in SPACERS.items():
-    sp = cut_all(ring(R_SP_I, R_SP_O, z0, z1), [rhole(a, (R_SP_I + R_SP_O) / 2, zb, length=6) for a in BOLT])
+    extra = HB if key.endswith("spacer_top") else HL if key.endswith("spacer_low") else []   # 2026-11-28: hinge bolts pass the top + lower lid rings
+    sp = cut_all(ring(R_SP_I, R_SP_O, z0, z1), [rhole(a, (R_SP_I + R_SP_O) / 2, zb, length=6) for a in BOLT + extra])
     export_stl(solid(sp), _tmp); trimesh.load(_tmp).export(os.path.join(ROOT, key + ".glb"))
 os.remove(_tmp)
 # Ceramics in the viewers. R2 (2026-11-08): drawn at the REAL measured size. Base plate = the C2 print profile at its real

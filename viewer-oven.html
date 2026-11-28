@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Heat &amp; Clean Glass Oven: one viewer (2026-11-12)</title>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Heat &amp; Clean Glass Oven: one viewer (2026-11-28)</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#e8e8ec;font-family:-apple-system,"PingFang SC",sans-serif;color:#16181d;overflow:hidden}
@@ -30,13 +30,15 @@ canvas{display:block;width:100%;height:100%}
   #key{font-size:11px;padding:6px 8px;left:8px;max-width:calc(100% - 16px);bottom:10px;gap:3px 10px}
   #key i{width:10px;height:10px}
 }
+#oldnew{position:absolute;right:12px;top:8px;z-index:15;max-width:min(560px,calc(100% - 24px));max-height:calc(100% - 70px);overflow:auto;background:#fff;border-left:5px solid #ff6a00;border-radius:8px;padding:10px 14px;font-size:14px;line-height:1.4;box-shadow:0 4px 18px rgba(0,0,0,.15)}
+#oldnew.hide{display:none} #oldnew p{margin-top:7px} #oldnew span{color:#555} #oldnew #onx{float:right;border:0;background:none;font-size:18px;cursor:pointer}
 </style></head><body>
 <div id="wrap">
 <div id="hdr">
   <div id="tabs"><button data-t="build">Build animation</button><button data-t="whole">Whole oven</button><button data-t="base">Base</button><button data-t="lid">Lid</button></div>
   <div id="ctl">
     <b id="title"></b>
-    <button id="play" data-tabs="build">❚❚ Pause</button><button id="prev" data-tabs="build">◀ Back</button><button id="next" data-tabs="build">Next ▶</button><button id="again" data-tabs="build">↻ Restart</button>
+    <button id="play" data-tabs="build">❚❚ Pause</button><button id="prev" data-tabs="build">◀ Back</button><button id="next" data-tabs="build">Next ▶</button><button id="again" data-tabs="build">↻ Restart</button><button id="onb" data-tabs="build">Old vs new</button>
     <button id="lidb" data-tabs="whole">Close lid</button>
     <button id="btn" data-tabs="whole base lid">Separate</button><input id="sl" data-tabs="whole base lid" type="range" min="0" max="1" step="0.01" value="0"><span id="mode" data-tabs="whole base lid">assembled</span>
     <button id="cut" data-tabs="build whole base lid">Cut in half</button>
@@ -47,7 +49,16 @@ canvas{display:block;width:100%;height:100%}
 <div id="stage">
 <div id="loading">Loading…</div>
 <div id="step" class="hide"></div>
-<div id="key"><span><i style="background:#2f6fd6"></i>bottom cap</span><span><i style="background:#2fa84f"></i>support ring / lid holder</span><span><i style="background:#fff;border:1px solid #bbb"></i>ceramic disks</span><span><i style="background:#9b59b6"></i>top cap / lid top</span><span><i style="background:#a9b4c2"></i>outer tube</span><span><i style="background:#d9825a"></i>inner tube</span><span><i style="background:#efe9da;border:1px solid #bbb"></i>ceramic</span><span><i style="background:#4a4f56"></i>bolts + nuts</span></div>
+<div id="oldnew" class="hide"><b>Old way vs new way · 旧方法和新方法</b><button id="onx">✕</button>
+<p><b>Bottom row ×5.</b> Before: the nuts sat inside 01 and were sealed under 03 for good. Now: welded inside 01, you bolt from outside, and it comes apart later.<br><span>底圈 ×5。以前：螺母在 01 里面，被 03 永久封在下面。现在：焊在 01 里面，从外面拧螺栓，以后能拆。</span></p>
+<p><b>Seat row ×5.</b> Before: you held the nuts behind the 03 wall from inside the tube. Now: welded to the 03 wall, bolts from outside.<br><span>座圈 ×5。以前：要从管子里面扶住 03 墙后面的螺母。现在：焊在 03 墙上，螺栓从外面装。</span></p>
+<p><b>Top row ×5.</b> Before: impossible, the nuts were buried behind the core and 14.6 mm of insulation. Now: welded inside the top of 01, so core, insulation and cap go in first and the bolts go in last.<br><span>顶圈 ×5。以前：根本装不了，螺母埋在加热芯和 14.6 mm 保温棉后面。现在：焊在 01 顶部里面，先装加热芯、保温棉和顶盖，最后装螺栓。</span></p>
+<p><b>Lower lid row ×5.</b> Before: you held the nuts behind the 09 wall. Now: welded to 09.<br><span>盖子下圈 ×5。以前：要扶住 09 墙后面的螺母。现在：焊在 09 上。</span></p>
+<p><b>Upper lid row ×5.</b> Before: you held the nuts inside 06. Now: welded inside 06.<br><span>盖子上圈 ×5。以前：要在 06 里面扶住螺母。现在：焊在 06 里面。</span></p>
+<p><b>Hinge.</b> Before: on a lid bolt at 257.5°. Now: centred at 292.5° in the slot-free arc, on its own 2 holes per leaf, with weld nuts.<br><span>合页。以前：装在 257.5° 的盖子螺栓上。现在：中心在没有玻璃槽那段弧的 292.5°，每片有自己的 2 个孔和焊接螺母。</span></p>
+<p><b>The shop welds all 29 nuts at the factory before shipping.</b> Assembly is about 5-6 min vs 45-60+ (an estimate), and the oven can be taken apart for service.<br><span>工厂在出厂前把 29 颗螺母全部焊好。装配大约 5-6 分钟，以前要 45-60 分钟以上（估计），而且炉子可以拆开维修。</span></p>
+</div>
+<div id="key"><span><i style="background:#2f6fd6"></i>bottom cap</span><span><i style="background:#2fa84f"></i>support ring / lid holder</span><span><i style="background:#fff;border:1px solid #bbb"></i>ceramic disks</span><span><i style="background:#9b59b6"></i>top cap / lid top</span><span><i style="background:#a9b4c2"></i>outer tube</span><span><i style="background:#d9825a"></i>inner tube</span><span><i style="background:#efe9da;border:1px solid #bbb"></i>ceramic</span><span><i style="background:#4a4f56"></i>bolts</span><span><i style="background:#ff6a00"></i>weld nuts (welded in their part)</span><span><i style="background:#c0c6cf;border:1px solid #888"></i>hinge 292.5°</span></div>
 <div id="bar" class="hide"><i></i></div>
 <canvas id="c"></canvas>
 </div>
@@ -65,7 +76,9 @@ import { makeLabeler } from './viewer-labels.js';
 //   Whole oven      = viewer-complete.html  (lid open on its hinge, separate / assemble)
 //   Base            = viewer-base-full.html (every base part + measurements when cut and assembled)
 //   Lid             = viewer-lid-full.html  (every lid part)
-// The 2026-11-12 meshes (viewer-full/, viewer-lid-full/) are loaded once and shared by every tab.
+// 2026-11-28: every nut is a weld nut, drawn orange as part of its part's own glb (mesh "weldnuts"), so it is there from
+// that part's first step and moves with it; the hinge H1/H2/H3 is at 292.5° on its own bolts.
+// The 2026-11-28 meshes (viewer-full/, viewer-lid-full/) are loaded once and shared by every tab.
 // "Cut in half" is one switch for all tabs and works live, also while the build animation plays.
 // Hash: #build | #whole | #base | #lid, plus ,cut ,separated ,assembled ,closed (e.g. #build,cut).
 const PARTS=[
@@ -74,61 +87,62 @@ const PARTS=[
   {f:'core',col:'cer'},{f:'spacer_top',col:'cer'},{f:'bolts_top',col:'bolt',radial:true},{f:'02',col:'out'},{f:'cap',col:'top'},
   {f:'liddisk',col:'disk',lid:true},{f:'09',col:'sup',lid:true},{f:'06',col:'in',lid:true},{f:'spacer_low',col:'cer',lid:true},
   {f:'bolts_low',col:'bolt',lid:true,radial:true},{f:'07',col:'out',lid:true},{f:'spacer_high',col:'cer',lid:true},{f:'08',col:'top',lid:true},
-  {f:'bolts_high',col:'bolt',lid:true,radial:true},{f:'10',col:'bolt',lid:true},{f:'11',col:'out',lid:true},{f:'13',col:'bolt',lid:true},
+  {f:'bolts_high',col:'bolt',lid:true,radial:true},{f:'10',col:'bolt',lid:true},
+  {f:'h1',col:'hin'},{f:'bolts_hinge',col:'bolt',radial:true},{f:'h2',col:'hin',lid:true},{f:'bolts_hinge_lid',col:'bolt',lid:true,radial:true},{f:'h3',col:'bolt',lid:true},
 ];
 // labels and stacking order per tab, word for word from the single pages: [file, label, side-of]
 const VIEWS={
  base:{title:'BASE — every part, one-piece top cap',size:1.7,k:1,list:[
   ['feet','Ceramic Feet (3)'],['legscrews','Leg Screws','feet'],['04','04 Bottom Cap'],['spacer_bot','Bottom Spacer Ring (ceramic)'],
-  ['bolts_bot','Bottom Bolts ×5 (clamp the bottom cap)','spacer_bot'],['03','03 Support Ring'],['basedisk','Ceramic Base Disk'],
-  ['spacer_seat','Seat Spacer Ring (ceramic)'],['bolts_seat','Seat Bolts ×5 (through the 03 wall)','spacer_seat'],['01','01 Inner Wall Tube'],
+  ['bolts_bot','Bottom Bolts ×5 (clamp the bottom cap)','spacer_bot'],['03','03 Support Ring (5 weld nuts)'],['basedisk','Ceramic Base Disk'],
+  ['spacer_seat','Seat Spacer Ring (ceramic)'],['bolts_seat','Seat Bolts ×5 (through the 03 wall)','spacer_seat'],['01','01 Inner Wall Tube (12 weld nuts)'],
   ['core','Ceramic Heater Core'],['spacer_top','Top Spacer Ring (ceramic)'],['bolts_top','Top Bolts ×5 (hold the top cap)','spacer_top'],
-  ['02','02 Outer Perforated Tube'],['cap','05 One-Piece Top Cap']]},
+  ['02','02 Outer Perforated Tube'],['cap','05 One-Piece Top Cap (hinge pad)'],['h1','H1 Hinge Body Leaf (292.5°)','cap'],['bolts_hinge','Hinge Body Bolts ×2','cap']]},
  lid:{title:'LID — every part',size:1.7,k:1,list:[
-  ['liddisk','Ceramic Lid Disk'],['09','09 Lid Ceramic Holder (48 vent holes)'],['06','06 Lid Inner Tube'],['spacer_low','Lower Lid Spacer (ceramic)'],
+  ['liddisk','Ceramic Lid Disk'],['09','09 Lid Ceramic Holder (7 weld nuts, 48 vents)'],['06','06 Lid Inner Tube (5 weld nuts)'],['spacer_low','Lower Lid Spacer (ceramic)'],
   ['bolts_low','Lower Lid Bolts ×5','spacer_low'],['07','07 Lid Outer Perforated Tube'],['spacer_high','Upper Lid Spacer (ceramic)'],['08','08 Lid Top Disk'],
-  ['bolts_high','Upper Lid Bolts ×5 (hold the top disk)','spacer_high'],['10','10 Lid Handle'],['11','11 Hinge Strap','07'],['13','13 Hinge Pin','07']]},
+  ['bolts_high','Upper Lid Bolts ×5 (hold the top disk)','spacer_high'],['10','10 Lid Handle'],['h2','H2 Hinge Lid Leaf (292.5°)','07'],['bolts_hinge_lid','Hinge Lid Bolts ×2','07'],['h3','H3 Hinge Pin','07']]},
  whole:{title:'COMPLETE OVEN — lid open',size:1.35,k:0,list:[
   ['feet','Ceramic Feet (3)'],['legscrews','Leg Screws','feet'],['04','04 Bottom Cap'],['spacer_bot','Bottom Spacer (ceramic)'],
-  ['bolts_bot','Bottom Bolts ×5','spacer_bot'],['03','03 Support Ring'],['basedisk','Ceramic Base Disk'],['spacer_seat','Seat Spacer (ceramic)'],
-  ['bolts_seat','Seat Bolts ×5','spacer_seat'],['01','01 Inner Wall Tube'],['core','Ceramic Heater Core'],['spacer_top','Top Spacer (ceramic)'],
+  ['bolts_bot','Bottom Bolts ×5','spacer_bot'],['03','03 Support Ring (5 weld nuts)'],['basedisk','Ceramic Base Disk'],['spacer_seat','Seat Spacer (ceramic)'],
+  ['bolts_seat','Seat Bolts ×5','spacer_seat'],['01','01 Inner Wall Tube (12 weld nuts)'],['core','Ceramic Heater Core'],['spacer_top','Top Spacer (ceramic)'],
   ['bolts_top','Top Bolts ×5 (hold the top cap)','spacer_top'],['02','02 Outer Perforated Tube'],['cap','05 One-Piece Top Cap'],
-  ['liddisk','Ceramic Lid Disk (glued in)'],['09','09 Lid Ceramic Holder (48 vent holes)'],['06','06 Lid Inner Tube'],['spacer_low','Lower Lid Spacer'],
+  ['liddisk','Ceramic Lid Disk (glued in)'],['09','09 Lid Ceramic Holder (7 weld nuts, 48 vents)'],['06','06 Lid Inner Tube (5 weld nuts)'],['spacer_low','Lower Lid Spacer'],
   ['bolts_low','Lower Lid Bolts ×5','spacer_low'],['07','07 Lid Outer Perforated Tube'],['spacer_high','Upper Lid Spacer'],['08','08 Lid Top Disk'],
-  ['bolts_high','Upper Lid Bolts ×5 (hold the top disk)','spacer_high'],['10','10 Lid Handle'],['11','11 Hinge Strap','07'],['13','13 Hinge Pin','07']]},
+  ['bolts_high','Upper Lid Bolts ×5 (hold the top disk)','spacer_high'],['10','10 Lid Handle'],['h1','H1 Hinge Body Leaf','cap'],['bolts_hinge','Hinge Body Bolts ×2','cap'],['h2','H2 Hinge Lid Leaf','07'],['bolts_hinge_lid','Hinge Lid Bolts ×2','07'],['h3','H3 Hinge Pin','07']]},
 };
 // build animation steps, same as viewer-oven-build.html
 const STEPS=[
  {add:['04'],how:'down',t:'1. Bottom Cap 04 on the bench, rim up (Ø134.7).',z:'底盖 04 放在台面上，边朝上（Ø134.7）。'},
  {add:['feet','legscrews'],how:'up',t:'2. 3 ceramic feet screwed onto the cap now, before anything else (03 has no leg holes).',z:'现在先把 3 个陶瓷脚拧到底盖上（03 没有脚孔）。'},
- {add:['01'],how:'down',t:'3. Inner Wall Tube 01 stands inside the cap (ID 121.7).',z:'内壁管 01 立在底盖里（内径 121.7）。'},
+ {add:['01','03'],how:'down',t:'3. Inner Wall Tube 01 stands inside the cap. It comes from the factory with its 12 orange weld nuts welded inside, and with Support Ring 03 (5 weld nuts on its wall) already in it: 03 cannot pass the nuts, so the shop puts it in before welding the top nuts. Under 03 is the 25 mm chamber for the lead crimps.',z:'内壁管 01 立在底盖里。出厂时 01 里面已焊好 12 颗橙色焊接螺母，支撑环 03（墙上 5 颗焊接螺母）也已经在里面：03 过不去螺母，所以工厂在焊顶部螺母之前先把它放进去。03 下面是 25 mm 的接线压接空间。'},
  {add:['spacer_bot'],how:'down',t:'4. Bottom ceramic spacer slides down over the inner tube; holes lined up.',z:'底部陶瓷垫环套在内管外，孔对齐。'},
  {add:['02'],how:'down',t:'5. Outer Perforated Tube 02 slides down over everything (OD 131.7).',z:'外冲孔管 02 套在外面（外径 131.7）。'},
- {add:['bolts_bot'],how:'in',t:'6. 5 bottom M6 bolts: cap rim, outer tube, spacer, inner tube. Nuts inside.',z:'底部 5 颗 M6 螺栓穿过底盖边、外管、垫环、内管，螺母在里面。'},
- {add:['03'],how:'down',t:'7. Insulation pad in the bottom, then Support Ring 03 drops in to the seat holes.',z:'底部放保温棉，再放支撑环 03 到座圈孔位置。'},
- {add:['spacer_seat'],how:'down',t:'8. Seat ceramic spacer into the 3.0 mm gap between the tubes.',z:'座圈陶瓷垫环放进两管之间 3.0 mm 的空隙。'},
- {add:['bolts_seat'],how:'in',t:'9. 5 seat bolts through outer tube, spacer, inner tube and the 03 wall.',z:'5 颗座圈螺栓穿过外管、垫环、内管和 03 的墙。'},
- {add:['spacer_top'],how:'down',t:'10. Top ceramic spacer into the gap at the top holes.',z:'顶部陶瓷垫环放进空隙，对准上排孔。'},
- {add:['basedisk'],how:'down',t:'11. Ceramic base disk onto the raised seat of 03.',z:'陶瓷底盘放在 03 抬高的座面上。'},
- {add:['core'],how:'down',t:'12. Ceramic heater core onto the base disk, glass slots lined up. Wire it, pack the 14.6 mm side insulation.',z:'陶瓷加热芯放在底盘上，玻璃槽对齐。接线，塞入 14.6 mm 侧面保温棉。'},
- {add:['cap'],how:'down',t:'13. One-piece Top Cap 05: tabs down the outside, grooves into the glass slots. Ring is now 20.0 mm wide.',z:'一体顶盖 05：折边片沿外侧向下，金属槽落进玻璃槽。圆环宽 20.0 mm。'},
- {add:['bolts_top'],how:'in',t:'14. 5 top bolts through the cap tabs, outer tube, spacer, inner tube. The base is done.',z:'5 颗顶部螺栓穿过顶盖折边片、外管、垫环、内管。底座完成。'},
- {add:['09'],how:'down',t:'15. Lid: Ceramic Holder 09 first. Its 48 vent holes line up with the top cap vents.',z:'盖子：先放陶瓷托架 09，48 个通风孔对准顶盖通风孔。'},
- {add:['06'],how:'down',t:'16. Lid Inner Tube 06 over the holder wall.',z:'盖子内管 06 套在托架立墙外。'},
+ {add:['bolts_bot'],how:'in',t:'6. 5 bottom M6 bolts from outside: cap rim, outer tube, spacer, inner tube, and they thread into the weld nuts welded inside 01.',z:'5 颗底部 M6 螺栓从外面穿过底盖边、外管、垫环、内管，拧进 01 里面焊好的焊接螺母。'},
+ {add:['spacer_seat'],how:'down',t:'7. Seat ceramic spacer into the 3.0 mm gap between the tubes.',z:'座圈陶瓷垫环放进两管之间 3.0 mm 的空隙。'},
+ {add:['bolts_seat'],how:'in',t:'8. 5 seat bolts from outside through outer tube, spacer and inner tube, threading into the weld nuts on the 03 wall.',z:'5 颗座圈螺栓从外面穿过外管、垫环、内管，拧进 03 墙上的焊接螺母。'},
+ {add:['spacer_top'],how:'down',t:'9. Top ceramic spacer into the gap at the top holes.',z:'顶部陶瓷垫环放进空隙，对准上排孔。'},
+ {add:['basedisk'],how:'down',t:'10. Ceramic base disk onto the raised seat of 03 (8.65 mm inside the seat weld nuts).',z:'陶瓷底盘放在 03 抬高的座面上（离座圈焊接螺母 8.65 mm）。'},
+ {add:['core'],how:'down',t:'11. Ceramic heater core onto the base disk, glass slots lined up (9.65 mm inside the top weld nuts). Wire it, pack the 14.6 mm side insulation.',z:'陶瓷加热芯放在底盘上，玻璃槽对齐（离顶部焊接螺母 9.65 mm）。接线，塞入 14.6 mm 侧面保温棉。'},
+ {add:['cap'],how:'down',t:'12. One-piece Top Cap 05: tabs and the hinge pad down the outside, grooves into the glass slots. Ring is 20.0 mm wide.',z:'一体顶盖 05：折边片和合页垫片沿外侧向下，金属槽落进玻璃槽。圆环宽 20.0 mm。'},
+ {add:['bolts_top'],how:'in',t:'13. 5 top bolts go in LAST, from outside: cap tabs, outer tube, spacer, inner tube, into the weld nuts inside the top of 01. The base is done.',z:'5 颗顶部螺栓最后装，从外面穿过顶盖折边片、外管、垫环、内管，拧进 01 顶部里面的焊接螺母。底座完成。'},
+ {add:['h1','bolts_hinge'],how:'in',t:'14. Hinge body leaf H1 at 292.5° (the middle of the arc with no glass slot) on the 05 hinge pad: 2 M6 × 16 into its own 2 weld nuts in 01.',z:'合页本体页 H1 装在 292.5°（没有玻璃槽那段弧的中间）的 05 合页垫片上：2 颗 M6 × 16 拧进 01 里自己的 2 颗焊接螺母。'},
+ {add:['09'],how:'down',t:'15. Lid: Ceramic Holder 09 first, with its 7 weld nuts on the wall. Its 48 vent holes line up with the top cap vents.',z:'盖子：先放陶瓷托架 09，立墙上有 7 颗焊接螺母。48 个通风孔对准顶盖通风孔。'},
+ {add:['06'],how:'down',t:'16. Lid Inner Tube 06 (5 weld nuts inside) over the holder wall; its nuts stay 8.2 mm above the wall.',z:'盖子内管 06（里面 5 颗焊接螺母）套在托架立墙外；螺母在立墙上方 8.2 mm。'},
  {add:['spacer_low'],how:'down',t:'17. Lower lid ceramic spacer.',z:'盖子下排陶瓷垫环。'},
  {add:['07'],how:'down',t:'18. Lid Outer Perforated Tube 07.',z:'盖子外冲孔管 07。'},
- {add:['bolts_low'],how:'in',t:'19. 5 lower lid bolts through 07, spacer, 06 and the 09 wall.',z:'5 颗盖子下排螺栓穿过 07、垫环、06 和 09 的立墙。'},
+ {add:['bolts_low'],how:'in',t:'19. 5 lower lid bolts from outside through 07, spacer and 06, into the weld nuts on the 09 wall.',z:'5 颗盖子下排螺栓从外面穿过 07、垫环、06，拧进 09 立墙上的焊接螺母。'},
  {add:['spacer_high'],how:'down',t:'20. Upper lid ceramic spacer.',z:'盖子上排陶瓷垫环。'},
  {add:['08'],how:'down',t:'21. Lid Top Disk 08, skirt down the outside.',z:'盖子顶盘 08，裙边沿外侧向下。'},
- {add:['bolts_high'],how:'in',t:'22. 5 upper lid bolts through the 08 skirt, 07, spacer and 06.',z:'5 颗盖子上排螺栓穿过 08 裙边、07、垫环和 06。'},
+ {add:['bolts_high'],how:'in',t:'22. 5 upper lid bolts from outside through the 08 skirt, 07 and spacer, into the weld nuts inside 06.',z:'5 颗盖子上排螺栓从外面穿过 08 裙边、07、垫环，拧进 06 里面的焊接螺母。'},
  {add:['10'],how:'down',t:'23. Handle 10: two M4 screws come up from inside the lid into its posts.',z:'提手 10：两颗 M4 螺丝从盖子里面往上拧进提手脚。'},
  {add:['liddisk'],how:'up',t:'24. Fill the lid with insulation, glue the ceramic lid disk into the 09 pocket.',z:'盖子里塞满保温棉，把陶瓷盖盘粘进 09 的槽位。'},
- {add:['11','13'],how:'in',t:'25. Hinge strap 11 and pin 13 on the lid bolt at 257.5° (placeholder: Tianrun fits their stock hinge).',z:'铰链片 11 和销 13 装在 257.5° 的盖子螺栓上（示意：天润用自己的合页）。'},
- {add:[],lid:'hang',t:'26. The lid goes onto the hinge.',z:'盖子装到铰链上。'},
- {add:[],lid:'close',t:'27. Close the lid. Done: the 2026-11-12 oven, Ø134.7 over the bottom cap and lid; the ceramic top is flush with the top cap.',z:'合上盖子。完成：2026-11-12 版炉子，底盖和盖子外径 Ø134.7；陶瓷顶面和顶盖齐平。'},
+ {add:['h2','bolts_hinge_lid'],how:'in',t:'25. Hinge lid leaf H2: 2 M6 × 18 through its side wings, 07, spacer and 06, into its own 2 weld nuts on 09.',z:'合页盖子页 H2：2 颗 M6 × 18 穿过两侧翼片、07、垫环、06，拧进 09 上自己的 2 颗焊接螺母。'},
+ {add:['h3'],how:'down',lid:'hang',t:'26. The lid goes onto the hinge; pin H3 goes through the knuckles.',z:'盖子装到合页上，销 H3 穿过合页节。'},
+ {add:[],lid:'close',t:'27. Close the lid. Done: the 2026-11-28 oven, 29 weld nuts, no loose nuts, every bolt from outside, and it comes apart for service.',z:'合上盖子。完成：2026-11-28 版炉子，29 颗焊接螺母，没有散装螺母，每颗螺栓都从外面装，可以拆开维修。'},
 ];
 const DUR=3.6, ANIM=1.5, LIFT=150, OPEN=110, TOTAL=STEPS.length*DUR+2.5, GAP=40, RADIAL=70;
-const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6};
+const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6,hin:0xc0c6cf,wn:0xff7a00};
 const V='?v='+Date.now();
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const canvas=document.getElementById('c');
@@ -143,17 +157,17 @@ scene.add(new THREE.AmbientLight(0xffffff,0.95));
 const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,-200,400); scene.add(d1);
 const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
 scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
-// lid hinge, same numbers as viewer-complete.html: axis tangent at 257.5° (292.4° before the 5-bolt rings, 2026-11-12), pivot r 70.1, z 100.86
-const HA=257.5*Math.PI/180, HC=new THREE.Vector3(70.1*Math.cos(HA),70.1*Math.sin(HA),100.86), HAX=new THREE.Vector3(-Math.sin(HA),Math.cos(HA),0);
+// lid hinge (2026-11-28): the H1/H2/H3 hinge pin, axis tangent at 292.5° (the middle of the slot-free arc), r 73.55, z 94.86 (the seam); 257.5° on the placeholder strap before
+const HA=292.5*Math.PI/180, HC=new THREE.Vector3(73.55*Math.cos(HA),73.55*Math.sin(HA),94.86), HAX=new THREE.Vector3(-Math.sin(HA),Math.cos(HA),0);
 const lidOuter=new THREE.Group(); scene.add(lidOuter); const lidPivot=new THREE.Group(); lidPivot.position.copy(HC); lidOuter.add(lidPivot);
 const lidInner=new THREE.Group(); lidInner.position.copy(HC).negate(); lidPivot.add(lidInner);
 // cut planes: whole oven + build cut through the hinge (as viewer-complete), so the open lid stays cut on the same plane;
 // base + lid cut on y = 0 (as their pages, the base measurements are drawn on that face). The half facing the camera goes.
 const CLIP={build:new THREE.Plane(HAX.clone(),0), whole:new THREE.Plane(HAX.clone(),0), base:new THREE.Plane(new THREE.Vector3(0,1,0),0), lid:new THREE.Plane(new THREE.Vector3(0,1,0),0)};
 const loader=new GLTFLoader(); const load=p=>new Promise((res,rej)=>loader.load(p,g=>res(g.scene),undefined,rej));
-function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
-  const cer=(color===COL.cer||color===COL.disk);
-  ch.material=new THREE.MeshStandardMaterial({color,side:THREE.DoubleSide,metalness:cer?0.05:0.45,roughness:cer?0.8:0.45,clippingPlanes:[]}); } }); }
+function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){ const wn=ch.name.startsWith('weldnuts'); ch.userData.em0=wn?0x7a2c00:0; ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  const cer=!wn&&(color===COL.cer||color===COL.disk);
+  ch.material=new THREE.MeshStandardMaterial({color:wn?COL.wn:color,emissive:ch.userData.em0,side:THREE.DoubleSide,metalness:cer?0.05:0.45,roughness:cer?0.8:0.45,clippingPlanes:[]}); } }); }
 function makeLabel(text){ const c=document.createElement('canvas'); let x=c.getContext('2d'); x.font='bold 28px -apple-system, sans-serif';
   const w=Math.ceil(x.measureText(text).width)+30, h=48; c.width=w; c.height=h; x=c.getContext('2d');
   x.fillStyle='rgba(255,255,255,0.94)'; x.beginPath(); x.roundRect(0,0,w,h,11); x.fill();
@@ -207,7 +221,7 @@ const stepEl=$('step'), barEl=document.querySelector('#bar i'), sl=$('sl'), btn=
 const H=location.hash.slice(1).split(',');
 let tab='build', cutOn=false, lidAng=H.includes('closed')?0:110;
 function setClip(){ const pl=cutOn?[CLIP[tab]]:[]; items.forEach(it=>it.m.traverse(ch=>{ if(ch.isMesh) ch.material.clippingPlanes=pl; })); }
-function setHot(on){ items.forEach(it=>it.m.traverse(ch=>{ if(ch.isMesh) ch.material.emissive.setHex(0); })); }
+function setHot(on){ items.forEach(it=>it.m.traverse(ch=>{ if(ch.isMesh) ch.material.emissive.setHex(ch.userData.em0); })); }
 
 // ---------- build animation (viewer-oven-build.html) ----------
 const stepIn={}; STEPS.forEach((s,i)=>s.add.forEach(f=>stepIn[f]=i));
@@ -233,7 +247,7 @@ function buildState(t){
     const f=(k===n)?1-e:0, how=STEPS[k].how; it.g.position.set(0,0,how==='down'?160*f:how==='up'?-120*f:0);
     if(it.kids) it.kids.forEach(kd=>kd.o.position.copy(kd.base).addScaledVector(kd.dir,how==='in'?60*f:0));
     if(!it.kids && how==='in') it.g.position.set(60*f*Math.cos(HA),60*f*Math.sin(HA),0);
-    const hot=(k===n)&&t-n*DUR<DUR-0.3; it.m.traverse(ch=>{ if(ch.isMesh) ch.material.emissive.setHex(hot?0x332200:0x000000); }); });
+    const hot=(k===n)&&t-n*DUR<DUR-0.3; it.m.traverse(ch=>{ if(ch.isMesh) ch.material.emissive.setHex(hot?0x332200:ch.userData.em0); }); });
   let lz=LIFT, ang=0;
   if(n>=iH){ const eh=n===iH?e:1; lz=LIFT*(1-eh); ang=OPEN*eh; }
   if(n>=iC){ const ec=n===iC?e:1; lz=0; ang=OPEN*(1-ec); }
@@ -311,7 +325,7 @@ if(H.includes('assembled')) Object.values(VIEWS).forEach(v=>v.k=v.goal=0);
 fit(); setTab(['build','whole','base','lid'].find(n=>H.includes(n))||'build');
 if(H.includes('cut')) cutb.onclick();
 if(H.includes('paused')) setPlaying(false);
-window.__oven={setTab,get t(){return t;},set t(v){t=v;},setPlaying,get cut(){return cutOn;},TOTAL};
+window.__oven={setTab,get t(){return t;},set t(v){t=v;},setPlaying,get cut(){return cutOn;},TOTAL,cam,ctl,look:(x,y,z,d,az,el)=>{ userCam=true; ctl.target.set(x,y,z); cam.position.set(x+d*Math.cos(az)*Math.cos(el),y+d*Math.sin(az)*Math.cos(el),z+d*Math.sin(el)); ctl.update(); }};
 let tPrev=performance.now();
 (function loop(){ requestAnimationFrame(loop); const now=performance.now(), dt=Math.min(0.1,(now-tPrev)/1000); tPrev=now;
   if(tab==='build'){ if(playing){ t=Math.min(TOTAL,t+dt); if(t>=TOTAL) setPlaying(false); } buildState(t); }
@@ -319,5 +333,6 @@ let tPrev=performance.now();
     const ls=cam.position.distanceTo(ctl.target)/900; v.LB.update(ls,v.k);
     dimG.children.forEach(o=>{ if(o.isSprite) o.scale.set(o.userData.w*ls*1.6,o.userData.h*ls*1.6,1); }); }
   ctl.update(); renderer.render(scene,cam); })();
+document.getElementById('onb').onclick=()=>document.getElementById('oldnew').classList.toggle('hide'); document.getElementById('onx').onclick=()=>document.getElementById('oldnew').classList.add('hide');
 </script>
 </body></html>

@@ -1,8 +1,39 @@
-Heat & Clean Glass Oven: machining files, 2026-11-12
-Replaces every earlier package, including 2026-11-08 R2. Metal parts only; we supply all ceramics.
-Same 13 parts as before (01-11, 13, 14). No new parts.
+Heat & Clean Glass Oven: machining files, 2026-11-28
+Replaces every earlier package, including 2026-11-12. Metal parts only; we supply all ceramics.
+14 parts: 01-10, 14, and the real hinge H1 / H2 / H3 (replaces the placeholder strap 11 and pin 13).
+Build plan, old way vs new way: BUILD_PLAN.md in this folder.
 
-LATEST, 2026-11-12 (5:19 AM): THE 3 LEGS EVENLY 120 DEG APART AGAIN, M5 LEG SCREWS
+LATEST, 2026-11-28: WELD NUTS AT EVERY BOLT, HINGE MOVED TO 292.5 DEG
+  WELD NUTS. Every M6 bolt now threads into a stainless M6 projection weld nut that YOU weld to the inside face of the
+  part at the factory, before shipping. No loose nuts anywhere: every bolt goes in from the outside and can come back
+  out for service. In the STEP / STL the nut is part of its part (a weldment, one solid).
+  Spec: M6 hex projection weld nut, DIN 929, A2 (304) stainless, 10 across flats, 5 thick, one corner straight up (on 09: flats up),
+  centred on the bolt hole, face on the inside face of the wall. The files show the Ø6.6 clearance hole; if your weld
+  nut has a pilot, open the hole in that one wall to the pilot diameter.
+    01 Inner Wall Tube      12 weld nuts: bottom ring 5 (z -24.0), top ring 5 (z 61.66), hinge 2 (z 61.66, 286.5 / 298.5 deg)
+    03 Support Ring          5 weld nuts on the inside of the bolt wall (seat ring, z 2.15)
+    09 Lid Ceramic Holder    7 weld nuts on the inside of the bolt wall: lower lid ring 5 + hinge 2 (z 102.86, 274.1 / 310.9 deg)
+    06 Lid Inner Tube        5 weld nuts (upper lid ring, z 122.86)
+    Total 29 weld nuts (25 ring bolts + 4 hinge bolts). Ring bolt angles unchanged: 41.5 / 113.5 / 185.5 / 257.5 / 329.5 deg.
+  ASSEMBLY ORDER THIS NEEDS: 03 cannot pass the weld nuts of 01 (03 is r 60.65, the nuts reach in to r 55.9) from either
+  end, so 03 goes into 01 BEFORE you weld 01's top-ring and hinge nuts (weld 01's bottom nuts, drop 03 in from the top,
+  then weld the 7 top nuts). 03 stays inside 01 for good but still bolts and unbolts with its 5 seat bolts.
+  HINGE. The hinge is now real (H1 body leaf, H2 lid leaf, H3 pin, all 304 stainless) and centred at 292.5 deg, the
+  middle of the arc with no glass slot (slots at 218.5 and 6.5 deg), opposite the handle. It used to sit on the 257.5 deg
+  lid bolt. Each leaf has its OWN 2 radial M6 holes with weld nuts:
+    H1 body leaf    2 x M6 x 16 at 286.5 / 298.5 deg, z 61.66: through H1 (Ø13 spot face), the new 05 hinge pad, 02, the
+                    top ceramic spacer, 01 -> weld nuts in 01
+    H2 lid leaf     2 x M6 x 18 at 274.1 / 310.9 deg, z 102.86: through the two side wings of H2, 07, the lower lid
+                    ceramic spacer, 06, the 09 wall -> weld nuts on 09 (the holes sit in wings beside the knuckles,
+                    because a bolt head under the knuckles would hit the body knuckles)
+    H3 pin          Ø6 x 29 with a Ø10 x 1.5 head; H1 holes Ø6.1, H2 holes Ø6.4; pivot r 73.55, z 94.86 (the seam)
+  Parts that change: 01, 02 (+2 holes), 03, 05 (hinge pad: the skirt carried down to the tab bottom, 28 wide at 292.5 deg,
+  2 holes), 06 (+2 holes), 07 (+2 holes, perforation skipped around them), 09, H1, H2, H3. 04, 08, 10, 14 do not change.
+  Checked in CAD: every STEP one solid; no part touches another; every bolt shank lines up with its holes and weld nut;
+  the lid opens 15 to 135 deg with nothing touching. Weld nut to ceramic core 9.65 mm (01 top), 8.65 (03 seat).
+
+
+EARLIER, 2026-11-12 (5:19 AM): THE 3 LEGS EVENLY 120 DEG APART AGAIN, M5 LEG SCREWS
   Legs at 5.5 / 125.5 / 245.5 deg, still r 54 (Ø108 leg circle). This replaces the uneven 77.5 / 221.5 / 293.5 below.
   With 5 bolts per ring (72 deg) and 3 legs (120 deg), the best a leg can be from its nearest bolt is 12 deg; that is
   too tight for an M6 screw head beside an M6 nut, so the leg screws are now M5 (M5 x 40 socket head cap screw,
@@ -194,11 +225,37 @@ Fit fixes, 2026-09-30 (same files, updated):
   Change sheets (2026-11-12, old vs new): https://nicedreamzapp.github.io/Heat-N-Clean-Glass-Oven/change-sheets-2026-11-12.html
 
 
-加热清洁玻璃炉：加工文件，2026-11-12
-替换之前所有的文件包，包括 2026-11-08 R2。只包括金属件，陶瓷件全部由我方提供。
-还是同样的13个零件（01-11、13、14）。没有新增零件。
+加热清洁玻璃炉：加工文件，2026-11-28
+替换之前所有的文件包，包括 2026-11-12。只包括金属件，陶瓷件全部由我方提供。
+14 个零件：01-10、14，以及真正的合页 H1 / H2 / H3（取代示意用的铰链片 11 和销 13）。
+装配方案（旧方法和新方法对比）：本文件夹里的 BUILD_PLAN.md。
 
-最新，2026-11-12（5:19）：3 个脚重新均布 120 度，脚螺丝改 M5
+最新，2026-11-28：每颗螺栓都用焊接螺母，合页移到 292.5 度
+  焊接螺母。每颗 M6 螺栓现在都拧进一颗不锈钢 M6 凸焊螺母，由贵厂在出厂前焊在零件的内侧面上。不再有散装螺母：
+  每颗螺栓都从外面装，以后维修也能拆下来。STEP / STL 里螺母就是零件的一部分（焊接件，一个实体）。
+  规格：M6 六角凸焊螺母，DIN 929，A2（304）不锈钢，对边 10，厚 5，一个角朝正上方（09 上平边朝上），对准螺栓孔中心，贴在壁的内侧面。
+  图纸上是 Ø6.6 通孔；如果贵厂的焊接螺母带定位凸台，请把那一层壁上的孔扩到凸台直径。
+    01 内壁管        12 颗：底圈 5（z -24.0）、顶圈 5（z 61.66）、合页 2（z 61.66，286.5 / 298.5 度）
+    03 支撑环         5 颗，焊在螺栓立墙内侧（座圈，z 2.15）
+    09 盖子陶瓷托架   7 颗，焊在螺栓立墙内侧：盖子下圈 5 + 合页 2（z 102.86，274.1 / 310.9 度）
+    06 盖子内管       5 颗（盖子上圈，z 122.86）
+    共 29 颗焊接螺母（25 颗圈螺栓 + 4 颗合页螺栓）。圈螺栓角度不变：41.5 / 113.5 / 185.5 / 257.5 / 329.5 度。
+  因此需要的装配顺序：03（半径 60.65）从任何一端都过不去 01 的焊接螺母（螺母伸进到半径 55.9），所以 03 要在焊 01 的
+  顶圈和合页螺母之前放进 01（先焊 01 底圈螺母，从上面放进 03，再焊上面 7 颗螺母）。03 永久留在 01 里面，但仍然用 5 颗
+  座圈螺栓固定和拆卸。
+  合页。现在是真正的合页（H1 本体页、H2 盖子页、H3 销，全部 304 不锈钢），中心在 292.5 度，即没有玻璃槽的那段弧的中间
+  （槽在 218.5 和 6.5 度），正对提手。以前装在 257.5 度的盖子螺栓上。每片合页都有自己的 2 个径向 M6 孔和焊接螺母：
+    H1 本体页   2 x M6 x 16，286.5 / 298.5 度，z 61.66：穿过 H1（Ø13 锪平面）、05 新的合页垫片、02、顶部陶瓷垫环、01 -> 01 里的焊接螺母
+    H2 盖子页   2 x M6 x 18，274.1 / 310.9 度，z 102.86：穿过 H2 两侧的翼片、07、盖子下排陶瓷垫环、06、09 立墙 -> 09 上的焊接螺母
+                （孔放在合页节两侧的翼片上，因为放在合页节下面的话螺栓头会碰到本体的合页节）
+    H3 销       Ø6 x 29，头 Ø10 x 1.5；H1 孔 Ø6.1，H2 孔 Ø6.4；转轴半径 73.55，z 94.86（接缝）
+  改动的零件：01、02（+2 孔）、03、05（合页垫片：裙边在 292.5 度处向下延伸到折边片底部，宽 28，2 孔）、06（+2 孔）、
+  07（+2 孔，孔周围不冲孔）、09、H1、H2、H3。04、08、10、14 不变。
+  CAD 检查：每个 STEP 都是一个实体；零件之间互不接触；每颗螺栓都对准它的孔和焊接螺母；盖子从 15 度开到 135 度都不碰。
+  焊接螺母到陶瓷芯 9.65 mm（01 顶圈），8.65 mm（03 座圈）。
+
+
+之前，2026-11-12（5:19）：3 个脚重新均布 120 度，脚螺丝改 M5
   脚在 5.5 / 125.5 / 245.5 度，仍是 r 54（Ø108 脚圆）。取代下面不均布的 77.5 / 221.5 / 293.5。
   每圈 5 颗螺栓（72 度）和 3 个脚（120 度）时，脚离最近的螺栓最多只能 12 度；M6 螺丝头放在 M6 螺母旁边太挤，所以脚螺丝改为
   M5（M5 x 40 内六角圆柱头螺丝 ISO 4762，A2 不锈钢，头 Ø8.5，托盘下面加 M5 垫片 + 螺母）。最小间隙：螺丝头到底部螺栓螺母 2.6 mm。

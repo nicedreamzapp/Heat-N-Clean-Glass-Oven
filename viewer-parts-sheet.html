@@ -13,31 +13,32 @@ html,body{width:1650px;height:1275px;background:#fff;font-family:-apple-system,"
 .box{position:absolute;border:1.5px solid #d8d8de;border-radius:10px}
 </style></head><body>
 <canvas id="c"></canvas>
-<div id="head"><h1>Heat &amp; Clean Glass Oven: every part · 所有零件</h1><span>2026-11-12 (ring 20.0 mm, ceramic flush with cap) · parts not to scale · 零件未按比例</span></div>
+<div id="head"><h1>Heat &amp; Clean Glass Oven: every part · 所有零件</h1><span>2026-11-28 · orange = weld nuts, welded in the part · not to scale</span></div>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // One still sheet (US letter, landscape) laying out every part in 3 rows. Each part gets its own
 // viewport so small parts are as readable as big ones. Meshes are the approved ones from CURRENT.md.
-const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6};
+const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6,hin:0xc0c6cf,wn:0xff7a00};
 const ROWS=[
  {name:'BASE METAL · 底座金属件', color:'#2f6fd6', parts:[
   {src:'viewer-full/04',col:'cap',n:'04',en:'Bottom Cap',zh:'底盖'},
-  {src:'viewer-full/03',col:'sup',n:'03',en:'Support Ring (5 bolt holes)',zh:'支撑环（5个螺栓孔）'},
-  {src:'viewer-full/01',col:'in',n:'01',en:'Inner Wall Tube 0.8 mm',zh:'内壁管 0.8mm'},
+  {src:'viewer-full/03',col:'sup',n:'03',en:'Support Ring (5 weld nuts)',zh:'支撑环（5颗焊接螺母）'},
+  {src:'viewer-full/01',col:'in',n:'01',en:'Inner Tube (12 weld nuts)',zh:'内壁管（12颗焊接螺母）'},
   {src:'viewer-full/02',col:'out',n:'02',en:'Outer Perforated Tube',zh:'外层带孔管'},
-  {src:'viewer-full/cap',col:'top',n:'05',en:'One-Piece Top Cap (5 bolt tabs, 4 slot grooves)',zh:'一体顶盖（5个螺栓折边片，4个槽）'},
+  {src:'viewer-full/cap',col:'top',n:'05',en:'Top Cap (tabs + hinge pad)',zh:'一体顶盖（折边片+合页垫片）'},
   {src:'viewer-full/tray',col:'out',n:'14',en:'Steel Tray 3 mm',zh:'钢托盘 3mm'},
  ]},
  {name:'LID METAL · 盖子金属件', color:'#9b59b6', parts:[
-  {src:'viewer-lid-full/09',col:'sup',n:'09',en:'Lid Ceramic Holder',zh:'盖子陶瓷托架'},
-  {src:'viewer-lid-full/06',col:'in',n:'06',en:'Lid Inner Tube 0.8 mm',zh:'盖子内管 0.8mm'},
+  {src:'viewer-lid-full/09',col:'sup',n:'09',en:'Lid Holder (7 weld nuts)',zh:'盖子陶瓷托架（7颗焊接螺母）'},
+  {src:'viewer-lid-full/06',col:'in',n:'06',en:'Lid Inner Tube (5 weld nuts)',zh:'盖子内管（5颗焊接螺母）'},
   {src:'viewer-lid-full/07',col:'out',n:'07',en:'Lid Outer Perforated Tube',zh:'盖子外层带孔管'},
-  {src:'viewer-lid-full/08',col:'top',n:'08',en:'Lid Top Disk, underside',zh:'盖子顶盘底面（2个提手孔）',under:true},
+  {src:'viewer-lid-full/08',col:'top',n:'08',en:'Lid Top Disk, underside',zh:'盖子顶盘底面',under:true},
   {src:'viewer-lid-full/10',col:'bolt',n:'10',en:'Lid Handle (M4 tapped posts)',zh:'提手（M4螺纹孔）'},
-  {src:'viewer-lid-full/11',col:'out',n:'11',en:'Hinge Strap',zh:'铰链片'},
-  {src:'viewer-lid-full/13',col:'bolt',n:'13',en:'Hinge Pin Ø5',zh:'铰链销 Ø5'},
+  {src:'viewer-full/h1',col:'hin',n:'H1',en:'Hinge Body Leaf (292.5°)',zh:'合页本体页（292.5°）'},
+  {src:'viewer-lid-full/h2',col:'hin',n:'H2',en:'Hinge Lid Leaf',zh:'合页盖子页'},
+  {src:'viewer-lid-full/h3',col:'bolt',n:'H3',en:'Hinge Pin Ø6',zh:'合页销 Ø6'},
  ]},
  {name:'CERAMIC + HARDWARE (we supply) · 陶瓷件和五金（我方提供）', color:'#8a7a55', parts:[
   {src:'viewer-full/core',col:'cer',en:'Ceramic Heater Core',zh:'陶瓷加热芯'},
@@ -46,7 +47,7 @@ const ROWS=[
   {src:'viewer-full/spacer_bot',col:'cer',en:'Ceramic Spacer ×3 (10 mm)',zh:'陶瓷垫环 ×3（10mm）'},
   {src:'viewer-lid-full/spacer_low',col:'cer',en:'Lid Ceramic Spacer ×2 (10 mm)',zh:'盖子陶瓷垫环 ×2（10mm）'},
   {src:'viewer-full/feet',col:'cer',en:'Ceramic Feet ×3',zh:'陶瓷脚 ×3'},
-  {src:'viewer-full/bolts_top',col:'bolt',one:true,en:'M6 Bolt + Nut ×25',zh:'M6 螺栓 + 螺母 ×25'},
+  {src:'viewer-full/bolts_top',col:'bolt',one:true,en:'M6 Bolt ×29',zh:'M6 螺栓 ×29（拧进焊接螺母）'},
  ]},
 ];
 const W=1650,H=1275, TOP=86, ROWH=(H-TOP-20)/3, LEFT=40, RIGHT=40;
@@ -56,8 +57,8 @@ renderer.setPixelRatio(devicePixelRatio); renderer.setSize(W,H,false); renderer.
 renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.1;
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
 const loader=new GLTFLoader(); const load=p=>new Promise((res,rej)=>loader.load(p,g=>res(g.scene),undefined,rej));
-function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
-  const cer=(color===COL.cer||color===COL.disk); ch.material=new THREE.MeshStandardMaterial({color,side:THREE.DoubleSide,metalness:cer?0.05:0.45,roughness:cer?0.8:0.45}); } }); }
+function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){ const wn=ch.name.startsWith('weldnuts'); ch.userData.em0=wn?0x7a2c00:0; ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  const cer=!wn&&(color===COL.cer||color===COL.disk); ch.material=new THREE.MeshStandardMaterial({color:wn?COL.wn:color,emissive:ch.userData.em0,side:THREE.DoubleSide,metalness:cer?0.05:0.45,roughness:cer?0.8:0.45}); } }); }
 const cells=[];
 for(const [ri,row] of ROWS.entries()){
   const y0=TOP+ri*ROWH, n=row.parts.length, cw=(W-LEFT-RIGHT)/n;

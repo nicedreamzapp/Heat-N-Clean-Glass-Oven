@@ -1,0 +1,22 @@
+package: FAB_PACKAGE_2026-11-28
+1. parts + spacers closed: 0 overlaps
+2. bolts (head + shank at minor dia) vs all parts: 0 clashes
+3. weld nut clearances (min distance, mm):
+  01 bottom     core 24.65  base disk 20.24  lid disk 113.50  spacers 0.95
+  01 top        core 9.65  base disk 52.32  lid disk 29.07  spacers 0.95
+  01 hinge      core 9.65  base disk 52.32  lid disk 29.07  spacers 0.95
+  03 seat       core 8.65  base disk 8.65  lid disk 87.37  spacers 1.94
+  09 lower lid  core 9.16  base disk 93.80  lid disk 8.65  spacers 1.87
+  06 upper lid  core 24.23  base disk 113.04  lid disk 18.88  spacers 0.95
+  heater leads: seat nuts to the 03 lead-hole column (Ø10 up to the base disk) 2.10; bottom nuts to the Skutt lips 0.53, to the Ø8 crimp path in the 03-04 chamber 4.46
+  bottom nuts to the M5 leg screw heads 2.70
+4. slide-in checks:
+  03 support ring OD r 60.65 vs 01's top + hinge weld nuts (inner face r 55.90, z 55.9..67.4) and bottom nuts (z -29.8..-18.2): BLOCKED, 4.75 mm radial overlap from either end
+  ceramic core / base disk (r 46.25) down past 01's top nuts: radial clear 9.65
+  06 down over the 09 wall: 06 nuts lowest z 117.09 vs 09 wall top 108.86 -> never meet (8.23 above)
+  spacer rings (ID r 62.05) over 01 (OD r 61.65): nuts are inside 01, clear 0.40
+5. lid swing overlap (mm3) 15°: 0.00, 45°: 0.00, 90°: 0.00, 110°: 0.00, 135°: 0.00
+  257.5 lower-lid bolt head to the H2 wing: 7.69 mm; 329.5 head: 9.99 mm
+  257.5 / 329.5 top bolt heads to H1: 22.01 / 24.33 mm
+  09 weld nut top 107.86 vs 09 wall top 108.86; nearest 09 nut pair gap 4.42
+  01 hinge weld nut pair gap 1.74

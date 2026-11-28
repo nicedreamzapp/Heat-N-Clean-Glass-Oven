@@ -1,4 +1,4 @@
-"""PRINT_SET_2026-11-12: plastic fit/display print set (Matt 2026-11-08; 2026-11-12 = the 20.0 mm ring).
+"""PRINT_SET_2026-11-28 (weld nuts printed as part of 01/03/06/09, hinge H1/H2/H3 at 292.5; was 2026-11-12): plastic fit/display print set (Matt 2026-11-08; 2026-11-12 = the 20.0 mm ring).
 12 metal parts copied from FAB_PACKAGE_2026-11-12 (no 14 tray this round) + 6 ceramic solids drawn here
 at the measured sizes (hnc_params + the viewer meshes). Fit check places each ceramic where the viewers put it.
 R2: C1 core 90.4 tall and C2 base disk 4.9 thick (Matt's calipers on the real ceramic: stack 95.3), so on the print the
@@ -8,13 +8,13 @@ import os, sys, math, shutil, json
 from build123d import *
 sys.path.insert(0, os.path.dirname(__file__)); import hnc_params as P
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TAG = "2026-11-12"
+TAG = "2026-11-28"
 PKG = os.path.join(ROOT, "FAB_PACKAGE_" + TAG); OUT = os.path.join(ROOT, "PRINT_SET_" + TAG)
 if os.path.isdir(OUT): shutil.rmtree(OUT)
 for d in ("STL", "STEP"): os.makedirs(os.path.join(OUT, d), exist_ok=True)
 METAL = ["01_Inner_Wall_Tube", "02_Outer_Perforated_Tube", "03_Support_Ring", "04_Bottom_Cap", "05_One_Piece_Top_Cap",
          "06_Lid_Inner_Tube", "07_Lid_Outer_Perforated_Tube", "08_Lid_Top_Disk", "09_Lid_Ceramic_Holder",
-         "10_Lid_Handle", "11_Lid_Hinge_Strap", "13_Hinge_Pin"]
+         "10_Lid_Handle", "H1_Hinge_Body_Leaf", "H2_Hinge_Lid_Leaf", "H3_Hinge_Pin"]
 for n in METAL: shutil.copy(os.path.join(PKG, "STL", n + ".stl"), os.path.join(OUT, "STL", n + ".stl"))
 
 def solid(x): return x if not isinstance(x, ShapeList) else Compound(children=list(x))
@@ -52,16 +52,17 @@ def disk(t=6.0):   # base / lid disk as modelled: Ø92.5 body + raised centre Ø
         revolve(axis=Axis.Z)
     return bp.part
 SP_RI, SP_RO = P.housing_outer_r + 0.4, P.mesh_inner_r   # fill the air gap: ID 124.1 / OD 129.3 (136.1 / 144.1 before 2026-11-12)
-def spacer(h):   # 5 radial Ø6.6 holes at mid height on the bolt angles
+def spacer(h, extra=()):   # 5 radial Ø6.6 holes at mid height on the bolt angles (+ the 2 hinge holes on the top / lower lid ring, 2026-11-28)
     ri, ro = SP_RI, SP_RO
     s = ring(ri, ro, 0, h)
-    for a in BOLT: s -= radial(a, (ri + ro) / 2, h / 2, 3.3, 8)
+    for a in list(BOLT) + list(extra): s -= radial(a, (ri + ro) / 2, h / 2, 3.3, 8)
     return solid(s)
 def foot():      # Ø20 x 20 post on a Ø28 x 5 base, Ø5.5 leg-screw hole through (M5 since 2026-11-12 5:19 AM, Ø6.6 before)
     f = cyl(14, 5) + cyl(10, 20, 5)
     return solid(f - cyl(P.leg_hole_d / 2, 30, -1))
 CER = {"C1_Ceramic_Heater_Core": core, "C2_Ceramic_Base_Disk": disk(P.base_disk_t_real), "C3_Ceramic_Lid_Disk": disk(),
-       "C5_Spacer_Ring_10mm": spacer(10), "C6_Ceramic_Foot": foot()}
+       "C5_Spacer_Ring_10mm": spacer(10), "C5T_Spacer_Ring_Top_Hinge": spacer(10, [P.HINGE_ANGLE_DEG - 6.0, P.HINGE_ANGLE_DEG + 6.0]),
+       "C5L_Spacer_Ring_Lower_Lid_Hinge": spacer(10, [P.HINGE_ANGLE_DEG - 18.4, P.HINGE_ANGLE_DEG + 18.4]), "C6_Ceramic_Foot": foot()}
 info = {}
 for n, s in CER.items():
     export_step(s, os.path.join(OUT, "STEP", n + ".step")); export_stl(s, os.path.join(OUT, "STL", n + ".stl"))
@@ -76,8 +77,8 @@ CORE_Z = P.seat_z + P.base_disk_t_real                     # 4.46: core on the 4
 placed = {"core": Pos(0, 0, CORE_Z) * core, "basedisk": Pos(0, 0, P.seat_z) * CER["C2_Ceramic_Base_Disk"],
           "liddisk": Pos(0, 0, 91.2 + U) * CER["C3_Ceramic_Lid_Disk"]}
 # 2026-11-10 (Matt): one ring size, 10 mm x 5, each centred on its bolt line (body rings were 14 mm)
-for k, z0 in (("sp_bot", -29.0), ("sp_seat", -2.85), ("sp_top", 54.0 + U)): placed[k] = Pos(0, 0, z0) * CER["C5_Spacer_Ring_10mm"]
-for k, z0 in (("sp_low", 95.2 + U), ("sp_high", 115.2 + U)): placed[k] = Pos(0, 0, z0) * CER["C5_Spacer_Ring_10mm"]
+for k, z0 in (("sp_bot", -29.0), ("sp_seat", -2.85), ("sp_high", 115.2 + U)): placed[k] = Pos(0, 0, z0) * CER["C5_Spacer_Ring_10mm"]
+placed["sp_top"] = Pos(0, 0, 54.0 + U) * CER["C5T_Spacer_Ring_Top_Hinge"]; placed["sp_low"] = Pos(0, 0, 95.2 + U) * CER["C5L_Spacer_Ring_Lower_Lid_Hinge"]
 cap_top = metal["05_One_Piece_Top_Cap"].bounding_box().max.Z
 print("FLUSH core top", round(CORE_Z + H, 3), "cap top", round(cap_top, 3), "diff", round(CORE_Z + H - cap_top, 3))
 for i, a in enumerate(P.leg_angles):
@@ -114,10 +115,13 @@ NAMES = {"01_Inner_Wall_Tube": ("Inner Wall Tube", "内壁管", 1), "02_Outer_Pe
          "05_One_Piece_Top_Cap": ("One-Piece Top Cap", "一体顶盖", 1), "06_Lid_Inner_Tube": ("Lid Inner Tube", "盖子内管", 1),
          "07_Lid_Outer_Perforated_Tube": ("Lid Outer Perforated Tube", "盖子外冲孔管", 1), "08_Lid_Top_Disk": ("Lid Top Disk", "盖子顶盘", 1),
          "09_Lid_Ceramic_Holder": ("Lid Ceramic Holder", "盖子陶瓷托架", 1), "10_Lid_Handle": ("Lid Handle", "提手", 1),
-         "11_Lid_Hinge_Strap": ("Lid Hinge Strap (placeholder)", "铰链片(示意)", 1), "13_Hinge_Pin": ("Hinge Pin (placeholder)", "铰链销(示意)", 1),
+         "H1_Hinge_Body_Leaf": ("Hinge Body Leaf (292.5 deg)", "合页本体页", 1), "H2_Hinge_Lid_Leaf": ("Hinge Lid Leaf", "合页盖子页", 1),
+         "H3_Hinge_Pin": ("Hinge Pin 6 mm", "合页销 6mm", 1),
          "C1_Ceramic_Heater_Core": ("Ceramic Heater Core", "陶瓷加热芯", 1), "C2_Ceramic_Base_Disk": ("Ceramic Base Disk", "陶瓷底盘", 1),
          "C3_Ceramic_Lid_Disk": ("Ceramic Lid Disk", "陶瓷盖盘", 1),
-         "C5_Spacer_Ring_10mm": ("Ceramic Spacer Ring 10 mm", "陶瓷垫圈 10mm", 5), "C6_Ceramic_Foot": ("Ceramic Foot", "陶瓷脚", 3)}
+         "C5_Spacer_Ring_10mm": ("Ceramic Spacer Ring 10 mm (bottom, seat, upper lid)", "陶瓷垫圈 10mm（底、座、盖上）", 3),
+         "C5T_Spacer_Ring_Top_Hinge": ("Spacer Ring, top (+2 hinge holes)", "顶部垫圈（+2合页孔）", 1),
+         "C5L_Spacer_Ring_Lower_Lid_Hinge": ("Spacer Ring, lower lid (+2 hinge holes)", "盖子下排垫圈（+2合页孔）", 1), "C6_Ceramic_Foot": ("Ceramic Foot", "陶瓷脚", 3)}
 rows, big = [], (0, None)
 for n, (en, zh, q) in NAMES.items():
     ext = trimesh.load(os.path.join(OUT, "STL", n + ".stl")).extents
@@ -130,6 +134,15 @@ txt = f"""HEAT & CLEAN GLASS OVEN - PLASTIC PRINT SET {TAG}
 
 PLASTIC FIT / DISPLAY MODEL ONLY, NOT HEAT RATED. Do not heat or use it as an oven.
 仅用于塑料试装 / 展示模型，不耐热。请勿加热或当作烤炉使用。
+
+2026-11-28 (replaces the 2026-11-12 print set): every M6 bolt goes into a weld nut welded inside its part (01 x12, 03 x5,
+06 x5, 09 x7). In this print the nuts are printed as part of 01 / 03 / 06 / 09 with a 5.0 mm hole: an M6 bolt cuts its own
+thread in plastic. The hinge is the real hinge H1 / H2 / H3, centred at 292.5 deg on its own 2 bolts per leaf, so the top
+spacer (C5T) and the lower lid spacer (C5L) have 2 extra hinge holes. 03 goes into 01 before you glue / fit anything at
+the top: it cannot pass the top nuts later.
+2026-11-28（替换 2026-11-12 打印套件）：每颗 M6 螺栓都拧进焊在零件里面的焊接螺母（01 x12、03 x5、06 x5、09 x7）。打印件里螺母和
+01 / 03 / 06 / 09 打成一体，孔径 5.0 mm：M6 螺栓可以在塑料里自己攻丝。合页是真正的合页 H1 / H2 / H3，中心 292.5 度，每片有自己的 2 颗螺栓，
+所以顶部垫圈（C5T）和盖子下排垫圈（C5L）多 2 个合页孔。03 要先放进 01：以后过不去顶部螺母。
 
 2026-11-12 (replaces the 2026-11-08 R2 print set): the top cap ring, ceramic edge to cap edge, is 20.0 mm (was 28.4) so
 the smallest glass slurper (21 mm bowl to bend) fits: insulation 14.6 (was 20.6), air gap 3.0 (was 4.4), top cap edge 0.5
@@ -164,17 +177,18 @@ C1: OD 92.5 / ID 81.5, h {H}; 4 glass slots 10.5 wide x {P.slot_depth} deep, R5.
     热电偶孔 6.4，314.6 度，高 8.2；加热丝螺旋槽：30 圈，高 15.5 至 66.5，宽 1.0，深 0.6。
 C2: OD 92.5, {bd} overall: {bd - 1.5:.1f} body + raised centre 77.0 x 1.0 with a 0.5 taper. 外径 92.5，总厚 {bd}（{bd - 1.5:.1f} 主体 + 中间凸台 77.0 x 1.0，0.5 斜边）。
 C3: OD 92.5, 6.0 overall: 4.5 body + raised centre 77.0 x 1.0 with a 0.5 taper. 外径 92.5，总厚 6.0（4.5 主体 + 中间凸台 77.0 x 1.0，0.5 斜边）。
-C5 (all 5 rings, 3 body + 2 lid, 10 mm tall): ID {2*SP_RI:.1f} / OD {2*SP_RO:.1f}, {len(BOLT)} radial holes 6.6 at mid height, at {BOLT[0]:g} + n x {BOLT[1]-BOLT[0]:g} deg. C5（全部 5 个垫圈，机体 3 个 + 盖子 2 个，高 10 mm）：内径 {2*SP_RI:.1f} / 外径 {2*SP_RO:.1f}，{len(BOLT)} 个径向孔 6.6，位于中间高度，角度 {BOLT[0]:g} + n x {BOLT[1]-BOLT[0]:g} 度。
+C5 (all 5 rings, 3 body + 2 lid, 10 mm tall): ID {2*SP_RI:.1f} / OD {2*SP_RO:.1f}, {len(BOLT)} radial holes 6.6 at mid height (C5T / C5L: + 2 hinge holes), at {BOLT[0]:g} + n x {BOLT[1]-BOLT[0]:g} deg. C5（全部 5 个垫圈，机体 3 个 + 盖子 2 个，高 10 mm）：内径 {2*SP_RI:.1f} / 外径 {2*SP_RO:.1f}，{len(BOLT)} 个径向孔 6.6，位于中间高度，角度 {BOLT[0]:g} + n x {BOLT[1]-BOLT[0]:g} 度。
 C6: post 20 x 20 on a base 28 x 5 (25 tall), leg screw hole 5.5 through (M5). 立柱 20 x 20，底座 28 x 5（高 25），通孔 5.5 用于 M5 脚螺丝。
 
-FASTENERS NOT INCLUDED, BUY THEM: {5*len(BOLT)} M6 bolts + nuts, 2 M4 screws (handle), 3 leg screws M5 x 40 socket head + washers + nuts.
-紧固件不包含，请购买：{5*len(BOLT)} 套 M6 螺栓 + 螺母，2 个 M4 螺丝（提手），3 个 M5 x 40 内六角脚螺丝 + 垫片 + 螺母。
+FASTENERS NOT INCLUDED, BUY THEM: {5*len(BOLT)} M6 bolts for the rings + 2 M6 x 16 + 2 M6 x 18 for the hinge (no loose M6 nuts:
+the nuts are part of the parts), 2 M4 screws (handle), 3 leg screws M5 x 40 socket head + washers + nuts.
+紧固件不包含，请购买：圈螺栓 {5*len(BOLT)} 颗 M6，合页 2 颗 M6 x 16 + 2 颗 M6 x 18（不需要散装 M6 螺母：螺母是零件的一部分），2 个 M4 螺丝（提手），3 个 M5 x 40 内六角脚螺丝 + 垫片 + 螺母。
 
 Part 14 Steel Tray is NOT in this round (it stays in the design).
 14 号钢托盘本次不打印（仍保留在设计中）。
 
-Hinge 11 + 13 are placeholders; the real hinge is the factory's stock hinge.
-11 和 13 铰链为示意件，实际使用工厂标准铰链。
+Hinge H1 + H2 + H3 is the real hinge (2026-11-18 thick hinge), at 292.5 deg since 2026-11-28.
+H1 + H2 + H3 是真正的合页（2026-11-18 加厚版），2026-11-28 起在 292.5 度。
 """
 open(os.path.join(OUT, "README.txt"), "w", encoding="utf-8").write(txt)
 ZIP = os.path.join(os.environ.get("HNC_ZIPDIR", "/tmp"), f"Heat-N-Clean_Print_Set_{TAG}.zip")   # uploaded to the wholesale site, not committed

@@ -15,7 +15,7 @@ body{background:#e8e8ec;font-family:-apple-system,sans-serif;color:#16181d}
 <div id="loading">Loading…</div>
 <div id="ctl"><b>HOW THE BASE GOES TOGETHER</b><button id="prev">◀ Back</button><button id="next">Next ▶</button><button id="play">▶ Play all</button><button id="cut">Cut in half</button></div>
 <div id="step" style="position:absolute;top:70px;left:12px;right:12px;max-width:760px;background:#fff;border-left:5px solid #d08a00;padding:12px 16px;border-radius:8px;font-size:18px;line-height:1.4;z-index:10;box-shadow:0 4px 18px rgba(0,0,0,.12)"></div>
-<div id="key"><span><i style="background:#2f6fd6"></i>bottom cap</span><span><i style="background:#2fa84f"></i>support ring</span><span><i style="background:#fff;border:1px solid #bbb"></i>base disk</span><span><i style="background:#9b59b6"></i>top cap</span><span><i style="background:#a9b4c2"></i>outer tube</span><span><i style="background:#d9825a"></i>inner tube</span><span><i style="background:#efe9da;border:1px solid #bbb"></i>ceramic</span><span><i style="background:#4a4f56"></i>bolts + nuts</span></div>
+<div id="key"><span><i style="background:#2f6fd6"></i>bottom cap</span><span><i style="background:#2fa84f"></i>support ring</span><span><i style="background:#fff;border:1px solid #bbb"></i>base disk</span><span><i style="background:#9b59b6"></i>top cap</span><span><i style="background:#a9b4c2"></i>outer tube</span><span><i style="background:#d9825a"></i>inner tube</span><span><i style="background:#efe9da;border:1px solid #bbb"></i>ceramic</span><span><i style="background:#4a4f56"></i>bolts</span><span><i style="background:#ff7a00"></i>weld nuts (welded in their part)</span></div>
 <canvas id="c"></canvas>
 </div>
 <script type="importmap">
@@ -27,35 +27,37 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // Base assembly with the ceramics and the fasteners in place. Metal parts are the fab-package meshes,
 // the top cap is the one-piece 03_Top_Cap from before the 2026-06-10 split, ceramics come from Core Split,
-// and the 15 ring bolts (5 per ring height, 41.5° + n·72°, between the glass slots; 6 at 52.4° + n·60° before 2026-11-12) are drawn M6: head outside, nut inside the inner tube.
+// and the ring bolts (5 per ring height, 41.5° + n·72°, between the glass slots) are drawn M6: head outside, threading into the weld nut.
+// 2026-11-28: every nut is a stainless M6 weld nut welded inside its part (01, 03, 06, 09), drawn orange as the "weldnuts" mesh of that
+// part's glb, so it is always shown with its part; bolts are head + shank only. Hinge H1/H2/H3 at 292.5° on its own bolts.
 // "Separated" lifts parts straight up in assembly order; bolts back straight out of their holes.
 const PARTS=[
-  {f:'04',label:'Bottom Cap',col:'cap'},{f:'01',label:'Inner Wall Tube',col:'in'},{f:'spacer_bot',label:'Bottom Spacer',col:'cer'},
+  {f:'04',label:'Bottom Cap',col:'cap'},{f:'01',label:'Inner Wall Tube (12 weld nuts)',col:'in'},{f:'spacer_bot',label:'Bottom Spacer',col:'cer'},
   {f:'02',label:'Outer Perforated Tube',col:'out'},{f:'bolts_bot',label:'Bottom Bolts',col:'bolt',radial:true},
-  {f:'03',label:'Support Ring',col:'sup'},{f:'spacer_seat',label:'Seat Spacer',col:'cer'},{f:'bolts_seat',label:'Seat Bolts',col:'bolt',radial:true},
+  {f:'03',label:'Support Ring (5 weld nuts)',col:'sup'},{f:'spacer_seat',label:'Seat Spacer',col:'cer'},{f:'bolts_seat',label:'Seat Bolts',col:'bolt',radial:true},
   {f:'spacer_top',label:'Top Spacer',col:'cer'},{f:'bolts_top',label:'Top Bolts',col:'bolt',radial:true},
   {f:'basedisk',label:'Ceramic Base Disk',col:'disk'},{f:'core',label:'Ceramic Heater Core',col:'cer'},{f:'cap',label:'One-Piece Top Cap (5 bolt tabs + 4 round slot grooves, same shape as the ceramic slots)',col:'top'},
   {f:'feet',label:'Ceramic Feet',col:'cer'},{f:'legscrews',label:'Leg Screws',col:'bolt'},
+  {f:'h1',label:'H1 Hinge Body Leaf (292.5°)',col:'hin'},{f:'bolts_hinge',label:'Hinge Body Bolts',col:'bolt',radial:true},
 ];
 // Each step brings in parts: 'down' = lowered in from above, 'in' = pushed in from outside (bolts), 'up' = from below.
 const STEPS=[
  {add:['04'],how:'down',t:'1. Bottom Cap on the bench, rim facing up. Everything else builds up inside it.'},
- {add:['01'],how:'down',t:'2. Stand the Inner Wall Tube inside the Bottom Cap.'},
- {add:['spacer_bot'],how:'down',t:'3. Slide the Bottom Spacer (ceramic) down over the inner tube until it sits in the cap. Turn it so its 5 holes line up with the tube holes.'},
- {add:['02'],how:'down',t:'4. Slide the Outer Perforated Tube down over everything, into the cap. Line up its bottom holes.'},
- {add:['bolts_bot'],how:'in',t:'5. Push the 5 Bottom Bolts in from outside: cap rim, outer tube, spacer, inner tube. Reach down inside the tube to thread the nuts on.'},
- {add:[],how:'',t:'6. Pack the 25 mm of insulation into the bottom now, before the Support Ring closes it off. (Insulation not drawn.)'},
- {add:['03'],how:'down',t:'7. Lower the Support Ring into the inner tube until its wall holes line up with the seat holes. The 25 mm insulation pad underneath holds it at the right height while you work.'},
- {add:['spacer_seat'],how:'down',t:'8. Drop the Seat Spacer into the 3.0 mm gap between the tubes and hold it at the seat holes. THIS IS THE FIDDLY STEP: nothing holds it up until the bolts go in.'},
- {add:['bolts_seat'],how:'in',t:'9. Push the 5 Seat Bolts through outer tube, seat spacer, inner tube and the Support Ring wall. Nuts on from inside, just above the plate.'},
- {add:['spacer_top'],how:'down',t:'10. Drop the Top Spacer into the gap and hold it at the top holes. Same fiddly step as 8.'},
- {add:['basedisk'],how:'down',t:'11. Set the Ceramic Base Disk onto the Support Ring, inside its small centering wall.'},
- {add:['core'],how:'down',t:'12. Lower the Ceramic Heater Core onto the base disk. Line its 4 glass slots up with the tube slots. Wire it, then pack the side insulation around it.'},
- {add:['cap'],how:'down',t:'13. Drop the One-Piece Top Cap on. Its 5 tabs slide down the outside of the tube and line up with the top holes; its 4 metal slot grooves drop into the glass slots and cover the insulation.'},
- {add:['bolts_top'],how:'in',t:'14. Push the 5 Top Bolts through the cap tabs, outer tube, top spacer and inner tube. Nuts on from inside. These hold the top cap on AND lock the top spacer.'},
- {add:['feet','legscrews'],how:'up',t:'15. Screw the 3 Ceramic Feet onto the bottom. Done.'},
+ {add:['feet','legscrews'],how:'up',t:'2. Screw the 3 Ceramic Feet onto the cap now (03 has no leg holes).'},
+ {add:['01','03'],how:'down',t:'3. Stand the Inner Wall Tube inside the Bottom Cap. It comes with its 12 orange weld nuts welded inside and the Support Ring (5 weld nuts) already in it: the Support Ring cannot pass the nuts, so the factory puts it in before welding the top nuts. Under it is the 25 mm chamber for the heater lead crimps.'},
+ {add:['spacer_bot'],how:'down',t:'4. Slide the Bottom Spacer (ceramic) down over the inner tube until it sits in the cap. Turn it so its 5 holes line up with the tube holes.'},
+ {add:['02'],how:'down',t:'5. Slide the Outer Perforated Tube down over everything, into the cap. Line up its bottom holes.'},
+ {add:['bolts_bot'],how:'in',t:'6. Push the 5 Bottom Bolts in from outside: cap rim, outer tube, spacer, inner tube. They thread into the weld nuts inside the tube; nothing to hold.'},
+ {add:['spacer_seat'],how:'down',t:'7. Drop the Seat Spacer into the 3.0 mm gap between the tubes and hold it at the seat holes. THIS IS THE FIDDLY STEP: nothing holds it up until the bolts go in.'},
+ {add:['bolts_seat'],how:'in',t:'8. Push the 5 Seat Bolts through outer tube, seat spacer and inner tube into the weld nuts on the Support Ring wall.'},
+ {add:['spacer_top'],how:'down',t:'9. Drop the Top Spacer into the gap and hold it at the top holes. Same fiddly step as 7.'},
+ {add:['basedisk'],how:'down',t:'10. Set the Ceramic Base Disk onto the Support Ring, inside its small centering wall (8.65 mm inside the seat weld nuts).'},
+ {add:['core'],how:'down',t:'11. Lower the Ceramic Heater Core onto the base disk (9.65 mm inside the top weld nuts). Line its 4 glass slots up with the tube slots. Wire it, then pack the side insulation around it.'},
+ {add:['cap'],how:'down',t:'12. Drop the One-Piece Top Cap on. Its 5 tabs and the hinge pad slide down the outside of the tube; its 4 metal slot grooves drop into the glass slots and cover the insulation.'},
+ {add:['bolts_top'],how:'in',t:'13. The 5 Top Bolts go in last, from outside: cap tabs, outer tube, top spacer, inner tube, into the weld nuts inside the top of the tube. They hold the top cap on AND lock the top spacer.'},
+ {add:['h1','bolts_hinge'],how:'in',t:'14. Hinge body leaf H1 at 292.5° on the cap\'s hinge pad: 2 M6 × 16 into its own 2 weld nuts in the inner tube. Done.'},
 ];
-const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6};
+const COL={out:0xa9b4c2,in:0xd9825a,cer:0xefe9da,bolt:0x2d3136,cap:0x2f6fd6,sup:0x2fa84f,disk:0xffffff,top:0x9b59b6,hin:0xc0c6cf,wn:0xff7a00};
 const GAP=40, RADIAL=70;
 const V='?v='+Date.now();
 THREE.Object3D.DEFAULT_UP.set(0,0,1);
@@ -73,12 +75,12 @@ scene.add(new THREE.AmbientLight(0xffffff,0.95));
 const d1=new THREE.DirectionalLight(0xffffff,1.4); d1.position.set(150,-200,400); scene.add(d1);
 const d2=new THREE.DirectionalLight(0xaabbdd,0.5); d2.position.set(-200,-150,150); scene.add(d2);
 scene.add(new THREE.HemisphereLight(0xddeeff,0x888888,0.5));
-// "Cut in half" removes the half facing the camera so the spacers, bolts and nuts show in section
+// "Cut in half" removes the half facing the camera so the spacers, bolts and weld nuts show in section
 const clip=new THREE.Plane(new THREE.Vector3(0,1,0),0); let cutOn=false;
 const loader=new GLTFLoader();
 const load=p=>new Promise((res,rej)=>loader.load(p,g=>res(g.scene),undefined,rej));
-function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){ ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
-  ch.material=new THREE.MeshStandardMaterial({color,side:THREE.DoubleSide,metalness:(color===COL.cer||color===COL.disk)?0.05:0.45,roughness:(color===COL.cer||color===COL.disk)?0.8:0.45,clippingPlanes:[]}); } }); }
+function paint(o,color){ o.traverse(ch=>{ if(ch.isMesh){ const wn=ch.name.startsWith('weldnuts'); ch.userData.em0=wn?0x7a2c00:0; ch.geometry.deleteAttribute('color'); ch.geometry.computeVertexNormals();
+  ch.material=new THREE.MeshStandardMaterial({color:wn?COL.wn:color,emissive:ch.userData.em0,side:THREE.DoubleSide,metalness:(!wn&&(color===COL.cer||color===COL.disk))?0.05:0.45,roughness:(!wn&&(color===COL.cer||color===COL.disk))?0.8:0.45,clippingPlanes:[]}); } }); }
 function makeLabel(text){ const c=document.createElement('canvas'); let x=c.getContext('2d'); x.font='bold 28px -apple-system, sans-serif';
   const w=Math.ceil(x.measureText(text).width)+30, h=48; c.width=w; c.height=h; x=c.getContext('2d');
   x.fillStyle='rgba(255,255,255,0.94)'; x.beginPath(); x.roundRect(0,0,w,h,11); x.fill();
@@ -109,7 +111,7 @@ function go(n){ if(n<0||n>=STEPS.length) return; cur=n; const vis=shownThrough(n
   const st=STEPS[n]; stepEl.textContent=st.t; const t0=performance.now();
   const moving=items.filter(it=>st.add.includes(it.p.f));
   anim={moving,how:st.how,t0};
-  items.forEach(it=>it.m.traverse(ch=>{ if(ch.isMesh){ ch.material.emissive=new THREE.Color(st.add.includes(it.p.f)?0x332200:0x000000); } })); }
+  items.forEach(it=>it.m.traverse(ch=>{ if(ch.isMesh){ ch.material.emissive=new THREE.Color(st.add.includes(it.p.f)?0x332200:(ch.userData.em0||0)); } })); }
 document.getElementById('next').onclick=()=>go(Math.min(cur+1,STEPS.length-1));
 document.getElementById('prev').onclick=()=>go(Math.max(cur-1,0));
 let playing=null; document.getElementById('play').onclick=()=>{ if(playing){clearInterval(playing);playing=null;return;} go(0); playing=setInterval(()=>{ if(cur>=STEPS.length-1){clearInterval(playing);playing=null;return;} go(cur+1); },4200); };

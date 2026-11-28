@@ -20,7 +20,7 @@ canvas{display:block}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}</script>
 </head><body>
-<div id="step"><small>Heater coil and lead connection — on the 11-12 oven parts</small><span id="stxt">Loading the oven parts…</span></div>
+<div id="step"><small>Heater coil and lead connection — on the 11-28 oven parts (orange = weld nuts)</small><span id="stxt">Loading the oven parts…</span></div>
 <div id="ctl">
  <button id="play">▶ Play build</button>
  <button id="prev">◀</button><button id="next">▶</button>
@@ -47,7 +47,7 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {STLLoader} from 'three/addons/loaders/STLLoader.js';
 import {CSS2DRenderer,CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
 
-// Oven frame, mm, z up. Real parts = viewer-full/*.glb (FAB_PACKAGE_2026-11-12), embedded below.
+// Oven frame, mm, z up. Real parts = viewer-full/*.glb (FAB_PACKAGE_2026-11-28), embedded below.
 // Lead holes (Scripts/hnc_params.py, 2026-11-20): 145° and 173°. 03: Ø10 at r 53.5 (2026-11-21, was Ø8: the Ø8 porcelain beads pass). 04: Ø11.5 at r 49 for the
 // Skutt porcelain insulator (body Ø11.2, lip Ø22.1 on the floor, body down out of the oven).
 // 03 outer plate top z -5.5, 04 floor top z -31.7 (25.4 mm open space between). Slots 23.5 deep.
@@ -83,7 +83,8 @@ function annulus(ri,ro,z0,z1,pos,mat){const s=new THREE.Shape();s.absarc(0,0,ro,
 
 const loader=new GLTFLoader();
 const load=k=>new Promise(res=>loader.load(MODELS[k],g=>{g.scene.traverse(c=>{if(c.isMesh){c.geometry.deleteAttribute('color');c.geometry.computeVertexNormals()}});res(g.scene)},undefined,()=>res(null)));
-const part=async(k,mat,g)=>{const m=await load(k);if(!m)return null;m.traverse(c=>{if(c.isMesh)c.material=mat});g.add(m);return m};
+const mWN=M(0xff7a00,{rough:.45,metal:.45,em:0x7a2c00});   // 2026-11-28: weld nuts, part of their part's glb (mesh "weldnuts")
+const part=async(k,mat,g)=>{const m=await load(k);if(!m)return null;m.traverse(c=>{if(c.isMesh)c.material=c.name.startsWith('weldnuts')?mWN:mat});g.add(m);return m};
 
 // Build order = the approved oven build animation (viewer-oven.html), with the legs moved up to right after 04 (Matt 11/20:
 // legs go on early, so 03 has no leg holes) and the Skutt insulators dropped into 04 before 03 closes the floor off.
@@ -98,11 +99,11 @@ const g01=G(); await part('01',mSteelT,g01); L(g01,'01 Inner Wall Tube',P(61,40,
 const gSb=G(); await part('spacer_bot',mCer,gSb);
 const g02=G(); await part('02',M(0x9aa4ae,{rough:.4,metal:.45,op:.18}),g02); L(g02,'02 Outer Perforated Tube',P(66,20,40));
 const gBb=G(); await part('bolts_bot',mBolt,gBb);
-const g03=G(); await part('03',mSteel,g03); L(g03,'03 Support Ring',P(71,120,PLATE_TOP+1)); L(g03,'25 mm open space',P(45,165,-19));
+const g03=g01; await part('03',mSteel,g03);   // 2026-11-28: 03 comes inside 01 (it cannot pass 01's weld nuts) L(g03,'03 Support Ring',P(71,120,PLATE_TOP+1)); L(g03,'25 mm open space',P(45,165,-19));
 const gSs=G(); await part('spacer_seat',mCer,gSs);
 const gBs=G(); await part('bolts_seat',mBolt,gBs);
 const gBd=G(); await part('basedisk',mCer,gBd);
-// the real ceramic core = our C1 CAD (PRINT_SET_2026-11-12/STL/C1_Ceramic_Heater_Core.stl): 29 coil grooves + the Ø6.4 temp-probe hole at 314.6°.
+// the real ceramic core = our C1 CAD (PRINT_SET_2026-11-28/STL/C1_Ceramic_Heater_Core.stl): 29 coil grooves + the Ø6.4 temp-probe hole at 314.6°.
 const g2=G();
 const cpos=await load('core'); const cb=new THREE.Box3().setFromObject(cpos);
 const c1g=new STLLoader().parse(await (await fetch(MODELS.c1)).arrayBuffer()); c1g.computeBoundingBox();
@@ -150,13 +151,12 @@ L(g5,'MG wire out through the 04 insulator to the controller box',P(R04+66,LEADS
 const STEPS=[
  ['04 + insulators','Bottom Cap 04 on the bench, rim up. The two Skutt porcelain insulators drop into the Ø11.5 lead holes, lip on the floor, body down.'],
  ['Legs','The 3 ceramic feet screw on now, early. The leg screws stand on the 04 floor, so 03 has no leg holes.'],
- ['01 inner tube','Inner Wall Tube 01 stands inside the cap.'],
+ ['01 inner tube + 03','Inner Wall Tube 01 stands inside the cap, with its 12 orange weld nuts and with Support Ring 03 (5 weld nuts) already inside it: 03 cannot pass the nuts, so the factory puts it in before welding the top nuts. The heater lead holes in 03 sit 2.1 mm from the nearest seat weld nut.'],
  ['Bottom spacer','Bottom ceramic spacer slides down over the inner tube; holes lined up.'],
  ['02 outer tube','Outer Perforated Tube 02 slides down over everything.'],
- ['Bottom bolts','5 bottom M6 bolts: cap rim, outer tube, spacer, inner tube. Nuts inside.'],
- ['03 support ring','Insulation pad in the bottom, then Support Ring 03 drops in to the seat holes.'],
+ ['Bottom bolts','5 bottom M6 bolts from outside: cap rim, outer tube, spacer, inner tube, into the weld nuts inside 01 (0.53 mm above the Skutt insulator lips).'],
  ['Seat spacer','Seat ceramic spacer into the gap between the tubes.'],
- ['Seat bolts','5 seat bolts through outer tube, spacer, inner tube and the 03 wall.'],
+ ['Seat bolts','5 seat bolts from outside through outer tube, spacer and inner tube, into the weld nuts on the 03 wall.'],
  ['Base disk','Ceramic base disk onto the raised seat of 03.'],
  ['Core, coil, leads','The C1 core with the kanthal coil in its grooves. Each lead is the same wire, folded in half and twisted. The thermocouple goes in the core temp hole.'],
  ['Beads + crimp on the bench','Steatite beads over each twisted lead, then on the bench each lead is crimped to MG high-temp wire with a nickel crimp. No screw.'],
@@ -203,7 +203,7 @@ addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProje
 (function loop(t){requestAnimationFrame(loop);
   groups.forEach(g=>{if(g.userData.t0){const k=Math.min(1,(t-g.userData.t0)/700);g.position.z=(1-k)*(1-k)*40;if(k>=1)g.userData.t0=0}});
   if(fly){const k=Math.min(1,(t-fly.t0)/900),e=k*k*(3-2*k);ctl.target.lerpVectors(fly.ft,fly.tt,e);cam.position.lerpVectors(fly.fp,fly.tp,e);if(k>=1)fly=null}
-  mats.forEach(m=>m.emissive&&m!==mKan&&m.emissive.setHex(0)); mKan.emissive.setHex(0x3a1000);
+  mats.forEach(m=>m.emissive&&m!==mKan&&m!==mWN&&m.emissive.setHex(0)); mKan.emissive.setHex(0x3a1000);
   if(glow){const a=(Math.sin(t/250)+1)/2;glow.forEach(m=>m.emissive.setRGB(.55*a,.35*a,0))}
   ctl.update();ren.render(scene,cam);lr.render(scene,cam)})();
 </script></body></html>
